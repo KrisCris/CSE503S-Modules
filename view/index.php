@@ -23,7 +23,9 @@ form
         $type = $_POST["regorlog"];
         $username = $_POST["username"];
         if($type == "login"){
-            
+            session_start();
+            $_SESSION["username"] = $username;
+            header("Location: my_files.php");
         } elseif($type == "register"){
             
         }

@@ -1,13 +1,11 @@
 <?php
 
-require "file.php";
-require "user.php";
+require "File.php";
+require "User.php";
 
 class DataManager
 {
     private static $instance = null;
-
-    var $PATH = "/usr/shared/fileshare";
 
     var $users;
 
@@ -34,6 +32,10 @@ class DataManager
     {
         // io
 
+    }
+
+    public function addUser($username, $password){
+        
     }
 
 

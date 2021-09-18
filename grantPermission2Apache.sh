@@ -1,9 +1,9 @@
 #!/bin/sh
-if [ ! -d "../../module2res" ] 
+if [ ! -d "/var/www/module2res" ] 
 then
-    mkdir ../../module2res
+    sudo mkdir /var/www/module2res
 fi
-sudo chown -R connlost ../../module2res
-sudo chgrp -R apache ../../module2res
-sudo chmod -R 770 ../../module2res
-sudo chmod g+s ../../module2res
+sudo chown -R connlost /var/www/module2res
+sudo chgrp -R apache /var/www/module2res
+sudo chmod -R 770 /var/www/module2res
+sudo chmod g+s /var/www/module2res
