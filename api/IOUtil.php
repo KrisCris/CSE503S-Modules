@@ -1,4 +1,5 @@
 <?php
+// User IO
 class IOUtil
 {
     public static $path = "/var/www/module2res/";
@@ -15,6 +16,7 @@ class IOUtil
 
     public static function removeFile($user, $path)
     {
+        $path = rawurldecode($path);
         $filepath = self::formPath($user, $path);
         if (!file_exists($filepath)) {
             echo "$filepath not exist";
@@ -26,8 +28,13 @@ class IOUtil
 
     public static function listUserFiles($user, $innerPath = '')
     {
+        # make sure every user has its own dir
+        $userPath = self::$path . $user . '/';
+        if (!file_exists($userPath)) {
+            mkdir($userPath);
+        }
+        
         $dirPath = self::formPath($user, $innerPath);
-        echo $dirPath . "<br>";
         $files = scandir($dirPath);
         return $files;
     }
@@ -35,10 +42,11 @@ class IOUtil
     public static function downloadFile($user, $path)
     {
         ob_clean();
+        $path = rawurldecode($path);
         $filepath = self::formPath($user, $path);
-        $filename = explode("/",$path);
-        $filename = $filename[sizeof($filename)-1];
-        
+        $filename = explode("/", $path);
+        $filename = $filename[sizeof($filename) - 1];
+
         $fp = fopen($filepath, "r");
         $filesize = filesize($filepath);
 
@@ -55,6 +63,20 @@ class IOUtil
             echo $data;
         }
         fclose($fp);
+    }
+
+    public static function readFile($user, $path)
+    {
+        ob_clean();
+        $path = rawurldecode($path);
+        $filepath = self::formPath($user, $path);
+        $filename = explode("/", $path);
+        $filename = $filename[sizeof($filename) - 1];
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($filepath);
+        header("Content-Type: " . $mime);
+        header('content-disposition: inline; filename="' . $filename . '";');
+        readfile($filepath);
     }
 
     public static function formPath($user, $path)

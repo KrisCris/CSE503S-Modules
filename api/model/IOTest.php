@@ -13,9 +13,10 @@
         <input type="file" name="file" id="file">
         <input type="text" name="username" id="username" placeholder="username">
         <input type="text" name="filename" id="filename" placeholder="filename">
-        <input type="text" name="rm" id="rm" placeholder="rm-marker 1/0">
-        <input type="text" name="dl" id="dl" placeholder="dl_marker 1/0">
-        <input type="text" name="ls" id="ls" placeholder="ls_marker 1/0">
+        <input type="text" name="rm" id="rm" placeholder="rm-flag 1/0">
+        <input type="text" name="dl" id="dl" placeholder="dl_flag 1/0">
+        <input type="text" name="rf" id="rf" placeholder="rf_flag 1/0">
+        <input type="text" name="ls" id="ls" placeholder="ls_flag 1/0">
         <input type="submit" value="UPLOAD">
     </form>
 </body>
@@ -24,7 +25,7 @@
 
 <?php
 
-require '../IOUtil.php';
+require dirname(__FILE__).'/../IOUtil.php';
 if (isset($_FILES["file"]) && isset($_POST["username"])) {
     $file = $_FILES["file"];
     $username = $_POST["username"];
@@ -32,16 +33,20 @@ if (isset($_FILES["file"]) && isset($_POST["username"])) {
 }
 
 
-if (isset($_POST["rm"]) && isset($_POST["dl"]) && isset($_POST["filename"])) {
+if ((isset($_POST["rm"]) || isset($_POST["dl"]) || isset($_POST["rf"]))&& isset($_POST["filename"])) {
     $filename = $_POST["filename"];
     $rm = $_POST["rm"];
     $dl = $_POST["dl"];
+    $rf = $_POST["rf"];
 
     if ($rm == 1) {
         echo "DEL:" . IOUtil::removeFile($username, $filename) ? 'true' : 'false' . "<br>";
     }
     if ($dl == 1) {
         echo "Download" . IOUtil::downloadFile($username, $filename);
+    }
+    if ($rf == 1){
+        echo "READFILE". IOUtil::readFile($username, $filename);
     }
 }
 
