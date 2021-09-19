@@ -75,6 +75,9 @@
                     IOUtil::unzip($username, $fpath);
                     # no exit; since we want to have file list refreshed
                 }
+                if (isset($_POST["zip"]) && $_POST["zip"] == 1){
+                    IOUtil::zip($username, $fpath);
+                }
             }
 
             # innerPath is used for tracking current level of directory, 
@@ -249,6 +252,14 @@
                         <form class="fc" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="post">
                             <input type="text" name="innerPath" class="hide" value=<?php echo rawurlencode($relativePath . '/') ?>>
                             <input class="btn" type="submit" value="Open">
+                        </form>
+
+                        <!-- zip folders -->
+                        <form class="fc" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="post">
+                            <input type="text" name="filePath" class="hide" value=<?php echo rawurlencode($relativePath) ?>>
+                            <?php if($innerPath!=""){?> <input type="text" name="innerPath" class="hide" value=<?php echo rawurlencode($innerPath) ?>><?php }?>
+                            <input type="text" name="zip" class="hide" value="1">
+                            <input class="btn" type="submit" value="Compress">
                         </form>
                     <?php } ?>
 

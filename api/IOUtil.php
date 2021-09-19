@@ -142,9 +142,9 @@ class IOUtil
         $path = rawurldecode($path);
         $filepath = self::formPath($user, $path);
         $destpath = substr($filepath, 0, strrpos($filepath, '.'));
-        
+
         # dir name existed, rename it
-        $destpath = self::fixFileExisted($destpath);
+        $destpath = self::fixFolderExisted($destpath);
 
         $zip = new ZipArchive;
         $res = $zip->open($filepath);
@@ -157,8 +157,45 @@ class IOUtil
         return false;
     }
 
+    # credit https://stackoverflow.com/questions/4914750/how-to-zip-a-whole-folder-using-php
     public static function zip($user, $path)
     {
+        # we have to encode the path otherwise it will be messed up by post request.
+        $path = rawurldecode($path);
+        # form the absolute path
+        $filepath = self::formPath($user, $path);
+        // $filepath = substr($filepath, strrpos($filepath, '/')+1, strlen($filepath)-(strrpos($filepath, '/')+1));
+        if(strrpos($filepath, '/')==strlen($filepath)-1){
+            $filepath = substr($filepath,0, -1);
+        }
+        $fname = $filepath.".zip";
+        $fname = self::fixFileExisted($fname);
+
+        if(count(scandir($filepath))<3){
+            return false;
+        }
+
+        $zip = new ZipArchive();
+        $zip->open($fname, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+        // Create recursive directory iterator
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($filepath),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($files as $name => $file) {
+            // Skip directories (they would be added automatically)
+            if (!$file->isDir()) {
+                // Get real and relative path for current file
+                $filePath = $file->getRealPath();
+                $relativePath = substr($filePath, strlen($filepath) + 1);
+
+                // Add current file to archive
+                $zip->addFile($filePath, $relativePath);
+            }
+        }
+        // Zip archive will be created only after closing object
+        $zip->close();
     }
 
     # copy one file to another place.
@@ -166,12 +203,11 @@ class IOUtil
     {
         $sharedPath = self::$path . $sharedPath;
         $filename = basename($sharedPath);
-        if (is_dir($sharedPath)){
+        if (is_dir($sharedPath)) {
             return self::dirCopy($sharedPath, self::formPath($user, $destPath) . $filename);
         } else {
             return copy($sharedPath, self::formPath($user, $destPath) . $filename);
         }
-        
     }
 
     # credit https://www.php.net/manual/zh/function.copy.php#104020
@@ -190,13 +226,14 @@ class IOUtil
                     # continuously mkdir
                     self::dirCopy("$src/$file", "$dest/$file");
                 }
-        # copy files to the dir
+            # copy files to the dir
         } else if (file_exists($src)) copy($src, $dest);
         return true;
     }
 
     # rename if already existed
-    public static function fixFolderExisted($dest){
+    public static function fixFolderExisted($dest)
+    {
         $idx = 2;
         while (file_exists($dest)) {
             $dest = $dest . "_$idx";
@@ -205,12 +242,13 @@ class IOUtil
         return $dest;
     }
 
-    public static function fixFileExisted($dest){
+    public static function fixFileExisted($dest)
+    {
         $idx = 2;
-        while (file_exists($dest)){
+        while (file_exists($dest)) {
             $path_parts = pathinfo($dest);
-            $fn = $path_parts['filename']."_$idx";
-            $dest = substr($dest, 0, strrpos($dest, "/")+1).$fn.".".$path_parts["extension"];
+            $fn = $path_parts['filename'] . "_$idx";
+            $dest = substr($dest, 0, strrpos($dest, "/") + 1) . $fn . "." . $path_parts["extension"];
             $idx++;
         }
         return $dest;
