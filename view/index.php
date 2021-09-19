@@ -46,8 +46,8 @@
             if (isset($_POST["username"]) && isset($_POST["regorlog"])) {
                 $type = $_POST["regorlog"];
                 $username = $_POST["username"];
-
-                if ($username == "") {
+                
+                if (!preg_match('/^[\w_\.\-]+$/', $username) || $username == "") {
                     echo "INVALID INPUT";
                     exit;
                 }

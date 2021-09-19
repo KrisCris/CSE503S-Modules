@@ -38,6 +38,16 @@
     border-color: gray;
 }
 
+#shareLink{
+    color: blueviolet;
+    text-shadow: 3px 3px 10px rebeccapurple;
+}
+
+#pathIndicator{
+    color: dodgerblue;
+    text-shadow: 3px 3px 10px darkslateblue;
+}
+
 #filelist{
     margin-left: 30px;
     margin-right: 30px;
@@ -84,6 +94,14 @@
     position:absolute;
     top:210px;
     right:100px;
+    padding: 5px;
+    font-size: 20px;
+}
+
+#receive{
+    position:absolute;
+    top:210px;
+    left:100px;
     padding: 5px;
     font-size: 20px;
 }

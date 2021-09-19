@@ -92,7 +92,48 @@
             $finfo = new finfo(FILEINFO_MIME_TYPE); ?>
 
             <!-- Current directory indicator -->
-            <p class="filelistprompt">Current Path: <?php echo $containerPath; ?></p>
+            <p class="filelistprompt" id="pathIndicator">Current Path: <?php echo '/'.$innerPath; ?></p>
+
+            <!-- File receive(sharing) button -->
+            <form id="receive" action=<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?> method="post">
+                <!-- We use this line of code to let the the site stay in current directory after request is made. -->
+                <!-- We don't want this line exist when user is not in sub-directory, because the HTML validator would say `value=` is not syntax correct -->
+                <?php if($innerPath!=""){?> <input type="text" name="innerPath" class="hide" value=<?php echo rawurlencode($innerPath) ?>><?php }?>
+                
+                <!-- mkdir -->
+                <input type="text" name="sharingKey" placeholder=
+                    <?php
+                    // We put the code here is only to save some space printing the error information.
+                    if (isset($_POST["receive"]) && $_POST["receive"] == 1) {
+                        $key = $_POST["sharingKey"];
+                        # Making sure the sharing key is legit.
+                        if (!preg_match('/^[\w_\.\-]+$/', $key) || $key == "") {
+                            echo "InvalidKey!";
+                        } else {
+                            if ($DM->receiveFile($username, $innerPath, $key)) {;
+                            } else {
+                                # if php is unable to create the folder, throw error.
+                                echo "KeyNotWorking!";
+                            }
+                        }
+                    } else {
+                        echo "SharingKey";
+                    }
+                    ?>><br>
+                <!-- the flag indicating which btn is pressed -->
+                <input type="text" name="receive" value="1" class="hide">
+                <input type="submit" value="Receive File">
+            </form>
+
+            <!-- File sharing link -->
+            <?php
+                if(isset($_POST["share"]) && $_POST["share"] == 1){?>
+            <p class = "filelistprompt" id="shareLink">
+                <?php
+                    $fp = $_POST["filePath"];
+                    echo "ShareKey for [".rawurldecode($fp). "] : ".$DM->shareFile($username, $fp);
+                ?>
+            </p><?php }?>
 
             <!-- A button for file upload -->
             <!-- We put it here because we need to use innerPath to determine the place to upload -->
@@ -131,7 +172,7 @@
                                 if (IOUtil::mkdir($username, $dirName, $innerPath)) {;
                                 } else {
                                     # if php is unable to create the folder, throw error.
-                                    echo "ErrorOccured!";
+                                    echo "AlreadyExist";
                                 }
                             }
                         } else {
@@ -218,6 +259,14 @@
                         <?php if($innerPath!=""){?> <input type="text" name="innerPath" class="hide" value=<?php echo rawurlencode($innerPath) ?>><?php }?>
                         <input type="text" name="delete" class="hide" value="1">
                         <input class="btn" type="submit" value="Delete">
+                    </form>
+
+                    <!-- File share btn -->
+                    <form class="fc" action=<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?> method="post">
+                        <input type="text" name="filePath" class="hide" value=<?php echo rawurlencode($relativePath) ?>>
+                        <?php if($innerPath!=""){?> <input type="text" name="innerPath" class="hide" value=<?php echo rawurlencode($innerPath) ?>><?php }?>
+                        <input type="text" name="share" class="hide" value="1">
+                        <input class="btn" type="submit" value="Share">
                     </form>
                     
                     <!-- provide unzip button for zip archives -->

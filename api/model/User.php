@@ -9,8 +9,8 @@ class User{
         $this->passwd = $passwd;
     }
 
+    # create instance from json object
     public static function fromDecodedJson($jsonObj){
-        // echo var_dump($jsonObj);
         if(array_key_exists("name",$jsonObj)){
             return new static($jsonObj["name"]);
         } else {
@@ -18,11 +18,13 @@ class User{
         }
     }
 
+    # dump object to json string
     public function toJson(){
         $res = array("name"=>$this->name);
         return json_encode($res);
     }
 
+    # getter
     public function getName(){
         return $this->name;
     }
