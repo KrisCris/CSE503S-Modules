@@ -9,11 +9,13 @@ class DataManager
 
     private $configPath;
     private $users;
+    private $fileShareKeys;
 
     private function __construct()
     {
         $this->configPath = IOUtil::$path . ".config/";
         $this->users = array();
+        $this->fileShareKeys = array();
     }
 
     private function __clone()
@@ -87,5 +89,26 @@ class DataManager
             return true;
         }
         return false;
+    }
+
+    public function shareFile($user, $path){
+        $uuid = uniqid($user.'AT');
+        $relativePath = $user.'/'.$path;
+        while(key_exists($uuid, $this->fileShareKeys)){
+            $uuid = uniqid($user.'AT');
+        }
+        $this->fileShareKeys[$uuid] = $relativePath;
+        return $uuid;
+    }
+
+    public function receiveFile($user, $path, $uuid){
+        $sharedPath = null;
+        if(key_exists($uuid, $this->fileShareKeys)){
+            $sharedPath = $this->fileShareKeys[$uuid];
+            return IOUtil::shareTo($sharedPath, $user, $path);
+        } else {
+            return false;
+        }
+
     }
 }

@@ -125,4 +125,8 @@ class IOUtil
     public static function zip($user, $path){
 
     }
+
+    public static function shareTo($sharedPath, $user, $destPath){
+        return copy($sharedPath, self::formPath($user, $destPath));
+    }
 }
