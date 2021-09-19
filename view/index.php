@@ -11,16 +11,24 @@
 
 <body>
     <?php
+    # start session
     session_start();
+    # Use dirname to make sure the path won't be messed up when it also requiring other php files.
     require dirname(__FILE__) . '/../api/model/DataManager.php';
+    # Get Singleton Instance DataManager.
     $DM = DataManager::getInstance();
+    # auto login if possible.
     if (isset($_SESSION["username"]) && $DM->hasUser($_SESSION["username"])) {
         header("Location: my_files.php");
     }
     ?>
+
+    <!-- some decorations -->
     <div>
         <img alt="icon" src="res/icon.gif" />
     </div>
+
+    <!-- login or register -->
     <form action=<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?> method="POST">
         <input type="text" name="username" id="username" placeholder="Username">
         <div>
@@ -29,19 +37,25 @@
         </div>
         <input id="btn" type="submit" value="Go">
     </form>
+
+    <!-- login / register logic, and error output -->
     <p id="err">
         <?php
         if ($DM != null) {
+            // if requres is sent
             if (isset($_POST["username"]) && isset($_POST["regorlog"])) {
                 $type = $_POST["regorlog"];
                 $username = $_POST["username"];
+
                 if ($username == "") {
                     echo "INVALID INPUT";
                     exit;
                 }
-                # try to check account status, 
-                # but indeed these code are useless as no protection are added to any account.
+                # check account status, 
+                # but indeed these code are useless as no password protection are there.
+                # login
                 if ($type == "login") {
+                    # if the user is in our list, login.
                     if ($DM->hasUser($username)) {
                         $_SESSION["username"] = $username;
                         header("Location: my_files.php");
@@ -49,7 +63,9 @@
                         echo "YOU HAVE TO REGISTER FIRST!";
                         exit;
                     }
+                # register
                 } elseif ($type == "register") {
+                    # check if account existed.
                     if ($DM->addUser($username)) {
                         $_SESSION["username"] = $username;
                         header("Location: my_files.php");
@@ -63,6 +79,4 @@
         ?>
     </p>
 </body>
-
-
 </html>
