@@ -21,7 +21,11 @@ Xingchen Yang-501890-xingcheny
 2. click `choose file` to select a file for upload, then click `upload`. The file should show up in your online folder.
 3. Click `share` on a file, a sharing code will show up. Copy and paste to the text field on the top-left side, click `receive file`, and a file sharing is done.
 4. You can create folders by clicking the top-left side button.
-5. There's no double check for deleting any file, be careful.
+5. You can preview files like images, pdf, mp4, etc. For file cannot be previewed on browser (I suppose you're using chrome), just download it.
+6. You can unzip files.
+7. You can compress folders that are not empty.
+8. There's no double check for deleting any file, be careful.
+9. etc.
 
 ![note](note.png)
 
