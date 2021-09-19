@@ -8,6 +8,24 @@ Xingchen Yang-501890-xingcheny
 
 [Link](http://ec2-18-117-87-53.us-east-2.compute.amazonaws.com/~connlost/module2-group-503954/)
 
+
+# Note before testing on it
+1. we created 2 account, `testuser` and `connlost`, feel free to use them.
+2. don't input characters other than number and letters as username, or new folder name.
+
+
+
+# Usage
+
+1. login an account
+2. click `choose file` to select a file for upload, then click `upload`. The file should show up in your online folder.
+3. Click `share` on a file, a sharing code will show up. Copy and paste to the text field on the top-left side, click `receive file`, and a file sharing is done.
+4. You can create folders by clicking the top-left side button.
+5. There's no double check for deleting any file, be careful.
+
+![note](note.png)
+
+
 # Requirements
 
 1. File Sharing Site (40 Points):
