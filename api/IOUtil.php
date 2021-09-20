@@ -4,7 +4,7 @@ class IOUtil
 {
     # path to file storage. 
     # This path is not accessible from web browser so it is save.
-    public static $path = "/var/www/module2res/";
+    public static $path = "/media/module2res/";
 
     public static function saveFile($user, $file, $path = "")
     {
