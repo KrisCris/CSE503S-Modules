@@ -199,14 +199,17 @@ class IOUtil
     }
 
     # copy one file to another place.
+    # we do allow share files ourselves, one wey to copy and paste file, cool.
     public static function shareTo($sharedPath, $user, $destPath)
     {
         $sharedPath = self::$path . $sharedPath;
         $filename = basename($sharedPath);
+        $destPath = self::formPath($user, $destPath) . $filename;
         if (is_dir($sharedPath)) {
-            return self::dirCopy($sharedPath, self::formPath($user, $destPath) . $filename);
+            return self::dirCopy($sharedPath, $destPath);
         } else {
-            return copy($sharedPath, self::formPath($user, $destPath) . $filename);
+            $destPath = self::fixFileExisted($destPath);
+            return copy($sharedPath, $destPath);
         }
     }
 
