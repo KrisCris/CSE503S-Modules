@@ -60,3 +60,7 @@ Xingchen Yang-501890-xingcheny
    - [x] Users can share files/folders among each other via a one-time shareKey.
    - [x] Users can change the shareKey by re-sharing it.
    - [x] You are able to copy and paste files/folders by sharing files to yourself xD.
+
+
+
+Grade: 55/55. 
