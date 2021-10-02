@@ -1,10 +1,10 @@
-use module3;
 create table user(
     id int auto_increment not null,
     username varchar(50) not null,
     password varchar(200) not null,
     time timestamp not null default current_timestamp,
     photo varchar(500) not null default '/media/module3res/userPhoto/defaultPhoto.png',
+    admin boolean not null default false,
     primary key (id)
 ) engine = InnoDB default character set = utf8 collate = utf8_general_ci;
 
@@ -54,4 +54,3 @@ create table rates(
     foreign key (userId) references user(id),
     foreign key (commentsId) references comments(id)
 ) engine = InnoDB default character set = utf8 collate = utf8_general_ci;
-
