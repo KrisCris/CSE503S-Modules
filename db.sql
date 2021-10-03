@@ -25,11 +25,13 @@ create table comments(
     userId int not null,
     storyId int not null,
     comment longtext not null,
+    predecessor int not null,
     time timestamp not null default current_timestamp,
     seen boolean not null default false,
     primary key (id),
     foreign key (userId) references user (id),
-    foreign key (storyId) references story (id) on delete cascade
+    foreign key (storyId) references story (id),
+    foreign key (predecessor) references comments(id) on delete cascade
 ) engine = InnoDB default character set = utf8 collate = utf8_general_ci;
 
 create table subComments(
