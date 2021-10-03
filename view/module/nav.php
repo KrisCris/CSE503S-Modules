@@ -8,7 +8,7 @@
             if ($u == null) {
                 $errMsg = "Wrong username or password!";
             } else {
-                $_SESSION["uid"] = $u->getId();
+                $_SESSION["uid"] = $u->id;
                 $_SESSION["token"] = $_SESSION['token'] = bin2hex(random_bytes(32));
             }
         } else {
@@ -16,7 +16,7 @@
             if ($u == null) {
                 $errMsg = "Invalid username or password!";
             } else {
-                $_SESSION["uid"] = $u->getId();
+                $_SESSION["uid"] = $u->id;
                 $_SESSION["token"] = $_SESSION['token'] = bin2hex(random_bytes(32));
             }
         }
@@ -34,7 +34,7 @@
     <?php
     if (isset($_SESSION["uid"])) {
         $u = User::getUserById($_SESSION["uid"]);
-        $name = $u->getUsername();
+        $name = $u->username;
         $img = $u->getPhoto();
         $imgStyle = null;
     } else {
@@ -47,23 +47,27 @@
     <p>Hello <?php echo $name ?>!</p>
 
     <?php if (isset($_SESSION["uid"])) { ?>
-        <form action=<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?> method="post">
-            <input type="hidden" name="logout" value="1">
-            <input type="submit" value="Logout">
-        </form>
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+        <input type="hidden" name="logout" value="1">
+        <input type="submit" value="Logout">
+    </form>
+    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
+        <input type="hidden" name="newStory" value="1">
+        <input type="submit" value="New Story">
+    </form>
     <?php } else { ?>
-        <form action=<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?> method="POST">
-            <input type="hidden" name="sign" value="1">
-            <div class='inputs'>
-                <input type="text" name="username" id="username" placeholder="Username"><br>
-                <input type="password" name="password" id="password" placeholder="Password">
-            </div>
+    <form action=<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?> method="POST">
+        <input type="hidden" name="sign" value="1">
+        <div class='inputs'>
+            <input type="text" name="username" id="username" placeholder="Username"><br>
+            <input type="password" name="password" id="password" placeholder="Password">
+        </div>
 
-            <div class='inputs'>
-                <input type="radio" name="regorlogin" id="login" value="login" checked><label for="login">Login</label><br>
-                <input type="radio" name="regorlogin" id="register" value="register"><label for="register">Register</label><br>
-            </div>
-            <input id="btn" type="submit" value="Go">
-        </form>
+        <div class='inputs'>
+            <input type="radio" name="regorlogin" id="login" value="login" checked><label for="login">Login</label><br>
+            <input type="radio" name="regorlogin" id="register" value="register"><label for="register">Register</label><br>
+        </div>
+        <input id="btn" type="submit" value="Go">
+    </form>
     <?php } ?>
 </div>

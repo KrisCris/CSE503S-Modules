@@ -29,7 +29,7 @@ create table comments(
     seen boolean not null default false,
     primary key (id),
     foreign key (userId) references user (id),
-    foreign key (storyId) references story (id)
+    foreign key (storyId) references story (id) on delete cascade
 ) engine = InnoDB default character set = utf8 collate = utf8_general_ci;
 
 create table subComments(
@@ -39,18 +39,18 @@ create table subComments(
     time timestamp not null default current_timestamp,
     seen boolean not null default false,
     primary key (id),
-    foreign key (commentsId) references comments(id),
+    foreign key (commentsId) references comments(id) on delete cascade,
     foreign key (userId) references user(id)
 ) engine = InnoDB default character set = utf8 collate = utf8_general_ci;
 
-create table rates(
+create table rate(
     id int auto_increment not null,
     userId int not null,
-    commentsId int not null,
+    storyId int not null,
     value int not null,
     time timestamp not null default current_timestamp,
     seen boolean not null default false,
     primary key (id),
     foreign key (userId) references user(id),
-    foreign key (commentsId) references comments(id)
+    foreign key (storyId) references story(id) on delete cascade
 ) engine = InnoDB default character set = utf8 collate = utf8_general_ci;
