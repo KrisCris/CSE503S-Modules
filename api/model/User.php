@@ -2,11 +2,12 @@
 require dirname(__FILE__) . '/DB.php';
 class User
 {
-    private $id;
-    private $username;
-    private $time;
+    # too lazy to create accessors, just made them all public xD
+    public $id;
+    public $username;
+    public $time;
     private $photo;
-    private $admin;
+    public $admin;
 
     private function __construct($id, $username, $time, $photo, $admin)
     {
@@ -15,14 +16,6 @@ class User
         $this->time = $time;
         $this->photo = $photo;
         $this->admin = $admin;
-    }
-
-    public function getId(){
-        return $this->id;
-    }
-
-    public function getUsername(){
-        return $this->username;
     }
 
     public function getPhoto()
@@ -40,11 +33,6 @@ class User
         $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
         return $base64;
     }
-
-    public function isAdmin(){
-        return $this->admin;
-    }
-
 
     public static function getUserById($id){
         global $conn;
@@ -66,6 +54,9 @@ class User
     }
 
     public static function register($username, $password, $admin=0){
+        if (!preg_match('/^[\w_\.\-]+$/', $username) || $username == "") {
+            return null;
+        }
         global $conn;
         # if exists
         $stmt = $conn->prepare("select COUNT(*) from user where username=?");
@@ -93,6 +84,9 @@ class User
     }
 
     public static function login($username, $inputPass){
+        if (!preg_match('/^[\w_\.\-]+$/', $username) || $username == "") {
+            return null;
+        }
         global $conn;
         $stmt = $conn->prepare("select id, username, time, photo, admin, password from user where username=?");
         if(!$stmt){
