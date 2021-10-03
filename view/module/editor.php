@@ -1,14 +1,5 @@
 <?php
 if (isset($_SESSION["uid"])){
-# handle requests
-if(isset($_POST["submitStory"]) && isset($_POST["token"]) && $_POST["submitStory"] == 1){
-    $title = $_POST["title"];
-    $content = $_POST["content"];
-    $link = $_POST["link"];
-    $storyId = $_POST["storyId"];
-    $_GET["storyId"] = Story::addStory($_SESSION['uid'], $title, $content, $link, $storyId);
-}
-
 # check editor mode
 if((isset($_GET["newStory"]) && $_GET["newStory"]==1)|| (isset($_GET["editStory"]) && $_GET["editStory"]==1 && isset($_GET["storyId"]))){ 
     $title = "";

@@ -1,5 +1,7 @@
 <div id="storyList">
-    <?php if(!isset($_GET["newStory"]) && !isset($_GET["storyId"]) && !isset($_GET["editStory"])){
+    <?php 
+    # skip rendering this part if the page is executing for other tasks.
+    if(!isset($_GET["newStory"]) && !isset($_GET["storyId"]) && !isset($_GET["editStory"])){
     $count = Story::countStories();
     $perPage = 10;
     $page = ceil($count / $perPage);
@@ -17,6 +19,15 @@
     }
     $li = Story::getStoryList($begin, $perPage);
 
+    # top page nav
+    for($i=0; $i<$page; $i++){ ?>
+        <form class="pageNav" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
+            <input type="hidden" name="page" value="<?php echo $i; ?>">
+            <input <?php if ($i == $currentPage) echo "class='btnCurrentPage'"; ?> type="submit" value="<?php echo $i+1; ?>">
+        </form>
+        <?php }
+    
+    # story list
     foreach ($li as $story) { ?>
     <div class="storyCard">
         <div>
@@ -35,13 +46,11 @@
     </div>
     <?php }
 
+    # bottom page nav
     for($i=0; $i<$page; $i++){ ?>
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
+    <form class="pageNav" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
         <input type="hidden" name="page" value="<?php echo $i; ?>">
         <input <?php if ($i == $currentPage) echo "class='btnCurrentPage'"; ?> type="submit" value="<?php echo $i+1; ?>">
     </form>
-    <?php }
-    }
-
-    ?>
+<?php }}?>
 </div>

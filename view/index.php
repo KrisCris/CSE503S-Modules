@@ -24,17 +24,13 @@
 
 <body>
     <?php 
+    require dirname(__FILE__) . '/module/requestsHandler.php';
+
     require dirname(__FILE__) . '/module/nav.php';
+    require dirname(__FILE__) . '/module/storyList.php';
     require dirname(__FILE__) . '/module/editor.php';
     require dirname(__FILE__) . '/module/storyViewer.php';
-    require dirname(__FILE__) . '/module/storyList.php';
-    
-    
-    
-    
     ?>
-
-
 </body>
 
 </html>

@@ -1,9 +1,6 @@
 <?php
-if (isset($_POST["delete"]) && $_POST["delete"]==1){
-    Story::deleteStory($_POST['storyId'])?  :$_GET["storyId"] = $_POST['storyId'];
-}
 if (isset($_GET["storyId"])) {
-    # make sure it is not in other modes
+    # skip rendering this part if the page is executing for other tasks.
     if (!isset($_GET["newStory"]) && !isset($_GET["editStory"])) {
         if ($s = Story::getStoryById($_GET["storyId"])) { ?>
         <div class="storyViewer">

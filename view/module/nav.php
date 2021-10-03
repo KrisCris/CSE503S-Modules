@@ -1,31 +1,7 @@
 <div class="nav">
-    <?php
-    # handle requests
-    $errMsg = null;
-    if (isset($_POST["sign"]) && $_POST["sign"] == 1) {
-        if ($_POST['regorlogin'] == "login") {
-            $u = User::login($_POST["username"], $_POST["password"]);
-            if ($u == null) {
-                $errMsg = "Wrong username or password!";
-            } else {
-                $_SESSION["uid"] = $u->id;
-                $_SESSION["token"] = $_SESSION['token'] = bin2hex(random_bytes(32));
-            }
-        } else {
-            $u = User::register($_POST["username"], $_POST["password"]);
-            if ($u == null) {
-                $errMsg = "Invalid username or password!";
-            } else {
-                $_SESSION["uid"] = $u->id;
-                $_SESSION["token"] = $_SESSION['token'] = bin2hex(random_bytes(32));
-            }
-        }
-    }
-    if ($errMsg) { ?>
+    <?php if ($errMsg) { ?>
         <p class="error"><?php echo $errMsg; ?></p>
     <?php }
-    ?>
-    <?php
     if (isset($_POST['logout']) && $_POST['logout'] == 1) {
         session_unset();
     }
