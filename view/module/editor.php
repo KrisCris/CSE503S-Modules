@@ -15,17 +15,18 @@ if((isset($_GET["newStory"]) && $_GET["newStory"]==1)|| (isset($_GET["editStory"
 
 <!-- render htmls -->
 <div class="editor">
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
-        <textarea <?php  ?> name="title" id="title" cols="30" rows="1" placeholder="Title"><?php echo $title; ?></textarea><br>
-        <textarea name="content" id="content" cols="30" rows="10" placeholder="Content"><?php echo $content; ?></textarea><br>
-        <textarea name="link" id="link" cols="30" rows="2" placeholder="Link"><?php echo $link; ?></textarea><br>
+    <form class="editor" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+        <textarea <?php  ?> name="title" id="title" cols="30" rows="3" placeholder="Title"><?php echo $title; ?></textarea><br>
+        <textarea name="content" id="content" cols="30" rows="20" placeholder="Content"><?php echo $content; ?></textarea><br>
+        <textarea name="link" id="link" cols="30" rows="3" placeholder="Link"><?php echo $link; ?></textarea><br>
         <input type="hidden" name="token" value="<?php echo $_SESSION["token"] ?>">
         <input type="hidden" name="submitStory" value="1">
         <input type="hidden" name="storyId" value="<?php echo !isset($_GET["storyId"])?-1:$_GET['storyId'];?>">
-        <input type="submit" value="Submit">
+        <input class="editorBtn btn1" type="submit" value="Submit">
     </form>
-    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-        <input type="submit" value="Cancel" />
+    <form class="editor" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
+        <?php if (isset($_GET["editStory"])){?> <input type="hidden" name="storyId" value="<?php echo $_GET['storyId']?>"> <?php }?>
+        <input class="editorBtn" type="submit" value="Cancel" />
     </form>
 </div>
 

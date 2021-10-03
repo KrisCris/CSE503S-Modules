@@ -31,6 +31,18 @@ class Story
         $this->rate = $rate;
     }
 
+    public function viewed(){
+        global $conn;
+        $this->click++;
+        $stmt = $conn->prepare("update story set click=click+1 where id=$this->id");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->execute();
+        $stmt->close();
+    }
+
     public static function addStory($userId, $title, $content, $link, $storyId = -1)
     {
         global $conn;
@@ -65,7 +77,89 @@ class Story
             exit;
         }
         $stmt->bind_param('i', $id);
-        return $stmt->execute() ? true : false;
+        if ($stmt->execute()){
+            $stmt->close();
+            return true;
+        }
+        $stmt->close();
+        return false;
+    }
+
+    public static function rateStory($sid, $uid, $val){
+        global $conn;
+        # if user already rated the story, just modify the value
+        $stmt = $conn->prepare("select rate.id, rate.value from rate where rate.userId=? and rate.storyId=?");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->bind_param('ii', $uid, $sid);
+        $stmt->execute();
+        $stmt->bind_result($rid, $rval);
+        if($stmt->fetch()){
+            $stmt->close();
+            # if same val, meaning user want to cancel the rate, otherwise change the rate.
+            if ($val==$rval) {
+                $stmt = $conn->prepare("delete from rate where id=?");
+                if (!$stmt) {
+                    printf("Query Prep Failed: %s\n", $conn->error);
+                    exit;
+                }
+                $stmt->bind_param('i', $rid);
+                if ($stmt->execute()){
+                    $stmt->close();
+                    return true;
+                }
+                $stmt->close();
+                return false;
+            } else {
+                $stmt = $conn->prepare("update rate set rate.value=? where rate.id=?");
+                if (!$stmt) {
+                    printf("Query Prep Failed: %s\n", $conn->error);
+                    exit;
+                }
+                $stmt->bind_param('ii', $val, $rid);
+                if ($stmt->execute()){
+                    $stmt->close();
+                    return true;
+                }
+                $stmt->close();
+                return false;
+            }
+            
+        }
+        # add a new rate
+        $stmt = $conn->prepare("insert into rate (userId, storyId, value) values (?,?,?)");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->bind_param('iii', $uid, $sid, $val);
+        if ($stmt->execute()){
+            $stmt->close();
+            return true;
+        }
+        $stmt->close();
+        return false;
+    }
+
+    public static function getMyRate($uid, $sid){
+        global $conn;
+        $stmt = $conn->prepare("select rate.value from rate where rate.userId=? and rate.storyId=?");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->bind_param('ii', $uid, $sid);
+        $stmt->execute();
+        $stmt->bind_result($val);
+        if($stmt->fetch()){
+            $stmt->close();
+            return $val;
+        } else {
+            $stmt->close();
+            return 0;
+        }
     }
 
     public static function getStoryById($id)
@@ -125,4 +219,5 @@ class Story
         $stmt->close();
         return 0;
     }
+
 }

@@ -18,39 +18,46 @@
         $begin = 0;
     }
     $li = Story::getStoryList($begin, $perPage);
-
-    # top page nav
+    ?>
+    <!-- top page nav -->
+    <p class="navTxt">Pages:</p>
+    <div class="pageNav">
+    <?php
     for($i=0; $i<$page; $i++){ ?>
-        <form class="pageNav" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
+        <form class="pageNavBtn" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
             <input type="hidden" name="page" value="<?php echo $i; ?>">
-            <input <?php if ($i == $currentPage) echo "class='btnCurrentPage'"; ?> type="submit" value="<?php echo $i+1; ?>">
+            <input <?php if ($i == $currentPage) echo "class='btnSelected'"; ?> type="submit" value="<?php echo $i+1; ?>">
         </form>
-        <?php }
-    
+        <?php }?>
+    </div><br>
+    <?php
     # story list
     foreach ($li as $story) { ?>
     <div class="storyCard">
-        <div>
+        <div class="content">
             <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']."?storyId=$story->id"); ?>">
-                <h3><?php echo $story->title;?></h3>
+                <h1><?php echo $story->title;?></h1>
             </a>
             <p><?php if (strlen($story->content)>100) echo substr($story->content, 0, 100).'......'; else echo $story->content;?></p>
         </div>
 
-        <div>
-            <p>Time: <?php echo $story->time;?></p>
-            <p>Auther: <?php echo $story->username;?></p>
-            <p>Likes: <?php echo $story->rate;?></p>
-            <p>Views: <?php echo $story->click;?></p>
+        <div class="meta">
+            <p>| Time: <?php echo $story->time;?></p>
+            <p>| Auther: <?php echo $story->username;?></p>
+            <p>| Likes: <?php echo $story->rate;?></p>
+            <p>| Views: <?php echo $story->click;?></p>
         </div>
     </div>
-    <?php }
-
-    # bottom page nav
+    <?php }?>
+    <!-- bottom page nav -->
+    <p class="navTxt">Pages:</p>
+    <div class="pageNav">
+    <?php
     for($i=0; $i<$page; $i++){ ?>
-    <form class="pageNav" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
+    <form class="pageNavBtn" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="get">
         <input type="hidden" name="page" value="<?php echo $i; ?>">
-        <input <?php if ($i == $currentPage) echo "class='btnCurrentPage'"; ?> type="submit" value="<?php echo $i+1; ?>">
-    </form>
-<?php }}?>
+        <input <?php if ($i == $currentPage) echo "class='btnSelected'"; ?> type="submit" value="<?php echo $i+1; ?>">
+    </form><?php }?>
+    </div><br>
+<?php }?>
 </div>
