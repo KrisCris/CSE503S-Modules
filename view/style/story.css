@@ -1,0 +1,70 @@
+.pageNavBtn{
+    float: left;
+}
+.navTxt{
+    color:rgb(0, 0, 0);
+    font-family: 'Courier New';
+    font-weight:bolder;
+    text-shadow: 3px 3px 10px rgb(97, 97, 97);
+}
+
+.btnSelected{
+    background-color: aqua;
+}
+
+#btnBack{
+    width: 100px;
+    height: 40px;
+    margin-left: 10%;
+}
+
+.pageNav{
+    margin-left: 60px;
+    margin-top: -10px;
+}
+.storyCard{
+    border-radius: 20px;
+    padding: 10px 30px;
+    text-align: left;
+    border: 3px solid black;
+    margin: 15px;
+}
+
+.meta p{
+    display: inline;
+    margin-right: 10px;
+    color:rgb(0, 60, 255);
+    font-family: 'Courier New';
+    text-shadow: 0px 0px 10px rgba(65, 65, 65, 0.651);
+}
+
+.content h1{
+    margin-right: 10px;
+    color:rgb(0, 0, 0);
+    font-weight: 100;
+    font-size: 30px;
+    margin: 0px;
+    margin-top: 5px;
+    margin-bottom: -10px;
+    text-shadow: 0px 0px 10px rgba(92, 92, 92, 0.445);
+}
+.content a{
+    text-decoration: none;
+    color: black;
+}
+
+.content p{
+    margin-right: 10px;
+    font-size: 20px;
+    color:rgb(0, 0, 0);
+    font-family: 'Courier New';
+}
+
+.singleView{
+    margin: 0px 10%;
+    margin-top: 15px;
+}
+.svBtn{
+    display: inline;
+    width: 100px;
+}

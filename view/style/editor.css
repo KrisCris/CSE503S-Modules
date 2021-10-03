@@ -1,0 +1,13 @@
+textarea{
+    width:90%;
+    margin: 0px 5%;
+    margin-top: 15px;
+}
+.editorBtn{
+    float: left;
+    margin-right: 5px;
+}
+
+.btn1{
+    margin-left: 5%;
+}
