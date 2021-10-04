@@ -7,9 +7,14 @@ if((isset($_GET["newStory"]) && $_GET["newStory"]==1)|| (isset($_GET["editStory"
     $link = "";
     if(isset($_GET["editStory"]) && $_GET["editStory"]==1){
         $s = Story::getStoryById($_GET['storyId']);
-        $title = $s->title;
-        $content = $s->content;
-        $link = $s->link;
+        if ($s->userId == $_SESSION['uid']){
+            $title = $s->title;
+            $content = $s->content;
+            $link = $s->link;
+        } else {
+            unset($_GET["editStory"]);
+            unset($_GET["storyId"]);
+        }
     }
 ?>
 

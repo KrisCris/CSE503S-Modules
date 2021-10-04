@@ -2,7 +2,7 @@
 require dirname(__FILE__) . '/DB.php';
 class Story
 {
-    # too lazy to create accessors
+    # made them all public cuz i am too lazy to create getters/setters
     public $id;
     public $userId;
     public $title;
@@ -11,9 +11,11 @@ class Story
     public $time;
     public $click;
 
+    # story writer's info
     public $username;
     public $userPhoto;
 
+    # like + dislikes
     public $rate;
 
     private function __construct($id, $userId, $title, $content, $link, $time, $click, $username, $userPhoto, $rate)
@@ -31,6 +33,7 @@ class Story
         $this->rate = $rate;
     }
 
+    # increase number of views each time user visite the story page
     public function viewed(){
         global $conn;
         $this->click++;
@@ -43,6 +46,7 @@ class Story
         $stmt->close();
     }
 
+    # add a new story / update a story
     public static function addStory($userId, $title, $content, $link, $storyId = -1)
     {
         global $conn;
@@ -68,6 +72,7 @@ class Story
         }
     }
 
+    # del
     public static function deleteStory($id)
     {
         global $conn;
@@ -85,8 +90,18 @@ class Story
         return false;
     }
 
+    # like & dislike
     public static function rateStory($sid, $uid, $val){
         global $conn;
+        # workaround for fixing view num
+        $stmt = $conn->prepare("update story set click=click-1 where id=$sid");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->execute();
+        $stmt->close();
+
         # if user already rated the story, just modify the value
         $stmt = $conn->prepare("select rate.id, rate.value from rate where rate.userId=? and rate.storyId=?");
         if (!$stmt) {
@@ -126,7 +141,6 @@ class Story
                 $stmt->close();
                 return false;
             }
-            
         }
         # add a new rate
         $stmt = $conn->prepare("insert into rate (userId, storyId, value) values (?,?,?)");
@@ -143,6 +157,7 @@ class Story
         return false;
     }
 
+    # help html render which rate button we clicked
     public static function getMyRate($uid, $sid){
         global $conn;
         $stmt = $conn->prepare("select rate.value from rate where rate.userId=? and rate.storyId=?");
@@ -162,6 +177,7 @@ class Story
         }
     }
 
+    # get a story in db via its unique id
     public static function getStoryById($id)
     {
         global $conn;
@@ -176,13 +192,15 @@ class Story
         if ($stmt->fetch()) {
             $s = new static($id, $userId, $title, $content, $link, $time, $click, $username, $userPhoto, $rate);
             $stmt->close();
+            if($s->id==null) return null;
             return $s;
         }
         $stmt->close();
         return null;
     }
 
-    public static function getStoryList($beginId, $num)
+    # a list of story..
+    public static function getStoryList($begin, $num)
     {
         global $conn;
         $stmt = $conn->prepare("select story.id, story.userId, story.title, story.content, story.link, story.time, story.click, u.username, u.photo, sum(r.value) as rates from story left join user u on u.id = story.userId left join rate r on story.id = r.storyId group by story.id order by story.id desc limit ?,?");
@@ -190,7 +208,7 @@ class Story
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
-        $stmt->bind_param('ii', $beginId, $num);
+        $stmt->bind_param('ii', $begin, $num);
         $stmt->execute();
         $stmt->bind_result($id, $userId, $title, $content, $link, $time, $click, $username, $userPhoto, $rate);
         $arr = array();
@@ -202,6 +220,7 @@ class Story
         return $arr;
     }
 
+    # number of stories, for split all stories into pages
     public static function countStories()
     {
         global $conn;

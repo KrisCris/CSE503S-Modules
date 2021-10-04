@@ -7,6 +7,7 @@ class User
     public $username;
     public $time;
     private $photo;
+    # unimplemented feature: admin
     public $admin;
 
     private function __construct($id, $username, $time, $photo, $admin)
@@ -18,6 +19,7 @@ class User
         $this->admin = $admin;
     }
 
+    # user will have their own photos
     public function getPhoto()
     {
         $type = pathinfo($this->photo, PATHINFO_EXTENSION);
@@ -26,6 +28,14 @@ class User
         return $base64;
     }
 
+    public static function getPhotoFromPath($userPhotoPath){
+        $type = pathinfo($userPhotoPath, PATHINFO_EXTENSION);
+        $data = file_get_contents($userPhotoPath);
+        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        return $base64;
+    }
+
+    # guest only have a gray default photo
     public static function getGuestPhoto()
     {
         $type = pathinfo('/media/module3res/userPhoto/defaultPhoto.png', PATHINFO_EXTENSION);
@@ -34,6 +44,7 @@ class User
         return $base64;
     }
 
+    # find a user
     public static function getUserById($id){
         global $conn;
         $stmt = $conn->prepare("select id, username, time, photo, admin from user where id=?");
@@ -47,12 +58,14 @@ class User
         if($stmt->fetch()){
             $u = new static($id, $username, $time, $photo, $admin);
             $stmt->close();
+            if($u->id==null) return null;
             return $u;
         }
         $stmt->close();
         return null;
     }
 
+    # reg
     public static function register($username, $password, $admin=0){
         if (!preg_match('/^[\w_\.\-]+$/', $username) || $username == "") {
             return null;
@@ -64,6 +77,7 @@ class User
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
+        $username = strtolower($username);
         $stmt->bind_param('s', $username);
         $stmt->execute();
         $stmt->bind_result($count);
@@ -83,6 +97,7 @@ class User
         return null;
     }
 
+    # login
     public static function login($username, $inputPass){
         if (!preg_match('/^[\w_\.\-]+$/', $username) || $username == "") {
             return null;
@@ -93,6 +108,7 @@ class User
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
+        $username = strtolower($username);
         $stmt->bind_param('s',$username);
         $stmt->execute();
         $stmt->bind_result($id, $username, $time, $photo, $admin, $password);

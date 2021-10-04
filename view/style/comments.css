@@ -2,3 +2,84 @@
     margin: 0px 10%;
     margin-top: 15px;
 }
+
+.repliedComment *{
+    display: inline;
+    margin-right: 10px;
+    color:rgb(43, 43, 43);
+    font-family: 'Courier New';
+    font-style: italic;
+}
+
+.repliedComment img{
+    box-shadow: 5px 5px 30px gray;
+    border-radius: 50%;
+    height: 30px;
+    width:30px;
+}
+
+.repliedComment{
+    border-radius: 20px;
+    padding: 10px 30px;
+    text-align: left;
+    border: 2px dotted black;
+    margin-top: 5px;
+}
+
+.comment .username{
+    display: inline;
+    margin-right: 10px;
+    color:rgb(98, 0, 255);
+    font-family: 'Courier New';
+    text-shadow: 0px 0px 10px rgba(65, 65, 65, 0.651);
+}
+
+.comment .id{
+    display: inline;
+    margin-right: 10px;
+    color:rgb(0, 81, 255);
+    font-weight: bold;
+    text-shadow: 0px 0px 10px rgba(65, 65, 65, 0.651);
+}
+
+.myComment .msg{
+    display: inline;
+    margin-right: 10px;
+    color:rgb(0, 11, 105);
+    font-weight: bold;
+    font-family: 'Courier New';
+}
+
+.metaComment *{
+    display: inline;
+    margin-right: 10px;
+    color:rgb(43, 43, 43);
+    font-family: 'Courier New';
+}
+
+.metaComment img{
+    box-shadow: 5px 5px 30px gray;
+    border-radius: 50%;
+    height: 30px;
+    width:30px;
+}
+
+.metaComment{
+    margin-top: 5px;
+}
+
+.comment{
+    border-radius: 20px;
+    padding: 5px 15px;
+    text-align: left;
+    border: 3px solid black;
+    margin: 15px;
+}
+
+.commentOwner form{
+    display: inline;
+}
+
+.registeredUser form{
+    display: inline;
+}

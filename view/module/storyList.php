@@ -46,6 +46,7 @@
             <p>| Auther: <?php echo $story->username;?></p>
             <p>| Likes: <?php echo $story->rate;?></p>
             <p>| Views: <?php echo $story->click;?></p>
+            <p>| Comments: <?php echo Comment::countComments($story->id);?></p>
         </div>
     </div>
     <?php }?>
