@@ -82,3 +82,5 @@
 - [ ] User account settings.
 - [ ] Order stories based on number of likes / views.
  
+ 
+ Grade: 60/60. 
