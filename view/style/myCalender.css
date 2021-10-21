@@ -1,0 +1,32 @@
+#calendar{
+    position: absolute;
+    border-radius: 1%;
+    overflow: hidden;
+    width: 80%;
+    height: 60%;
+    left: 10%;
+    top: 20%;
+    /* background-color: #ffffff;
+    color: #333333; */
+}
+
+.col{
+    position:relative;
+    float:left;
+}
+
+.date{
+    width:60%;
+    background-color: aqua;
+}
+
+.events{
+    width:40%;
+    background-color: #333333;
+}
+
+input.year{
+    /* background-color: rgba(0, 0, 255, 0); */
+    border:0px;
+    color:black;
+}

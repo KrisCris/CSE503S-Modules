@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="style/myCalender.css">
+</head>
+
+<body>
+    <div id="calendar">
+        <div class="col date">
+            dasfads<br>
+            <div id="year-warpper">
+                <input class="year" type="text" name="test" id="year" value="dfsfa" disabled>
+            </div>
+            
+        </div>
+
+        <div class="col events">
+            dasfdsa
+            
+        </div>
+
+    </div>
+
+
+    <script>
+        const wYear=document.getElementById("year-warpper");
+        wYear.addEventListener("click", (event)=>{
+            let y = wYear.getElementsById("year");
+            if(y.disabled){
+                y.disabled = false;
+            }
+        }, false)
+
+
+    </script>
+</body>
+</html>
