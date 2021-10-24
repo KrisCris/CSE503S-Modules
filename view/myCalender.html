@@ -7,12 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendar</title>
     <link rel="stylesheet" href="style/myCalender.css">
+    <script src="script/calender.js"></script>
+    <script src="script/query.js"></script>
 </head>
 
 <body>
     <div id="calendar">
         <div class="col date">
-            <input class="year" type="text" name="test" id="year" value="dfsfa" >
+            <input class="year" type="text" name="test" id="year" value="dfsfa">
             <ul class="months">
                 <li><button id="prevMon">←</button></li>
                 <li><a href="#" title="Jan" data-value="1">Jan</a></li>
@@ -33,9 +35,8 @@
 
         <div class="col events">
             dasfdsa
-            
+
         </div>
-<p id ="test"></p>
     </div>
 
 
@@ -44,36 +45,63 @@
         const prevMon = document.getElementById("prevMon");
         const nextMon = document.getElementById("nextMon");
 
-        // document.addEventListener("click", (event)=>{
-        //     if(!year.disabled){
-        //         year.disabled = true;
-        //     }
-        // },true)
+        function initCalender() {
+            let currnetDate = new Date();
+            let data = getMonthlyData(currnetDate.getFullYear(), currnetDate.getMonth());
 
+        }
 
-        // year.addEventListener("click", (event)=>{
-        //     if(year.readOnly){
-        //         year.readOnly = false;
-        //         // event.stopPropagation();
-        //     }
-        // }, false)
+        function getMonthlyData(yr, mo) {
+            let currentMonth = new Month(yr, mo);
+            let weeks = currentMonth.getWeeks();
 
-        year.addEventListener("blur", (event)=>{
+            let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+            let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
+
+            post(
+                "/event/getMonthlyEvents.php", {
+                beginTS: beginTS,
+                endTS: endTS
+            }).then(res => {
+                console.log(res)
+            });
+
+            // console.log(beginTS);
+            // console.log(endTS);
+            // for(let week of weeks){
+            //     let dates = week.getDates();
+            //     for(let i = 0; i < 7 ; i++){
+            //         console.log(date);
+            //     }
+            // }
+        }
+
+        function refreshCalender(yr, mon) {
+
+        }
+
+        document.addEventListener("DOMContentLoaded", initCalender, false);
+
+        year.addEventListener("blur", (event) => {
             //Update Year when lose focus
-            let test = document.getElementById("test").textContent=year.value;
+            // you can get value like this:
+            let test = document.getElementById("test").textContent = year.value;
         })
 
-        prevMon.addEventListener("click", (event)=>{
-            //update month
+        prevMon.addEventListener("click", (event) => {
+            //query data of prev month
+            //getMonthlyData()
+        }, false)
 
-        },false)
+        nextMon.addEventListener("click", (event) => {
+            //query data of next month
+            //getMonthlyData()
+        }, false)
 
-        nextMon.addEventListener("click", (event)=>{
-            //update month
 
-        },false)
 
 
     </script>
 </body>
+
 </html>
