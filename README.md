@@ -4,6 +4,12 @@ Pingchuan Huang-503954-KrisCris
 
 REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-NAME-STUDENT-ID-AND-GITHUB-USERNAME
 
+## About this Project
+
+1. Database
+!["Database UML"](DB.png)
+
+## Grading
 
 1. AJAX Calendar (60 Points):
 
