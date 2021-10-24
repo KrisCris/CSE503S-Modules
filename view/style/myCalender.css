@@ -17,16 +17,34 @@
 
 .date{
     width:60%;
-    background-color: aqua;
+    /* background-color:; */
 }
 
 .events{
     width:40%;
-    background-color: #333333;
+    background-color: #F48989;
 }
 
 input.year{
-    /* background-color: rgba(0, 0, 255, 0); */
+    background-color: rgba(0, 0, 255, 0);
     border:0px;
-    color:black;
+    /* color:black; */
 }
+
+input.year:focus{
+    outline-color:red;
+}
+
+
+/* month */
+.months li,
+.weekday li,
+.days li{
+  float: left;
+  text-transform: uppercase;
+}
+
+ul li{
+    list-style: none;
+}
+
