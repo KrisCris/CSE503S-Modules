@@ -6,7 +6,7 @@ class User{
     public $pw;
     public $token;
 
-    private function __construct($id, $username, $token)
+    private function __construct($id, $username, $token=null)
     {
         $this->id = $id;
         $this->username = $username;
@@ -95,18 +95,40 @@ class User{
 
     private function updateToken(){
         global $conn;
+        $token = null;
+        while(true){
+            $token = bin2hex(random_bytes(32));
+            $stmt = $conn->prepare("select count(*) from user where token=?");
+            $stmt->bind_param("s", $token);
+            $stmt->execute();
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+            if($count==0){
+                break;
+            }
+        }
+
         $stmt = $conn->prepare("update user set token=? where id=?");
         if (!$stmt) {
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
-        $token = bin2hex(random_bytes(32));
+        
         $stmt->bind_param('si', $token, $this->id);
         if ($stmt->execute()) {
             $stmt->close();
+            $this->token = $token;
             return true;
         } else {
             return false;
+        }
+    }
+
+    public static function logout($uid){
+        $u = static::getUserById($uid);
+        if($u){
+            $u->updateToken();
         }
     }
 
