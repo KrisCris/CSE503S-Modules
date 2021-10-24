@@ -1,28 +1,30 @@
 <?php
 require dirname(__FILE__) . '/DB.php';
 class User{
-    private $id;
-    private $username;
-    private $pw;
+    public $id;
+    public $username;
+    public $pw;
+    public $token;
 
-    private function __construct($id, $username)
+    private function __construct($id, $username, $token)
     {
         $this->id = $id;
         $this->username = $username;
+        $this->token = $token;
     }
 
     public static function getUserById($id){
         global $conn;
-        $stmt = $conn->prepare("select id, username from user where id=?");
+        $stmt = $conn->prepare("select id, username, token from user where id=?");
         if(!$stmt){
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        $stmt->bind_result($id, $username);
+        $stmt->bind_result($id, $username, $token);
         if($stmt->fetch()){
-            $u = new static($id, $username);
+            $u = new static($id, $username, $token);
             $stmt->close();
             if($u->id==null) return null;
             return $u;
@@ -83,7 +85,41 @@ class User{
             if (!password_verify($inputPass, $password)){
                 return null;
             }
-            return new static($id, $username);
+            $u = new static($id, $username);
+            $u->updateToken();
+            return $u;
+        }
+        $stmt->close();
+        return null;
+    }
+
+    private function updateToken(){
+        global $conn;
+        $stmt = $conn->prepare("update user set token=? where id=?");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $token = bin2hex(random_bytes(32));
+        $stmt->bind_param('si', $token, $this->id);
+        if ($stmt->execute()) {
+            $stmt->close();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function isLogin($uid, $token){
+        global $conn;
+        $stmt = $conn->prepare("select username from user where id=? and token=?");
+        $stmt->bind_param('is', $uid, $token);
+        $stmt->execute();
+        $stmt->bind_result($username);
+        if($stmt->fetch()){
+            $stmt->close();
+            $u = new static($uid, $username, $token);
+            return $u;
         }
         $stmt->close();
         return null;

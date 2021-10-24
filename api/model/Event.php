@@ -1,16 +1,16 @@
 <?php
 require dirname(__FILE__) . '/DB.php';
 class Event{
-    private $id;
-    private $uid;
-    private $title;
-    private $detail;
-    private $location;
-    private $color;
-    private $isFullDay;
-    private $doRepeat;
-    private $start;
-    private $end;
+    public $id;
+    public $uid;
+    public $title;
+    public $detail;
+    public $location;
+    public $color;
+    public $isFullDay;
+    public $doRepeat;
+    public $start;
+    public $end;
 
     private function __construct()
     {

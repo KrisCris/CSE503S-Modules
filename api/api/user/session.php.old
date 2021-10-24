@@ -1,0 +1,15 @@
+<!-- <?php
+require '../../model/User.php';
+require '../../util/reply.php';
+$status = session_status();
+if ($status == 1){
+    session_start();
+    reply_json(0);
+} else if ($status == 2 && isset($_SESSION["uid"])){
+    $u = User::getUserById($_SESSION["uid"]);
+    reply_json(1, ["username"=>$u->username]);
+} else {
+    reply_json(0);
+}
+
+?> -->

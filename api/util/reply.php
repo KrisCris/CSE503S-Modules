@@ -7,9 +7,12 @@ $msgs = [
     -3 => "not exists"
 ];
 
-function reply_json($code=1, $data=[], $msg="success")
+function reply_json($code=1, $data=[], $msg=null)
 {
-    if (isset($msgs[$code]) && $msg == $msgs[$code]) $msg = $msgs[$code];
+    global $msgs;
+    if (isset($msgs[$code]) && $msg == null){ 
+        $msg = $msgs[$code];
+    }
     echo json_encode(["code"=>$code, "msg"=>$msg, "data"=>$data]);
 }
 ?>
