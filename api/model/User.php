@@ -58,6 +58,10 @@ class User{
         # register
         $passhash = password_hash($password, PASSWORD_BCRYPT);
         $stmt = $conn->prepare("insert into user (username, password) values (?,?)");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
         $stmt->bind_param('ss', $username, $passhash);
         if($stmt->execute()){
             return static::login($username, $password);
@@ -99,6 +103,10 @@ class User{
         while(true){
             $token = bin2hex(random_bytes(32));
             $stmt = $conn->prepare("select count(*) from user where token=?");
+            if (!$stmt) {
+                printf("Query Prep Failed: %s\n", $conn->error);
+                exit;
+            }
             $stmt->bind_param("s", $token);
             $stmt->execute();
             $stmt->bind_result($count);
@@ -135,6 +143,10 @@ class User{
     public static function isLogin($uid, $token){
         global $conn;
         $stmt = $conn->prepare("select username from user where id=? and token=?");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
         $stmt->bind_param('is', $uid, $token);
         $stmt->execute();
         $stmt->bind_result($username);
