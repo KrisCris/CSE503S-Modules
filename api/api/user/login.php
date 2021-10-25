@@ -1,6 +1,6 @@
 <?php
-require dirname(__FILE__) . '/../../util/reply.php'; 
-require dirname(__FILE__) . '/../../model/User.php';
+require '../../util/reply.php'; 
+require '../../model/User.php';
 
 if(isset($_POST["username"]) && isset($_POST["password"])){
     $u = User::login($_POST["username"], $_POST["password"]);

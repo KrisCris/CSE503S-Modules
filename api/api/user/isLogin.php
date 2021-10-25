@@ -1,6 +1,6 @@
 <?php
 require '../../model/User.php';
-require dirname(__FILE__) . '/../../util/reply.php'; 
+require '../../util/reply.php'; 
 
 if(isset($_POST["uid"]) && isset($_POST["token"])){
     $u = User::isLogin($_POST["uid"], $_POST["token"]);
