@@ -31,7 +31,7 @@ create table event
 (
   id mediumint auto_increment not null,
   uid mediumint not null,
-  cid mediumint not null,
+  cid mediumint,
   gid mediumint default null,
   title varchar(200) not null,
   detail varchar(500),
