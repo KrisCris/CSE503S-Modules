@@ -14,6 +14,19 @@
 <body>
     <button onclick="wide()">wide</button>
     <button onclick="narrow()">narrow</button>
+
+    <div id=login>
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="password" name="password" id="password" placeholder="password">
+        <button id="loginBtn">LOGIN</button>
+        <button id="regBtn">REGISTER</button>
+    </div>
+
+    <div id="logout" class="displayNone">
+        <h1 id="hi"></h1>
+        <button id="logoutBtn">LOGOUT</button>
+    </div>
+
     <div class="calendar">
         <div id="tags" class="row top">
             <h3><a href="#">work</a></h3>
@@ -89,30 +102,135 @@
         const tags = document.getElementById("tags");
         const addEvent = document.getElementById("addEvent");
 
+        // Login Logout Register
+        const regBtn = document.getElementById("regBtn");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+        const loginDiv = document.getElementById("login");
+        const logoutDiv = document.getElementById("logout");
+        const hiMsg = document.getElementById("hi");
+        
+        regBtn.addEventListener('click', (event)=>{
+            let utxt = username.value;
+            let pwtxt = password.value;
+            var regex = /^[\w_\.\-]+$/;
+            if(!regex.test(utxt) || pwtxt==''){
+                alert("Invalid Input");
+            } else {
+                post('/user/register.php',{
+                    username:utxt,
+                    password:pwtxt
+                }).then(res=>{
+                    if(res['code']==1){
+                        localStorage.setItem('uid', res['data']['uid']);
+                        localStorage.setItem('token', res['data']['token']);
+                        localStorage.setItem('username', res['data']['username']);
+                        // do something after login
+                        removeAllChildNodes(hiMsg);
+                        hiMsg.append("Hi "+localStorage.username+"!");
+
+                        // hide login show logout
+                        loginDiv.setAttribute("class","displayNone");
+                        logoutDiv.removeAttribute("class");
+                    } else {
+                        alert("Register Failed!;")
+                    }
+                })
+            }
+        }, false);
+
+        loginBtn.addEventListener('click', (event)=>{
+            let utxt = username.value;
+            let pwtxt = password.value;
+            var regex = /^[\w_\.\-]+$/;
+            if(!regex.test(utxt) || pwtxt==''){
+                alert("Invalid Input");
+            } else {
+                post('/user/login.php',{
+                    username:utxt,
+                    password:pwtxt
+                }).then(res=>{
+                    if(res['code']==1){
+                        localStorage.setItem('uid', res['data']['uid']);
+                        localStorage.setItem('token', res['data']['token']);
+                        localStorage.setItem('username', res['data']['username']);
+                        // do something after login
+                        removeAllChildNodes(hiMsg);
+                        hiMsg.append("Hi "+localStorage.username+"!");
+
+                        // hide login show logout
+                        loginDiv.setAttribute("class","displayNone");
+                        logoutDiv.removeAttribute("class");
+                    } else {
+                        alert("Login Failed!;")
+                    }
+                })
+            }
+        }, false);
+
+        logoutBtn.addEventListener('click', (event)=>{
+            post('/user/logout.php',{
+                uid:localStorage.uid,
+                token:localStorage.token
+            }).then(res => {
+                // clear localstorage
+                localStorage.removeItem('uid');
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+
+                // hide login show logout
+                loginDiv.removeAttribute("class");
+                logoutDiv.setAttribute("class","displayNone");
+
+                if(!res['code']==1){
+                    alert("Invalid Access!");
+                }
+            })
+        }, false)
+
+        //
+
         const dateBegin = document.getElementById("date-begin");
         const dateEnd = document.getElementById("date-end");
         const submit = document.getElementById("submit");
         const title = document.getElementById("title");
         const detail = document.getElementById("detail");
 
+        document.addEventListener("DOMContentLoaded", initCalender, false);
+        
+        function initCalender() {
+            if (localStorage.token === undefined || localStorage.uid === undefined) {
+                drawRawCalender();
+            } else {
+                post(
+                    "/user/isLogin.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token
+                }).then(res => {
+                    if (res["code"] == 1) {
+                        
+
+
+
+
+
+
+
+
+                    } else {
+                        drawRawCalender();
+                    }
+                });
+            }
+
+            // let data = getMonthlyData(currnetDate.getFullYear(), currnetDate.getMonth());
+        }
+
         var currentCal = new Date();
 
-        function wide() {
-            calendar.setAttribute("class", "calendar2");
-            colLeft.setAttribute("class", "col left2");
-            colMiddle.setAttribute("class", "col middle2");
-            colRight.setAttribute("class", "col right2");
-        }
-
-        function narrow() {
-            calendar.setAttribute("class", "calendar");
-            colLeft.setAttribute("class", "col left");
-            colMiddle.setAttribute("class", "col middle");
-            colRight.setAttribute("class", "col right");
-        }
-
-        document.addEventListener("DOMContentLoaded", initCalender, false);
-
+    
         prev.addEventListener("click", (event)=>{
             let m = new Month(currentCal.getFullYear(), currentCal.getMonth());
             currentCal = m.prevMonth().getWeeks()[1].getDates()[1];
@@ -142,25 +260,7 @@
 
 
 
-        function initCalender() {
-            if (localStorage.token === undefined || localStorage.uid === undefined) {
-                drawRawCalender();
-            } else {
-                post(
-                    "/user/isLogin.php", {
-                    uid: localStorage.uid,
-                    token: localStorage.token
-                }).then(res => {
-                    if (res["code"] == 1) {
 
-                    } else {
-
-                    }
-                });
-            }
-
-            // let data = getMonthlyData(currnetDate.getFullYear(), currnetDate.getMonth());
-        }
 
         function drawRawCalender() {
             let currnetDate = new Date();
@@ -205,6 +305,20 @@
             while (parent.firstChild) {
                 parent.removeChild(parent.firstChild);
             }
+        }
+
+        function wide() {
+            calendar.setAttribute("class", "calendar2");
+            colLeft.setAttribute("class", "col left2");
+            colMiddle.setAttribute("class", "col middle2");
+            colRight.setAttribute("class", "col right2");
+        }
+
+        function narrow() {
+            calendar.setAttribute("class", "calendar");
+            colLeft.setAttribute("class", "col left");
+            colMiddle.setAttribute("class", "col middle");
+            colRight.setAttribute("class", "col right");
         }
 
 
