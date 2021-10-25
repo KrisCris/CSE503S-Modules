@@ -142,6 +142,12 @@ class Event
 
     public static function removeEvent($id)
     {
+        $tmpE = static::getEventById($id);
+        $cid = null;
+        if($tmpE && $tmpE->cid){
+            $cid = $tmpE->cid;
+        }
+
         global $conn;
         $stmt = $conn->prepare("delete from event where id=?");
         if (!$stmt) {
@@ -152,7 +158,7 @@ class Event
         if ($stmt->execute()) {
             $stmt->close();
             require 'Category.php';
-
+            Category::removeUnused($cid);
             return true;
         }
         $stmt->close();
