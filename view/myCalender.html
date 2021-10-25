@@ -59,7 +59,7 @@
             let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
 
             post(
-                "/event/getMonthlyEvents.php", {
+                "/user/session.php", {
                 beginTS: beginTS,
                 endTS: endTS
             }).then(res => {
