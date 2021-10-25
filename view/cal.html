@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="cal.css">
+    <script src="script/calender.js"></script>
+    <script src="script/query.js"></script>
+</head>
+
+<body>
+    <button onclick="wide()">wide</button>
+    <button onclick="narrow()">narrow</button>
+
+    <div id=login>
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="password" name="password" id="password" placeholder="password">
+        <button id="loginBtn">LOGIN</button>
+        <button id="regBtn">REGISTER</button>
+    </div>
+
+    <div id="logout" class="displayNone">
+        <h1 id="hi"></h1>
+        <button id="logoutBtn">LOGOUT</button>
+    </div>
+
+    <div class="calendar">
+        <div id="tags" class="row top">
+            <h3><a href="#">work</a></h3>
+            <h3><a href="#">home</a></h3>
+            <h3><a href="#">course</a></h3>
+            <h3><a href="#">group1</a></h3>
+        </div>
+        <div class="row bottom">
+            <div class="col left">
+                <div class="content">
+                    <h1 id="year">2021</h1>
+                    <h2 class="month"><a class="prev" href="#">←</a><span id="month">October</span><a class="next" href="#">→</a></h2>
+                    <div class="spacer10"></div>
+                    <ul class="weekday">
+                        <li><a href="#">SUN</a></li>
+                        <li><a href="#">MON</a></li>
+                        <li><a href="#">TUE</a></li>
+                        <li><a href="#">WED</a></li>
+                        <li><a href="#">THU</a></li>
+                        <li><a href="#">FRI</a></li>
+                        <li><a href="#">SAT</a></li>
+                    </ul>
+                    <ul id="days" class="days">
+                        <!-- <li><a href="#">1</a></li>
+                        <li><a class="selected" href="#">2</a></li>
+                        <li><a class="event" href="#">3</a></li>
+                        <li><a href="#">4</a></li> -->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col middle">
+                <div class="content">
+                    <h2>Friday<a id="addEvent" href="#">+</a></h2>
+                    <div class="events">
+                        <ul class="eventList">
+                            <li>Event 1 dsfdsafdsafdsfas</li>
+                            <li>Event 2dsafdsafassfdsafdsf</li>
+                            <li>Event 3dfsfdasfdsaasfdsf</li>
+                            <li>Event 4dasfasfssfafafa</li>
+                            <li>Event 5dasfdsafasfdsadf</li>
+                            <li>Event 6adfasfsfafsafs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col right">
+                <div class="content">
+                    <input type="datetime-local" name="begin" id="date-begin">
+                    <input type="datetime-local" name="end" id="date-end">
+                    <textarea name="title" id="title" cols="30" rows="2" placeholder="Title"></textarea>
+                    <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
+                    <button id="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        const months = {
+            0:"January", 1:"February", 2:"March", 3:"April", 4:"May", 
+            5:"June", 6:"July", 7:"August", 8:"September", 9:"October", 10:"November", 11:"December"};
+        const calendar = document.getElementsByClassName("calendar")[0];
+        const colLeft = document.getElementsByClassName("col left")[0];
+        const colMiddle = document.getElementsByClassName("col middle")[0];
+        const colRight = document.getElementsByClassName("col right")[0];
+        const days = document.getElementById("days");
+        const year = document.getElementById("year");
+        const month = document.getElementById("month");
+        const prev = document.getElementsByClassName("prev")[0];
+        const next = document.getElementsByClassName("next")[0];
+        const tags = document.getElementById("tags");
+        const addEvent = document.getElementById("addEvent");
+
+        // Login Logout Register
+        const regBtn = document.getElementById("regBtn");
+        const loginBtn = document.getElementById("loginBtn");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+        const loginDiv = document.getElementById("login");
+        const logoutDiv = document.getElementById("logout");
+        const hiMsg = document.getElementById("hi");
+        
+        regBtn.addEventListener('click', (event)=>{
+            let utxt = username.value;
+            let pwtxt = password.value;
+            var regex = /^[\w_\.\-]+$/;
+            if(!regex.test(utxt) || pwtxt==''){
+                alert("Invalid Input");
+            } else {
+                post('/user/register.php',{
+                    username:utxt,
+                    password:pwtxt
+                }).then(res=>{
+                    if(res['code']==1){
+                        localStorage.setItem('uid', res['data']['uid']);
+                        localStorage.setItem('token', res['data']['token']);
+                        localStorage.setItem('username', res['data']['username']);
+                        // do something after login
+                        removeAllChildNodes(hiMsg);
+                        hiMsg.append("Hi "+localStorage.username+"!");
+
+                        // hide login show logout
+                        loginDiv.setAttribute("class","displayNone");
+                        logoutDiv.removeAttribute("class");
+                    } else {
+                        alert("Register Failed!;")
+                    }
+                })
+            }
+        }, false);
+
+        loginBtn.addEventListener('click', (event)=>{
+            let utxt = username.value;
+            let pwtxt = password.value;
+            var regex = /^[\w_\.\-]+$/;
+            if(!regex.test(utxt) || pwtxt==''){
+                alert("Invalid Input");
+            } else {
+                post('/user/login.php',{
+                    username:utxt,
+                    password:pwtxt
+                }).then(res=>{
+                    if(res['code']==1){
+                        localStorage.setItem('uid', res['data']['uid']);
+                        localStorage.setItem('token', res['data']['token']);
+                        localStorage.setItem('username', res['data']['username']);
+                        // do something after login
+                        removeAllChildNodes(hiMsg);
+                        hiMsg.append("Hi "+localStorage.username+"!");
+
+                        // hide login show logout
+                        loginDiv.setAttribute("class","displayNone");
+                        logoutDiv.removeAttribute("class");
+                    } else {
+                        alert("Login Failed!;")
+                    }
+                })
+            }
+        }, false);
+
+        logoutBtn.addEventListener('click', (event)=>{
+            post('/user/logout.php',{
+                uid:localStorage.uid,
+                token:localStorage.token
+            }).then(res => {
+                // clear localstorage
+                localStorage.removeItem('uid');
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+
+                // hide login show logout
+                loginDiv.removeAttribute("class");
+                logoutDiv.setAttribute("class","displayNone");
+
+                if(!res['code']==1){
+                    alert("Invalid Access!");
+                }
+            })
+        }, false)
+
+        //
+
+        const dateBegin = document.getElementById("date-begin");
+        const dateEnd = document.getElementById("date-end");
+        const submit = document.getElementById("submit");
+        const title = document.getElementById("title");
+        const detail = document.getElementById("detail");
+
+        document.addEventListener("DOMContentLoaded", initCalender, false);
+        
+        function initCalender() {
+            if (localStorage.token === undefined || localStorage.uid === undefined) {
+                drawRawCalender();
+            } else {
+                post(
+                    "/user/isLogin.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token
+                }).then(res => {
+                    if (res["code"] == 1) {
+                        
+
+
+
+
+
+
+
+
+                    } else {
+                        drawRawCalender();
+                    }
+                });
+            }
+
+            // let data = getMonthlyData(currnetDate.getFullYear(), currnetDate.getMonth());
+        }
+
+        var currentCal = new Date();
+
+    
+        prev.addEventListener("click", (event)=>{
+            let m = new Month(currentCal.getFullYear(), currentCal.getMonth());
+            currentCal = m.prevMonth().getWeeks()[1].getDates()[1];
+            drawRawCalender();
+        },false);
+
+        next.addEventListener("click", (event)=>{
+            let m = new Month(currentCal.getFullYear(), currentCal.getMonth());
+            currentCal = m.nextMonth().getWeeks()[1].getDates()[1];
+            drawRawCalender();
+        }, false);
+
+        addEvent.addEventListener("click", wide, false);
+
+        submit.addEventListener("click", (event)=>{
+            console.log(parseInt(dateBegin.valueAsNumber/1000));
+            console.log(parseInt(dateEnd.valueAsNumber/1000));
+            if(dateEnd.valueAsNumber < dateBegin.valueAsNumber ){
+                //wrong
+            }
+            console.log(title.value);
+            console.log(detail.value);
+        }, false)
+
+
+
+
+
+
+
+
+        function drawRawCalender() {
+            let currnetDate = new Date();
+            let currentMonth = new Month(currentCal.getFullYear(), currentCal.getMonth());
+            removeAllChildNodes(days);
+            for (let week of currentMonth.getWeeks()) {
+                for (let date of week.getDates()) {
+                    let li = document.createElement('li');
+                    let a = document.createElement('a');
+                    a.append(date.getDate())
+                    a.setAttribute("href", "#");
+                    if (
+                        currnetDate.getDate() == date.getDate() &&
+                        currnetDate.getMonth() == date.getMonth() &&
+                        currnetDate.getFullYear() == date.getFullYear()
+                    ) {
+                        a.setAttribute("class", "today");
+                    }
+                    li.append(a);
+                    days.append(li);
+                }
+            }
+            removeAllChildNodes(year);
+            year.append(currentCal.getFullYear());
+            removeAllChildNodes(month);
+            month.append(months[currentCal.getMonth()]);
+        }
+
+        function getMonthlyData(yr, mo) {
+            let isLogin = false;
+
+            let currentMonth = new Month(yr, mo);
+            let weeks = currentMonth.getWeeks();
+
+            let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+            let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
+
+            //todo
+        }
+
+        function removeAllChildNodes(parent) {
+            while (parent.firstChild) {
+                parent.removeChild(parent.firstChild);
+            }
+        }
+
+        function wide() {
+            calendar.setAttribute("class", "calendar2");
+            colLeft.setAttribute("class", "col left2");
+            colMiddle.setAttribute("class", "col middle2");
+            colRight.setAttribute("class", "col right2");
+        }
+
+        function narrow() {
+            calendar.setAttribute("class", "calendar");
+            colLeft.setAttribute("class", "col left");
+            colMiddle.setAttribute("class", "col middle");
+            colRight.setAttribute("class", "col right");
+        }
+
+
+    </script>
+</body>
+
+</html>
