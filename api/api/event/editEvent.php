@@ -23,7 +23,7 @@ if(Event::editEvent(
     $inputs["start"],
     $inputs["isFullDay"] == 1 ? null : $inputs["end"]
 )){
-    return reply_json(1);
+    reply_json(1);
 } else {
     reply_json(-1, [], "error");
 }

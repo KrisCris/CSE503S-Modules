@@ -22,6 +22,7 @@ create table grp
 (
     id mediumint auto_increment not null,
     uid mediumint not null,
+    uuid varchar(100) not null;
     name varchar(100),
     primary key (id),
     foreign key (uid) references user(id)
