@@ -1,4 +1,5 @@
 <?php
+require '../../model/Category.php';
 require '../../util/reply.php';
 require '../user/require-login.php';
 

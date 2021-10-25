@@ -3,7 +3,7 @@ require '../../util/reply.php';
 require '../../model/Event.php';
 require '../user/require-login.php';
 
-$required = ["cid", "gid", "title", "detail", "isFullDay", "start", "end"];
+$required = ["eid", "cid", "gid", "title", "detail", "isFullDay", "start", "end"];
 $inputs = [];
 foreach ($required as $each) {
     if (!isset($_POST[$each])) {
@@ -13,19 +13,21 @@ foreach ($required as $each) {
     $inputs[$each] = $_POST[$each];
 }
 
-$eid = Event::addEvent(
-    $_POST['uid'],
+if(Event::editEvent(
+    $inputs["eid"],
     $inputs["cid"],
-    $inputs["gid"] == 0 ? null : $inputs["gid"],
+    $inputs["gid"]==0 ? null : $inputs["gid"],
     $inputs["title"],
     $inputs["detail"],
     $inputs["isFullDay"],
     $inputs["start"],
-    $inputs["isFullDay"] == 1 ? null : $inputs["end"]
-);
-
-if($eid){
-    reply_json(1, ["eid"=>$eid]);
+    $inputs["isFullDay"]==1 ? null : $inputs["end"]
+)){
+    return reply_json(1);
 } else {
-    reply_json(-1, [], "unknown error");
+    reply_json(-1, [], "error");
 }
+
+
+
+?>
