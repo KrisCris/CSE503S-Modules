@@ -1,9 +1,8 @@
 <?php
 require '../../util/reply.php';
-require '../../model/Event.php';
 require '../user/require-login.php';
 
-$required = ["cid", "gid", "title", "detail", "isFullDay", "start", "end"];
+$required = ["name", "color"];
 $inputs = [];
 foreach ($required as $each) {
     if (!isset($_POST[$each])) {
@@ -13,15 +12,10 @@ foreach ($required as $each) {
     $inputs[$each] = $_POST[$each];
 }
 
-$eid = Event::addEvent(
+$eid = Category::addCate(
     $_POST['uid'],
-    $inputs["cid"],
-    $inputs["gid"] ? null : $inputs["gid"],
-    $inputs["title"],
-    $inputs["detail"],
-    $inputs["isFullDay"],
-    $inputs["start"],
-    $inputs["isFullDay"] ? null : $inputs["end"]
+    $inputs["name"],
+    $inputs["color"]
 );
 
 if($eid){
