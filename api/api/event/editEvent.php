@@ -15,19 +15,16 @@ foreach ($required as $each) {
 
 if(Event::editEvent(
     $inputs["eid"],
-    $inputs["cid"],
-    $inputs["gid"]==0 ? null : $inputs["gid"],
+    $inputs["cid"] == 0 ? null : $inputs["cid"],
+    $inputs["gid"] == 0 ? null : $inputs["gid"],
     $inputs["title"],
     $inputs["detail"],
     $inputs["isFullDay"],
     $inputs["start"],
-    $inputs["isFullDay"]==1 ? null : $inputs["end"]
+    $inputs["isFullDay"] == 1 ? null : $inputs["end"]
 )){
     return reply_json(1);
 } else {
     reply_json(-1, [], "error");
 }
-
-
-
 ?>

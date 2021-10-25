@@ -63,14 +63,46 @@ class Event
     }
 
     // fetch events in a period, say, a month.
-    public static function getEventByRange()
+    public static function getEventByRange($uid, $beginTS, $endTS)
     {
         global $conn;
-        $stmt = $conn->prepare("select id, title, detail, ");
+        $stmt = $conn->prepare("
+            select event.id,
+                event.uid,
+                event.cid,
+                event.gid,
+                event.title,
+                event.detail,
+                event.isFullDay,
+                event.start,
+                event.end,
+                c.name  as cName,
+                c.color as color,
+                g.name  as gName
+            from event
+            left join category c on event.cid = c.id
+            left join grp g on event.gid = g.id
+            left join groupMember gM on g.id = gM.gid and gM.uid
+            where ((event.start >= ? and event.start <= ?) or
+                (event.end >= ? and event.end <= ?) or 
+                (event.start <= ? and event.end >= ?))
+            and (event.uid = ? or gM.uid = ?)
+            group by event.id, event.start
+            order by event.start asc;"
+        );
         if (!$stmt) {
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
+        $stmt->bind_param('iiiiiiii',$beginTS, $endTS, $beginTS, $endTS, $beginTS, $endTS, $uid, $uid);
+        $stmt->execute();
+        $stmt->bind_result($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName);
+        $arr = array();
+        while($stmt->fetch()){
+            $e = new static($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName);
+            array_push($arr, $e);
+        }
+        return $arr;
     }
 
     public static function addEvent($uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end = null)

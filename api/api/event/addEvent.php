@@ -15,7 +15,7 @@ foreach ($required as $each) {
 
 $eid = Event::addEvent(
     $_POST['uid'],
-    $inputs["cid"],
+    $inputs["cid"] == 0 ? null : $inputs["cid"],
     $inputs["gid"] == 0 ? null : $inputs["gid"],
     $inputs["title"],
     $inputs["detail"],
