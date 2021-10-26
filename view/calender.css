@@ -6,17 +6,38 @@
     border-color: #141211ea;
 }
 
-.event{
+
+
+.col{
+	position: relative;
+	float: left;
+	
+}
+
+
+.col.left{
+	width:50%;
+
+}
+
+.col.right{
+	width:50%;
+	
+}
+
+
+/* .event{
     margin-top:-450px;
 	margin-left:540px;
 }
+
 
 .event ul{
     font-family:arial;
 	font-size:15px;
 	font-weight: bold;
 }
-
+ */
 
 .calender-top{
 	color:#e94015;

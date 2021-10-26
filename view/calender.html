@@ -10,123 +10,134 @@
 
     </head>
     <body>
-        <div class ="Log" id="log">
-            <input type="text" name="username" id="username" placeholder="Username"><br>
-            <input type="text" name="password" id="password" placeholder="Password"><br>
-            <button id="btn3">
-                Login
-            </button>
+        <div class="col left">
+            <div class ="Log" id="log">
+                <input type="text" name="username" id="username" placeholder="Username"><br>
+                <input type="text" name="password" id="password" placeholder="Password"><br>
+                <button id="btn3">
+                    Login
+                </button>
+        
+                <button id="Sign">
+                    Signup
+                </button>
     
-            <button id="Sign">
-                Signup
-            </button>
-
-
-            <button id="enable">
-                Enable/Disable
-            </button>
-
-        </div>
-
-
-        <div class ="Quit" id="quit">
-            
-            <button id="logout">
-                Logout
-            </button>
-
-            <button id="enable">
-                Enable/Disable
-            </button>
-
-        </div>
-       
-
-
-
-
-
-
-
-        <div class ="calender">
-            <div class="calender-top" id="calender-top">
-                <h1 id = "calender-year">Year</h1>
+    
             </div>
-
-
-            <div class="month">
-
-                <button id="btn" type="button">
-                    Prevmonth
-                </button>
-
-                <text id = "calender-month">
-                    <strong>Month</strong>
-                </text>
+    
+    
+            <div class ="Quit" id="quit">
                 
-
-                <button id="btn2" type="button">
-                    Nextmonth
+                <button id="logout">
+                    Logout
                 </button>
-
+    
+                
+    
             </div>
-
-
-            <div class="calender-day" id="calender-day">
-                <table id ="Days">
-                   
-                </table>
-
+           
+    
+            <div class ="calender">
+                <div class="calender-top" id="calender-top">
+                    <h1 id = "calender-year">Year</h1>
+                </div>
+    
+    
+                <div class="month">
+    
+                    <button id="btn" type="button">
+                        Prevmonth
+                    </button>
+    
+                    <text id = "calender-month">
+                        <strong>Month</strong>
+                    </text>
+                    
+    
+                    <button id="btn2" type="button">
+                        Nextmonth
+                    </button>
+    
+                </div>
+    
+    
+                <div class="calender-day" id="calender-day">
+                    <table id ="Days">
+                       
+                    </table>
+    
+                </div>
+    
+    
             </div>
-
-
+    
+    
             <div class="event-tags" id="event-tags">
                 <input type="text" name="tagname" id="tagname" placeholder="tagname"><br>
-
-
+    
+    
                 <button id="tag_add" type="button">
                     Add
                 </button>
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-
-
-
-
-
-        <div class ="event" id = "event">
-
-            <div class ="add_new" id = "add_new">
-
-            </div>
-
-
-
-            <div class ="group" id = "group">
-               
-            </div>
-
-
-            <ul>
+                <div class = "tags" id="tags">
+    
+                </div>
                 
-            </ul>
-
-
-            <div class ="share" id = "share">
-            
+    
             </div>
 
-            
         </div>
+        
+
+
+
+
+
+
+        <div class="col right">
+            <div class ="event" id = "event">
+
+                <div class ="add_new" id = "add_new">
+    
+                </div>
+    
+    
+    
+                
+    
+    
+                <ul>
+                    
+                </ul>
+    
+    
+                <div class ="share" id = "share">
+                
+                </div>
+    
+                <div class ="sharelink" id = "sharelink">
+                
+                </div>
+    
+    
+                <div class ="group" id = "group">
+                   
+                </div>
+    
+    
+                <div class ="grouplink" id = "grouplink">
+                   
+                </div>
+                
+    
+                
+            </div>
+
+        </div>
+        
+
+
+        
 
         
 
@@ -135,12 +146,24 @@
 
 
         <script>
+
+
+            var enable = false;
+
+            var choose_id=""
+
             var show = true;
             var date = new Date();
             var year = date.getFullYear();
             var month = date.getMonth();
 
             var groupname = []
+
+            var sharelink = document.getElementById("sharelink");
+            var grouplink = document.getElementById("grouplink");
+
+
+            var name_of_tag="";
 
             var use = document.getElementById("username");
             var pass = document.getElementById("password");
@@ -150,6 +173,15 @@
 
 
             var group = document.getElementById("group");
+
+
+
+            let temp_a=null;
+            let temp_b=null;
+            let temp_c=null;
+
+
+            
     
             
             
@@ -160,9 +192,21 @@
                 if(localStorage.getItem("username")==NaN||localStorage.getItem("username")==null){
                     
                     //didn't log in.
+
+                    
+                    ///Display or show the button of signin and log out.
+                    var log = document.getElementById("log");
+                    var quit = document.getElementById("quit");
+
+                    log.style.display= "block";
+
+                    quit.style.display="none";
+
                 }
 
                 else{
+
+                    print_tag();
                     ///Display or show the button of signin and log out.
                     var log = document.getElementById("log");
                     var quit = document.getElementById("quit");
@@ -192,36 +236,79 @@
                     for(let x = 0;x<7;x++){
                         
                         
-                        var td = document.createElement("td");
-                        if(day[x].getDate()==date.getDate()&&date.getFullYear()==year&&date.getMonth()==month){
-                            var strong = document.createElement("strong");
-                            
-                            
-                            strong.appendChild(document.createTextNode(day[x].getDate()));
-                            td.appendChild(strong);
-
+                        let td = document.createElement("td");
 
                             
-                            
-                            
-                            td.addEventListener("click",function(event){
-                               
-                                printEvent(day[x].getDate(),month,year);
-                                
-                            }, false);
+
+                        if(enable==false){
+                            td.appendChild(document.createTextNode(day[x].getDate()));
 
                         }
                         else{
+
+                            let currentMonth = new Month(year, month);
+                            let weeks = currentMonth.getWeeks();
+
+                            let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+                            let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
                             
-                            td.appendChild(document.createTextNode(day[x].getDate()));
+                            post('/event/getMonthlyEvents.php',{
+                                uid:localStorage.uid,
+                                token:localStorage.token,
+                                beginTS:beginTS,
+                                endTS:endTS
+
+                                },false).then(res => {
+                                    if(res['code']==1){
+                                        let cur_month=day[x].getMonth()+1;
+                                        let stamp= day[x].getFullYear()+"-"+cur_month+"-"+day[x].getDate()+"T00:00:00.000-05:00";
+                                        
+                                        
+
+                                        let temp = document.createTextNode(day[x].getDate());
+                                        
+                                        if(res['data'][Date.parse(stamp) / 1000]==NaN||res['data'][Date.parse(stamp) / 1000]==null){
+                                            
+                                            
+                                        }
+                                        else{
+                                            for(let i of res['data'][Date.parse(stamp) / 1000]){
+                                                if(i['cid']==choose_id){
+                                                    
+                                                    temp = document.createElement("strong");
+                                                    temp.append(day[x].getDate());
+                                                    
+                                                }
+                                            }
+                                            
+                                        }
+                                        
+                                        td.appendChild(temp);
+                                              
+
+                                    }
+                            
+                            })
+                                
+                               
+                                
+
+                            }
+                            
+
+
+
+
+
+                            // td.appendChild(document.createTextNode(day[x].getDate()));
                             
                             td.addEventListener("click",function(event){
                                 
-                                printEvent(day[x].getDate(),month,year);
+                                printEvent(day[x].getDate(),day[x].getMonth(),day[x].getFullYear());
                                 
                             }, false);
 
-                        }
+                        // }
                         
                         now_days.appendChild(td);
                     }
@@ -245,6 +332,10 @@
 
             function printEvent(day,month,year){
 
+                temp_a=day;
+                temp_b=month;
+                temp_c=year;
+
  
                 if(localStorage.getItem("username")==NaN||localStorage.getItem("username")==null){
                     console.log("You should log in firstly.");
@@ -254,67 +345,66 @@
                 else{
                     
                     
-                  
+                    
+                    print_tag();
                     groupname=[];
 
                 
                
-                    var event_list = document.getElementById("event").getElementsByTagName("ul")[0];
-                    var add_new = document.getElementById("add_new");
-                    var share = document.getElementById("share");
+                    let event_list = document.getElementById("event").getElementsByTagName("ul")[0];
+                    let add_new = document.getElementById("add_new");
+                    let share = document.getElementById("share");
 
 
-                    var group = document.getElementById("group");
+                    let group = document.getElementById("group");
                     group.textContent="";
                     event_list.textContent ="";
                     add_new.textContent="";
                     share.textContent="";
+                    sharelink.textContent="";
+                    grouplink.textContent="";
                     
 
 
-
-                    
-
-
-                    var name = document.createElement("input");
+                    let name = document.createElement("input");
                     name.setAttribute("id","name");
-                    name.setAttribute("placeholder","group_memeber_name");
+                    name.setAttribute("placeholder","group_link");
                     
 
 
-                    var add = document.createElement("button");
+                    let add = document.createElement("button");
                     add.appendChild(document.createTextNode("Add"));
                     add.addEventListener("click",function(event){
-                        //Add group memeber here.
+                        
 
-                        var temp = name.value.replace(" ","");
+                        joinGroup();
 
-                        if(temp==""||temp==undefined||temp==null){
-                            console.log("Name" + 'is empty.');
-                        }
-                        else{
-                            var a=true;
-                            for(var i =0;i<groupname.length;i++){
-                                if(groupname[i]==name.value){
-                                    console.log("Has input;");
-                                    a=false;
-                                }
-                            }
-                            if(a==true){
+                        printEvent(day,month,year);
+                    }, false);
 
-                                ///need to implement
-                                groupname.push(name.value);
-                                var group_list = document.getElementById("group");
-                                var temp = document.createElement("li");
-                                temp.appendChild(document.createTextNode(name.value));
-                                group_list.appendChild(temp);
-                            }
-                            
-                            
-                        }
 
+                    let name2 = document.createElement("input");
+                    name2.setAttribute("id","name2");
+                    name2.setAttribute("placeholder","group_name");
+
+                    let create = document.createElement("button");
+                    create.appendChild(document.createTextNode("Create Group"));
+                    create.addEventListener("click",function(event){
+                        //Submit group events here.
+                        ///need to implement
+
+
+                        createGroup();
+                        printEvent(day,month,year);
                         
                     }, false);
+
+
+                    group.appendChild(name)
+                    
+                    group.appendChild(add);
+                    group.appendChild(name2);
+                    group.appendChild(create);
 
                     
 
@@ -335,41 +425,7 @@
 
 
 
-                    let create = document.createElement("button");
-                    create.appendChild(document.createTextNode("Group"));
-                    create.addEventListener("click",function(event){
-                        //Submit group events here.
-                        ///need to implement
-
-
-                        let temp = input.value.replace(" ","");
-
-                        if(temp==""||temp==undefined||temp==null){
-                            console.log("title" + ' is empty.');
-                        }
-                        else{
-                            temp = time.value.replace(" ","");
-                            if(temp==""||temp==undefined||temp==null){
-                                console.log("start" + ' is empty.');
-                            }
-                            else{
-                                temp = time2.value.replace(" ","");
-                                if(temp==""||temp==undefined||temp==null){
-                                    console.log("end" + ' is empty.');
-                                }
-                                else{
-                                    ///need to implement
-                                    
-
-                                }
-                            }
-
-
-                        }
-                        
-                        printEvent(day,month,year);
-                        
-                    }, false);
+                    
                     
 
 
@@ -380,10 +436,7 @@
                     
 
 
-                    group.appendChild(name)
                     
-                    group.appendChild(add);
-                    group.appendChild(create);
                     
 
                     add_new.appendChild(input);
@@ -428,7 +481,7 @@
                                         },false).then(res => {
                                             if(res['code']==1){
                                             
-                                                console.log(res);
+                                                // console.log(res);
                                             } else {
                                                 alert(res['msg']);
                                             }
@@ -440,18 +493,19 @@
                                         time.value ="";
                                         time2.value ="";
 
+                                        // console.log("has submit");
                                         printEvent(day,month,year);
-                                        
-
                                     }
 
                                     else{
                                         console.log('Wrong time');
                                     }
+                                    printEvent(day,month,year);
                                     
                                 }
+                                printEvent(day,month,year);
                             }
-
+                            
 
                         }
 
@@ -469,15 +523,15 @@
 
                     //input name to share to others
                     var input2 = document.createElement("input");
-                    input2.setAttribute("id","sharename");
-                    input2.setAttribute("placeholder","get shared event");
+                    input2.setAttribute("id","sharelink");
+                    input2.setAttribute("placeholder","enter share link here");
 
                     share.appendChild(input2);
 
 
                     //get share button
                     var add_share= document.createElement("button");
-                    add_share.appendChild(document.createTextNode("Share"));
+                    add_share.appendChild(document.createTextNode("Add_Share"));
                     add_share.addEventListener("click",function(event){
                         //share the current here.
                         var temp = input2.value.replace(" ","");
@@ -486,11 +540,15 @@
                             console.log("username" + ' is empty.');
                         }
                         else{
+
+                            addSharedEvent();
+                            printEvent(day,month,year);
                             
                         }
 
 
                         ///need to implement
+
 
 
 
@@ -506,7 +564,7 @@
                     
 
 
-
+                    ////show the event
                     let currentMonth = new Month(year, month);
                     let weeks = currentMonth.getWeeks();
 
@@ -540,9 +598,11 @@
                                 else{
 
                                         event_list.textContent ="";
-                                        console.log(res['data'][Date.parse(stamp) / 1000]);
+                                        // console.log(res['data'][Date.parse(stamp) / 1000]);
                                         for(let i of res['data'][Date.parse(stamp) / 1000]){
                                             //Add the event here.(Needs to implement here)
+
+
                                             let newevent = document.createElement("p");
                                             let newevent2 = document.createElement("p");
                                             let newevent3 = document.createElement("p");
@@ -552,7 +612,9 @@
                                             let get_time = new Date(i['end']*1000);
                                             let get_eid = i['id'];
 
-                                            
+
+                                            ///Event list
+                                            var li = document.createElement("li");
 
                                         
                                             newevent.textContent="Title: "+get_title;
@@ -560,12 +622,21 @@
                                             newevent2.textContent="Start: "+get_date;
                                             newevent3.textContent="End: "+get_time;
 
+                                            li.appendChild(newevent);
+                                            li.appendChild(newevent2);
+                                            li.appendChild(newevent3);
+
+                                            if(i['cid']!=0){
+                                                let newevent4 = document.createElement("p");
+                                                newevent4.textContent="Tag: "+i['cName'];
+                                                li.appendChild(newevent4);
+                                            }
+
                                             
 
 
 
-                                            ///Event list
-                                            var li = document.createElement("li");
+                                            
 
                                             
                             
@@ -593,7 +664,7 @@
                                                         else{
 
                                                             ///need to implement
-                                                            console.log(get_eid);
+                                                            // console.log(get_eid);
                                                             post('/event/editEvent.php',{
 
                                                                 
@@ -613,7 +684,7 @@
                                                                 if(res['code']==1){
                                                                     printEvent(day,month,year);
                                                                 
-                                                                    console.log(res);
+                                                                    
                                                                 } else {
                                                                     alert(res['msg']);
                                                                 }
@@ -650,44 +721,134 @@
                                                     if(res['code']==1){
                                                         printEvent(day,month,year);
                                                     
-                                                        console.log(res);
+                                                        // console.log(res);
                                                     } else {
                                                         alert(res['msg']);
                                                     }
                                                 })
+                                                
 
                                                 
 
 
                                             }, false);
 
-                                            li.appendChild(newevent);
-                                            li.appendChild(newevent2);
-                                            li.appendChild(newevent3);
+                                            
 
-                                            //add the tage button
-                                            var tag = document.createElement("button");
+                                            
+                                            
+
+                                            
+                                            
+                                             // let option = select.options[0];
+                                            // console.log(select.options[select.selectedIndex].value);
+
+                                            //add the tag button
+                                            let tag = document.createElement("button");
                                             tag.appendChild(document.createTextNode("Tag"));
                                             tag.addEventListener("click",function(event){
 
-                                                var temp = tagname.value.replace(" ","");
+                                                let temp = tagname.value.replace(" ","");
 
                                                 if(temp==""||temp==undefined||temp==null){
                                                     console.log("tagname " + 'is empty.');
                                                 }
                                                 else{
 
-                                                    var t = document.createElement("strong");
-                                                    t.appendChild(document.createTextNode("("+tagname.value+")"));
-                                                    t.setAttribute("class","tag");
+                                                    let select = document.getElementById("tagnames");
+                                                    // console.log(select);
+                                                    let cid ="";
 
-
+                                                    if(select!=null){
+                                                        for(let i of select.children){
+                                                            if(i.selected==true){
+                                                                cid =i.value;
+                                                            }
+                                                        }
+                                                    }
                                                     
-                                                    //// refresh at this time to get tag
-                                                    li.appendChild(t);
+                                                    post('/event/editEvent.php',{
+                                                        
+                                                        uid:localStorage.uid,
+                                                        token:localStorage.token,
+                                                        cid:cid,
+                                                        eid:get_eid,
+                                                        gid:0,
+                                                        title:get_title,
+                                                        detail:0,
+                                                        isFullDay:0,
+                                                        start:i['start'],
+                                                        end:i['end']
 
 
-                                                    ///need to implement
+                                                    },false).then(res => {
+                                                        if(res['code']==1){
+                                                            // console.log(res);
+                                                            printEvent(day,month,year);
+                                                        
+                                                            
+                                                        } else {
+                                                            alert(res['msg']);
+                                                        }
+                                                    })
+
+
+                                                }
+
+                                                
+
+                                            }, false);
+
+
+                                             // let option = select.options[0];
+                                            // console.log(select.options[select.selectedIndex].value);
+
+                                            let choosed = document.createElement("input");
+                                            choosed.setAttribute("placeholder","enter shared group id");
+
+
+
+
+
+
+
+                                            //add the tag button
+                                            let set = document.createElement("button");
+                                            set.appendChild(document.createTextNode("Set as group"));
+                                            set.addEventListener("click",function(event){
+
+                                                let temp = choosed.value.replace(" ","");
+
+                                                if(temp==""||temp==undefined||temp==null){
+                                                    console.log("group id " + 'is empty.');
+                                                }
+                                                else{
+
+                                                   
+                                                    post('/event/editEvent.php',{
+                                                        
+                                                        uid:localStorage.uid,
+                                                        token:localStorage.token,
+                                                        cid:cid,
+                                                        eid:get_eid,
+                                                        gid:0,
+                                                        title:get_title,
+                                                        detail:0,
+                                                        isFullDay:0,
+                                                        start:i['start'],
+                                                        end:i['end']
+
+
+                                                    },false).then(res => {
+                                                        if(res['code']==1){
+                                                            // console.log(res);
+                                                            printEvent(day,month,year);
+                                                        
+                                                            
+                                                        } else {
+                                                            alert(res['msg']);
+                                                        }
+                                                    })
 
 
                                                 }
@@ -698,50 +859,88 @@
 
                                             li.appendChild(Delete);
                                             li.appendChild(revise);
+                                            
 
 
 
                                             //input the tage name
-                                            var tagname = document.createElement("input");
-                                            tagname.setAttribute("id","tagname");
-                                            tagname.setAttribute("placeholder","tagname");
+                                            let tagname = document.createElement("select");
+                                            tagname.setAttribute("id","tagnames");
+                                            
+
+                                            //
+
+                                            post('/category/getCates.php',{
+                                                uid:localStorage.uid,
+                                                token:localStorage.token,
+                                                
+
+                                                    },false).then(res => {
+                                                        if(res['code']==1){
+                                                        
+                                                            for(let i of res['data']){
+                                                                let temp = document.createElement("option");
+                                                                temp.setAttribute("value",i['id']);
+                                                               
+                                                                temp.append(i['name']);
+                                                                tagname.append(temp);
+                                                            }
+                                                        } else {
+                                                            alert(res['msg']);
+                                                        }
+                                            })
+
+
+
+
                                             
                                             li.appendChild(tagname);
 
                                             li.appendChild(tag);
+                                            li.appendChild(choosed);
+                                            li.appendChild(set);
                                             
-                                            event_list.appendChild(li);
+                                            
 
 
                                             
 
 
                                             //share button
-                                            var button3 = document.createElement("button");
+                                            let button3 = document.createElement("button");
                                             button3.appendChild(document.createTextNode("Share"));
                                             button3.addEventListener("click",function(event){
                                                 //share the current here.
-                                                var temp = input2.value.replace(" ","");
-
-                                                if(temp==""||temp==undefined||temp==null){
-                                                    console.log("username" + ' is empty.');
-                                                }
-                                                else{
-
-
-
-
-
-                                                    li.appendChild(document.createTextNode("("+tagname.value+")"));
-                                                }
-
-
-                                            
+                                                post('/event/shareEvent.php',{
+                                                    uid:localStorage.uid,
+                                                    token:localStorage.token,
+                                                    eid:get_eid
+                                                    
+                                                        },false).then(res => {
+                                                            if(res['code']==1){
+                                                                console.log(res);
+                                                                sharelink.textContent="share link is "+res['data']['shareToken'];
+                                                                
+                                                            } else {
+                                                                alert(res['msg']);
+                                                            }
+                                                })
                                                 
+                                               
+                                                // sharelink.appendChild(document.createTextNode("("+"link"+")"));
                                                 
                                             }, false);
 
-                                            event_list.appendChild(button3);
+                                            
+
+
+
+                                            li.appendChild(button3);
+                                            event_list.appendChild(li);
+
+
+                                            
+                                           
 
                                     }
 
@@ -766,6 +965,85 @@
                 }
 
             }
+
+
+                function joinGroup(){
+                    let uuid = document.getElementById("name").value;
+                    let regex = /^[\w_\.\-]+$/;
+                    if (!regex.test(uuid)) {
+                        alert("Invalid Input!");
+                    } else {
+                        post("/group/joinGroup.php", {
+                            uid: localStorage.uid,
+                            token: localStorage.token,
+                            uuid: uuid
+                        }).then(res=>{
+                            if(res["code"]){
+                                // initUserFunc();
+                                alert("Joined!");
+                                post("/group/joinGroup.php")
+                                grouplink.textContent=res["data"]["uuid"];
+                            } else if (res["code"] == 0){
+                                // initGuestFunc();
+                                alert("Invalid user credential!")
+                            } else {
+                                alert("Error, please refresh webpage!");
+                            }
+                        })
+                    }
+
+                }
+
+                function createGroup(){
+                    let groupName = document.getElementById("name2").value;
+                    let regex = /^[\w_\.\-]+$/;
+                    if (!regex.test(groupName)) {
+                        alert("Invalid Input!");
+                    } else {
+                        post("/group/addGroup.php", {
+                            uid: localStorage.uid,
+                            token: localStorage.token,
+                            name: groupName
+                        }).then(res=>{
+                            if(res["code"]){
+                                alert("Group "+name+" created!");
+                                // removeAllChildNodes(document.getElementById("groupCode"));
+                                // document.getElementById("groupCode").append(res["data"]["uuid"]);
+                                grouplink.textContent=res["data"]["uuid"];
+                            } else if (res["code"] == 0){
+                                // initGuestFunc();
+                                alert("Invalid user credential!")
+                            } else {
+                                alert("Error, please refresh webpage!");
+                            }
+                        })
+                    }
+                }
+
+
+                function addSharedEvent(){
+                    let shareToken = document.getElementById("sharelink").value;
+                    let regex = /^[\w_\.\-]+$/;
+                    if (!regex.test(shareToken)) {
+                        alert("Invalid Input!");
+                    } else {
+                        post("/event/addShare.php", {
+                            uid: localStorage.uid,
+                            token: localStorage.token,
+                            shareToken: shareToken
+                        }).then(res=>{
+                            if(res["code"]){
+                                // initUserFunc();
+                                alert("Added!");
+                            } else if (res["code"] == 0){
+                                // initGuestFunc();
+                                alert("Invalid user credential!")
+                            } else {
+                                alert("Error, please refresh webpage!");
+                            }
+                        })
+                    }
+                }
                
 
                 
@@ -924,37 +1202,6 @@
                
             }, false);
 
-            //Enable/disable tag
-            document.getElementById("enable").addEventListener("click", function(event){
-                if(show==true){
-                    var all_tag = document.getElementsByClassName("tag");
-                    for(var i=0;i<all_tag.length;i++){
-                        all_tag[i].style.display="none";
-                    }
-                    
-
-
-
-                    //sent to server
-                    show = false;
-
-                }
-                else{
-
-                    var all_tag = document.getElementsByClassName("tag");
-                    for(var i=0;i<all_tag.length;i++){
-                        all_tag[i].style.display="inline";
-                    }
-
-
-
-
-                    //sent to server
-                    show = true;
-
-                }
-                
-            }, false);
 
             ///Log out
             document.getElementById("logout").addEventListener("click", function(event){
@@ -1000,55 +1247,114 @@
 
                     use.value="";
                     pass.value="";
+
+                    let temp = document.getElementById("tags");
+
+                    temp.textContent="";
                 }, false);
                 
 
 
                 document.getElementById("tag_add").addEventListener("click", function(event){
-
-                    let a =  document.getElementById("tagname").value;
-                    post('/category/addCate.php',{
-                           uid:localStorage.uid,
-                           token:localStorage.token,
-                           name:a,
-                           color:'#000000'
-
-                            },false).then(res => {
-                                if(res['code']==1){
-                                
-                                    
-
-                                } else {
-                                    alert(res['msg']);
-                                }
-                    });
-
-
-                    post('/category/getCates.php',{
-                           uid:localStorage.uid,
-                           token:localStorage.token,
-                           
-
-                            },false).then(res => {
-                                if(res['code']==1){
-                                
-                                    console.log(res);
-
-                                } else {
-                                    alert(res['msg']);
-                                }
-                    })
-
-
-                    document.getElementById("event-tags");
-
-
-                   
-                    
-
+                    add_tag();
 
                 }, false);
-            
+
+                function add_tag(){
+                        if(localStorage.getItem("username")==NaN||localStorage.getItem("username")==null){
+                            console.log("You should log in firstly.");
+                            
+                        }
+
+                        else{
+
+                            
+                                let a =  document.getElementById("tagname").value;
+                                var temp = a.replace(" ","");
+
+                                if(temp==""||temp==undefined||temp==null){
+                                    console.log("tagname" + ' is empty.');
+                                }
+                                else{
+
+                                    post('/category/addCate.php',{
+                                    uid:localStorage.uid,
+                                    token:localStorage.token,
+                                    name:a,
+                                    color:'#000000'
+
+                                        },false).then(res => {
+                                            if(res['code']==1){
+                                                print_tag();
+                                                printEvent(temp_a,temp_b,temp_c);
+                                            
+
+                                            } else {
+                                                alert(res['msg']);
+                                            }
+                                    });
+
+                                    
+                                    
+
+                                    }
+                                
+                            
+                            }
+
+                    }
+
+
+                    function print_tag(){
+                        let temp = document.getElementById("tags");
+                        temp.textContent="";
+
+                        post('/category/getCates.php',{
+                            uid:localStorage.uid,
+                            token:localStorage.token,
+                                },false).then(res => {
+                                    if(res['code']==1){
+                                        temp.textContent="";
+                                    
+                                        // console.log(res);
+                                        for(let i of res['data']){
+                                            let p = document.createElement("p");
+                                            p.appendChild(document.createTextNode(i['name']));
+                                            p.addEventListener("click",function(event) {
+
+                                                if(enable==false){
+                                                    enable=true;
+                                                    
+                                                    // console.log(i['id']);
+                                                    choose_id=i['id'];
+                                                    printall();
+                                                    printEvent(temp_a,temp_b,temp_c);
+
+                                                }
+                                                else{
+                                                    enable=false;
+                                                    choose_id=i['id'];
+                                                    printall();
+                                                    printEvent(temp_a,temp_b,temp_c);
+                                                }
+                                                
+                                            })
+                                            
+                                            temp.appendChild(p);
+                                        }
+
+                                    } else {
+                                        alert(res['msg']);
+                                    }
+                        })
+
+                        
+                    }
+                        
+                        
+                    
+
+                    
 
         </script>
 
