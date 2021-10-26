@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset='UTF-8'>
+    <title>Canlender</title>
+    <link rel="stylesheet" href="canlender.css">
+    <script src="script/calender.js"></script>
+</head>
+
+<body>
+    <div class="Log" id="log">
+        <input type="text" name="username" id="username" placeholder="Username"><br>
+        <input type="text" name="password" id="password" placeholder="Password"><br>
+        <button id="btn3">Login</button>
+        <button id="Sign">Signup</button>
+
+        <button id="enable">Enable/Disable</button>
+    </div>
+
+    <div class="Quit" id="quit">
+        <button id="logout">Logout</button>
+
+        <button id="enable">Enable/Disable</button>
+    </div>
+
+    <!-- calender -->
+    <div class="canlender">
+        <!-- year -->
+        <div class="canlender-top" id="canlender-top">
+            <h1 id="canlender-year">Year</h1>
+        </div>
+
+        <!-- month -->
+        <div class="month">
+            <button id="btn" type="button">Prev</button>
+
+            <text id="canlender-month">
+                <strong>Month</strong>
+            </text>
+
+            <button id="btn2" type="button">Next</button>
+        </div>
+
+
+        <div class="canlender-day" id="canlender-day">
+            <table id="Days">
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <div class="event" id="event">
+        <div class="add_new" id="add_new">
+
+        </div>
+        <div class="group" id="group">
+
+
+        </div>
+        <ul>
+
+        </ul>
+
+
+        <div class="share" id="share">
+
+        </div>
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+    <script>
+        var show = true;
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = date.getMonth();
+
+        var groupname = []
+
+
+
+        months = ["January", "Febrary", "March", "April", "May", "June", "July", "Auguest", "September", "October", "November", "December"];
+
+        function printall() {
+
+            var now_days = document.getElementById("Days");
+            var days = "<td>Sun</td><td>Mon</td><td>Tue</td><td>Wed</td><td>THU</td><td>Fri</td><td>Sat</td>";
+
+            var m = new Month(year, month);
+
+            var weeks = m.getWeeks();
+
+
+            now_days.innerHTML = days;
+
+            var now_days = document.getElementById("Days").getElementsByTagName("tr")[0];
+
+
+            for (var z = 0; z < weeks.length; z++) {
+                let day = weeks[z].getDates();
+                for (var i = 0; i < 7; i++) {
+
+                    var td = document.createElement("td");
+                    if (day[i].getDate() == date.getDate() && date.getFullYear() == year && date.getMonth() == month) {
+                        var strong = document.createElement("strong")
+                        var today = day[i].getDate();
+                        strong.appendChild(document.createTextNode(day[i].getDate()));
+                        td.appendChild(strong);
+                        td.addEventListener("click", function (event) {
+                            printEvent(today, month, year);
+
+                        }, false);
+
+                    }
+                    else {
+                        td.appendChild(document.createTextNode(day[i].getDate()));
+                        var today = day[i].getDate();
+                        td.addEventListener("click", function (event) {
+                            printEvent(today, month, year);
+
+                        }, false);
+
+                    }
+
+                    now_days.appendChild(td);
+                }
+
+            }
+
+
+            var now_year = document.getElementById("canlender-year");
+            var now_month = document.getElementById("canlender-month");
+
+
+
+            now_year.textContent = year;
+            now_month.textContent = months[month];
+
+
+        }
+
+
+        function printEvent(day, month, year) {
+
+            groupname = [];
+
+
+
+            var event_list = document.getElementById("event").getElementsByTagName("ul")[0];
+            var add_new = document.getElementById("add_new");
+            var share = document.getElementById("share");
+
+
+            var group = document.getElementById("group");
+            group.textContent = "";
+
+
+
+
+
+
+            var name = document.createElement("input");
+            name.setAttribute("id", "name");
+            name.setAttribute("placeholder", "group_memeber_name");
+
+
+
+            var add = document.createElement("button");
+            add.appendChild(document.createTextNode("Add"));
+            add.addEventListener("click", function (event) {
+                //Add group memeber here.
+
+                var temp = name.value.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log("Name" + 'is empty.');
+                }
+                else {
+                    var a = true;
+                    for (var i = 0; i < groupname.length; i++) {
+                        if (groupname[i] == name.value) {
+                            console.log("Has input;");
+                            a = false;
+                        }
+                    }
+                    if (a == true) {
+                        groupname.push(name.value);
+                        var group_list = document.getElementById("group");
+                        var temp = document.createElement("li");
+                        temp.appendChild(document.createTextNode(name.value));
+                        group_list.appendChild(temp);
+                    }
+
+
+                }
+
+
+
+
+
+            }, false);
+
+
+
+            var input = document.createElement("input");
+            input.setAttribute("id", "title");
+            input.setAttribute("placeholder", "title");
+
+            var time = document.createElement("input");
+            time.setAttribute("id", "time");
+            time.setAttribute("placeholder", "starttime");
+
+
+            var time2 = document.createElement("input");
+            time2.setAttribute("id", "time2");
+            time2.setAttribute("placeholder", "endtime");
+
+
+
+            var create = document.createElement("button");
+            create.appendChild(document.createTextNode("Group"));
+            create.addEventListener("click", function (event) {
+                //Submit group events here.
+
+
+                var temp = input.value.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log("title" + ' is empty.');
+                }
+                else {
+                    temp = time.value.replace(" ", "");
+                    if (temp == "" || temp == undefined || temp == null) {
+                        console.log("start" + ' is empty.');
+                    }
+                    else {
+                        temp = time2.value.replace(" ", "");
+                        if (temp == "" || temp == undefined || temp == null) {
+                            console.log("end" + ' is empty.');
+                        }
+                        else {
+
+                        }
+                    }
+
+
+                }
+
+                printEvent(day, month, year);
+
+            }, false);
+
+
+
+
+
+            //make new event
+            event_list.textContent = "";
+            add_new.textContent = "";
+            share.textContent = "";
+
+
+
+            group.appendChild(name)
+
+            group.appendChild(add);
+            group.appendChild(create);
+
+
+            add_new.appendChild(input);
+            add_new.appendChild(time);
+            add_new.appendChild(time2);
+
+
+            // submit the event
+            var button = document.createElement("button");
+            button.appendChild(document.createTextNode("Submit"));
+            button.addEventListener("click", function (event) {
+                //Submit the event here.
+                var temp = input.value.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log("title" + ' is empty.');
+                }
+                else {
+                    temp = time.value.replace(" ", "");
+                    if (temp == "" || temp == undefined || temp == null) {
+                        console.log("start" + ' is empty.');
+                    }
+                    else {
+                        temp = time2.value.replace(" ", "");
+                        if (temp == "" || temp == undefined || temp == null) {
+                            console.log("end" + ' is empty.');
+                        }
+                        else {
+
+                        }
+                    }
+
+
+                }
+
+
+
+                printEvent(day, month, year);
+
+            }, false);
+
+
+
+            add_new.appendChild(button);
+
+
+
+            //input name to share to others
+            var input2 = document.createElement("input");
+            input2.setAttribute("id", "sharename");
+            input2.setAttribute("placeholder", "sharename");
+
+            share.appendChild(input2);
+
+
+            //share button
+            var button3 = document.createElement("button");
+            button3.appendChild(document.createTextNode("Share"));
+            button3.addEventListener("click", function (event) {
+                //share the current here.
+                var temp = input2.value.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log("username" + ' is empty.');
+                }
+                else {
+                    li.appendChild(document.createTextNode("(" + tagname.value + ")"));
+                }
+
+
+
+                printEvent(day, month, year);
+
+            }, false);
+
+            share.appendChild(button3);
+
+
+
+
+            ///Event list
+            var li = document.createElement("li");
+
+            var revise = document.createElement("button");
+            revise.appendChild(document.createTextNode("Revise"));
+            revise.addEventListener("click", function (event) {
+                //Revise the event here.
+                var temp = input.value.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log("title" + ' is empty.');
+                }
+                else {
+                    temp = time.value.replace(" ", "");
+                    if (temp == "" || temp == undefined || temp == null) {
+                        console.log("start" + ' is empty.');
+                    }
+                    else {
+                        temp = time2.value.replace(" ", "");
+                        if (temp == "" || temp == undefined || temp == null) {
+                            console.log("end" + ' is empty.');
+                        }
+                        else {
+
+                        }
+                    }
+
+
+                }
+
+                printEvent(day, month, year);
+
+            }, false);
+
+
+            //add the delete event button
+            var Delete = document.createElement("button");
+            Delete.appendChild(document.createTextNode("Delete"));
+            Delete.addEventListener("click", function (event) {
+
+                ///Delete the event here.
+                event_list.removeChild(li);
+
+                // printEvent(day,month,year);
+
+
+            }, false);
+
+
+            ///Add the event here.(Needs to implement here)
+            var newevent = document.createElement("p");
+            var newevent2 = document.createElement("p");
+            var newevent3 = document.createElement("p");
+
+            var get_title = "a";
+            var get_date = "b";
+            var get_time = "c";
+
+
+            newevent.textContent = "Title: " + get_title;
+
+            newevent2.textContent = "Date: " + get_date;
+            newevent3.textContent = "Time: " + get_time;
+
+
+            li.appendChild(newevent);
+            li.appendChild(newevent2);
+            li.appendChild(newevent3);
+
+
+
+            //add the tage button
+            var tag = document.createElement("button");
+            tag.appendChild(document.createTextNode("Tag"));
+            tag.addEventListener("click", function (event) {
+
+                var temp = tagname.value.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log("tagname " + 'is empty.');
+                }
+                else {
+
+                    var t = document.createElement("strong");
+                    t.appendChild(document.createTextNode("(" + tagname.value + ")"));
+                    t.setAttribute("class", "tag");
+
+
+                    //// refresh at this time to get tag
+                    li.appendChild(t);
+
+
+                }
+
+
+
+            }, false);
+
+            li.appendChild(Delete);
+            li.appendChild(revise);
+
+
+
+            //input the tage name
+            var tagname = document.createElement("input");
+            tagname.setAttribute("id", "tagname");
+            tagname.setAttribute("placeholder", "tagname");
+
+            li.appendChild(tagname);
+
+            li.appendChild(tag);
+
+            event_list.appendChild(li);
+        }
+
+
+
+        //intialize
+        document.addEventListener("DOMContentLoaded", printall(), false);
+
+
+        ////Prev month
+        document.getElementById("btn").addEventListener("click", function (event) {
+            month -= 1;
+            if (month < 0) {
+                year -= 1;
+                month = 11;
+            }
+            printall();
+        }, false);
+
+
+        ////Next month
+        document.getElementById("btn2").addEventListener("click", function (event) {
+            month += 1;
+            if (month > 11) {
+                year += 1;
+                month = 0;
+            }
+            printall();
+        }, false);
+
+
+        ///Login function
+        document.getElementById("btn3").addEventListener("click", function (event) {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            var regex = /^[\w_\.\-]+$/;
+            var match = regex.test(username);
+
+            if (!match) {
+                console.log(username + ' is not a number that has between 1,20 digits');
+            }
+            else {
+                var temp = password.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log(password + ' is empty.');
+                }
+
+                else {
+
+                    var log = document.getElementById("log");
+                    var quit = document.getElementById("quit");
+
+                    log.style.display = "none";
+
+                    quit.style.display = "block";
+
+                }
+
+            }
+
+        }, false);
+
+
+
+        ///Sign function
+        document.getElementById("Sign").addEventListener("click", function (event) {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            var regex = /^[\w_\.\-]+$/;
+            var match = regex.test(username);
+
+            if (!match) {
+                console.log(username + ' is not a number that has between 1,20 digits');
+            }
+            else {
+                var temp = password.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    console.log(password + ' is empty.');
+                }
+                else {
+
+                    var log = document.getElementById("log");
+                    var quit = document.getElementById("quit");
+
+                    log.style.display = "none";
+
+                    quit.style.display = "block";
+
+
+                }
+
+            }
+
+        }, false);
+
+        //Enable/disable tag
+        document.getElementById("enable").addEventListener("click", function (event) {
+            if (show == true) {
+                var all_tag = document.getElementsByClassName("tag");
+                for (var i = 0; i < all_tag.length; i++) {
+                    all_tag[i].style.display = "none";
+                }
+
+                //sent to server
+                show = false;
+
+            }
+            else {
+
+                var all_tag = document.getElementsByClassName("tag");
+                for (var i = 0; i < all_tag.length; i++) {
+                    all_tag[i].style.display = "inline";
+                }
+
+
+                //sent to server
+                show = true;
+
+            }
+
+        }, false);
+
+        ///Log out
+        document.getElementById("logout").addEventListener("click", function (event) {
+
+            var log = document.getElementById("log");
+            var quit = document.getElementById("quit");
+
+            quit.style.display = "none";
+
+            log.style.display = "inline";
+
+
+        }, false);
+
+
+
+
+    </script>
+
+
+
+
+
+
+
+
+</body>
+
+
+
+
+</html>
