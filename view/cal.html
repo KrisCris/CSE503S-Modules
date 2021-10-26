@@ -37,11 +37,18 @@
         <div class="row bottom">
             <div class="col left">
                 <div class="content">
-                    <h1 id="year">2021</h1>
-                    <h2 class="month"><a class="prev" href="#">←</a><span id="month">October</span><a class="next"
-                            href="#">→</a></h2>
+                    <h1 id="year">
+                        <!-- year -->
+                    </h1>
+                    <h2 class="month">
+                        <a class="prev" href="#">←</a>
+                        <span id="month">
+                            <!-- month -->
+                        </span>
+                        <a class="next" href="#">→</a>
+                    </h2>
                     <div class="spacer10"></div>
-                    <ul class="weekday">
+                    <ul class="weekdays">
                         <li><a href="#">SUN</a></li>
                         <li><a href="#">MON</a></li>
                         <li><a href="#">TUE</a></li>
@@ -51,17 +58,16 @@
                         <li><a href="#">SAT</a></li>
                     </ul>
                     <ul id="days" class="days">
-                        <!-- <li><a href="#">1</a></li>
-                        <li><a class="selected" href="#">2</a></li>
-                        <li><a class="event" href="#">3</a></li>
-                        <li><a href="#">4</a></li> -->
+                        <!-- dates -->
                     </ul>
                 </div>
             </div>
 
             <div class="col middle">
                 <div class="content">
-                    <h2>Friday<a id="addEvent" href="#">+</a></h2>
+                    <h2><span id="weekday">
+                        <!-- weekday -->
+                        <span><a id="addEvent" href="#">+</a></h2>
                     <div class="events">
                         <ul class="eventList">
                             <li>Event 1 dsfdsafdsafdsfas</li>
@@ -92,6 +98,9 @@
             0: "January", 1: "February", 2: "March", 3: "April", 4: "May",
             5: "June", 6: "July", 7: "August", 8: "September", 9: "October", 10: "November", 11: "December"
         };
+        const weekdays = {
+            0: "Sunday", 1: "Monday", 2: "Tuesday", 3: "Wednesday", 4: "Thursday", 5: "Friday", 6: "Saturday"
+        }
         const calendar = document.getElementsByClassName("calendar")[0];
         const colLeft = document.getElementsByClassName("col left")[0];
         const colMiddle = document.getElementsByClassName("col middle")[0];
@@ -99,6 +108,7 @@
         const days = document.getElementById("days");
         const year = document.getElementById("year");
         const month = document.getElementById("month");
+        const weekday = document.getElementById("weekday");
 
         // cal
         const prev = document.getElementsByClassName("prev")[0];
@@ -130,7 +140,8 @@
         const logoutDiv = document.getElementById("logout");
         const hiMsg = document.getElementById("hi");
 
-        var currentCal = new Date();
+        let currentCal = new Date();
+        let selectedDay = null;
 
         regBtn.addEventListener('click', (event) => {
             let utxt = username.value;
@@ -219,6 +230,7 @@
         const detail = document.getElementById("detail");
         const tags = document.getElementById("tags");
         const addEvent = document.getElementById("addEvent");
+        const eventList = document.getElementsByClassName("eventList")[0];
 
         // Doc Init
 
@@ -241,8 +253,6 @@
                     }
                 });
             }
-
-            // let data = getMonthlyData(currnetDate.getFullYear(), currnetDate.getMonth());
         }
 
         function initUserFunc() {
@@ -277,16 +287,22 @@
             let currnetDate = new Date();
             let currentMonth = new Month(currentCal.getFullYear(), currentCal.getMonth());
             let weeks = currentMonth.getWeeks();
-            // query data
+            let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+            let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
+
+            // try query data
             if (localStorage.token === undefined || localStorage.uid === undefined) {
-                // draw
+                // draw cal
                 removeAllChildNodes(days);
                 for (let week of weeks) {
                     for (let date of week.getDates()) {
                         let li = document.createElement('li');
                         let a = document.createElement('a');
-                        a.append(date.getDate())
+                        a.append(date.getDate());
                         a.setAttribute("href", "#");
+                        a.setAttribute("weekday", weekdays[date.getDay()]);
+                        a.setAttribute("timestamp", parseInt(date.getTime()/1000))
+                        
                         if (
                             currnetDate.getDate() == date.getDate() &&
                             currnetDate.getMonth() == date.getMonth() &&
@@ -296,15 +312,34 @@
                         }
                         li.append(a);
                         days.append(li);
+
+                        // update selected date
+                        if(selectedDay!=null && selectedDay.getAttribute("timestamp")>=beginTS && selectedDay.getAttribute("timestamp")<=endTS){
+                            if(selectedDay.getAttribute("timestamp")==a.getAttribute("timestamp")){
+                                setSelectedDate(a);
+                            }
+                        } else {
+                            setSelectedDate(a);
+                        }
+
                     }
                 }
                 removeAllChildNodes(year);
                 year.append(currentCal.getFullYear());
                 removeAllChildNodes(month);
                 month.append(months[currentCal.getMonth()]);
+
+                // draw events list
+                removeAllChildNodes(weekday);
+                weekday.append(selectedDay.getAttribute("weekday"));
+                removeAllChildNodes(eventList);
+                let noticeEvent = document.createElement("li");
+                noticeEvent.append("Login to access full feature!");
+                eventList.append(noticeEvent);
+                
+                
+
             } else {
-                let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
-                let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
                 post('/event/getMonthlyEvents.php', {
                     uid: localStorage.uid,
                     token: localStorage.token,
@@ -318,8 +353,9 @@
                             for (let date of week.getDates()) {
                                 let li = document.createElement('li');
                                 let a = document.createElement('a');
-                                a.append(date.getDate())
+                                a.append(date.getDate());
                                 a.setAttribute("href", "#");
+                                a.setAttribute("weekday", weekdays[date.getDay()]);
                                 if (
                                     currnetDate.getDate() == date.getDate() &&
                                     currnetDate.getMonth() == date.getMonth() &&
@@ -331,10 +367,24 @@
                                 days.append(li);
                             }
                         }
+
+                        // update selected date
+                        if(selectedDay!=null && selectedDay.getAttribute("timestamp")>=beginTS && selectedDay.getAttribute("timestamp")<=endTS){
+                            if(selectedDay.getAttribute("timestamp")==a.getAttribute("timestamp")){
+                                setSelectedDate(a);
+                            }
+                        } else {
+                            setSelectedDate(a);
+                        }
+
+
+
                         removeAllChildNodes(year);
                         year.append(currentCal.getFullYear());
                         removeAllChildNodes(month);
                         month.append(months[currentCal.getMonth()]);
+
+
                     } else {
                         initGuestFunc();
                         alert("Invalid user credential!")
@@ -353,6 +403,23 @@
             let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
 
             //todo
+        }
+
+        function setSelectedDate(date) {
+            if(selectedDay==null){
+                selectedDay = date;
+                if(date.getAttribute("class")!="today"){
+                    date.setAttribute("class", "selected");
+                }
+            } else {
+                if(selectedDay.getAttribute("class")!="today"){
+                    selectedDay.removeAttribute("class");
+                }
+                if(date.getAttribute("class")!="today"){
+                    date.setAttribute("class", "selected");
+                }
+                selectedDay = date;
+            }
         }
 
         function removeAllChildNodes(parent) {

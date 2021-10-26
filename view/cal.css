@@ -173,7 +173,7 @@ li{
     list-style: none;
 }
 
-.weekday li,
+.weekdays li,
 .days li{
   float: left;
   text-transform: uppercase;
@@ -184,18 +184,18 @@ a{
     color: #747978;
 }
 
-.weekday a,
+.weekdays a,
 .days a{
   display: block;
   color: #747978;
 }
 
-.weekday li,
+.weekdays li,
 .days li{
     width: 55px;
 }
 
-.weekday a{
+.weekdays a{
     text-align: center;
     margin-bottom: 20px;
     font-size: 18px;
@@ -257,6 +257,10 @@ a{
     background-color: #F5A1A3;
     /* color: #aaaaaa; */
     transition: all 0.3s ease-in-out;
+}
+
+.eventList{
+    margin-top: 10px;
 }
 
 .eventList li{

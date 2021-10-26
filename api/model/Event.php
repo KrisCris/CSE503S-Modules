@@ -9,6 +9,7 @@ class Event
     public $isFullDay;
     public $start;
     public $end;
+    public $shareToken;
 
     public $cid;
     public $cName;
@@ -17,7 +18,7 @@ class Event
     public $gid;
     public $gName;
 
-    private function __construct($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName)
+    private function __construct($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $shareToken, $cName, $color, $gName)
     {
         $this->id = $id;
         $this->uid = $uid;
@@ -26,6 +27,7 @@ class Event
         $this->isFullDay = $isFullDay;
         $this->start = $start;
         $this->end = $end;
+        $this->shareToken = $shareToken;
         $this->cid = $cid;
         $this->cName = $cName;
         $this->cColor = $color;
@@ -38,7 +40,7 @@ class Event
     {
         global $conn;
         $stmt = $conn->prepare("select
-        event.id, event.uid, event.cid, event.gid, event.title, event.detail, event.isFullDay, event.start, event.end,
+        event.id, event.uid, event.cid, event.gid, event.title, event.detail, event.isFullDay, event.start, event.end, event.shareToken,
         c.name as cName, c.color as color,
         g.name as gName
         from event
@@ -51,9 +53,9 @@ class Event
         }
         $stmt->bind_param('i', $id);
         $stmt->execute();
-        $stmt->bind_result($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName);
+        $stmt->bind_result($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $shareToken, $cName, $color, $gName);
         if ($stmt->fetch()) {
-            $e = new static($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName);
+            $e = new static($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $shareToken, $cName, $color, $gName);
             $stmt->close();
             if ($e->id == null) return null;
             return $e;
@@ -66,7 +68,8 @@ class Event
     public static function getEventByRange($uid, $beginTS, $endTS)
     {
         global $conn;
-        $stmt = $conn->prepare("
+        $stmt = $conn->prepare(
+            "
             select event.id,
                 event.uid,
                 event.cid,
@@ -76,6 +79,7 @@ class Event
                 event.isFullDay,
                 event.start,
                 event.end,
+                event.shareToken,
                 c.name  as cName,
                 c.color as color,
                 g.name  as gName
@@ -94,12 +98,12 @@ class Event
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
-        $stmt->bind_param('iiiiiiii',$beginTS, $endTS, $beginTS, $endTS, $beginTS, $endTS, $uid, $uid);
+        $stmt->bind_param('iiiiiiii', $beginTS, $endTS, $beginTS, $endTS, $beginTS, $endTS, $uid, $uid);
         $stmt->execute();
-        $stmt->bind_result($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName);
+        $stmt->bind_result($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $shareToken, $cName, $color, $gName);
         $arr = array();
-        while($stmt->fetch()){
-            $e = new static($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $cName, $color, $gName);
+        while ($stmt->fetch()) {
+            $e = new static($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end, $shareToken, $cName, $color, $gName);
             array_push($arr, $e);
         }
         return $arr;
@@ -144,7 +148,7 @@ class Event
     {
         $tmpE = static::getEventById($id);
         $cid = null;
-        if($tmpE && $tmpE->cid){
+        if ($tmpE && $tmpE->cid) {
             $cid = $tmpE->cid;
         }
 
@@ -165,20 +169,110 @@ class Event
         return false;
     }
 
-    public function toDict(){
+    public function toDict()
+    {
         return [
-            "id"=>$this->id,
-            "uid"=>$this->uid,
-            "title"=>$this->title,
-            "detail"=>$this->detail,
-            "isFullDay"=>$this->isFullDay,
-            "start"=>$this->start,
-            "end"=>$this->end,
-            "cid"=>$this->cid,
-            "cName"=>$this->cName,
-            "cColor"=>$this->cColor,
-            "gid"=>$this->gid,
-            "gName"=>$this->gName
+            "id" => $this->id,
+            "uid" => $this->uid,
+            "title" => $this->title,
+            "detail" => $this->detail,
+            "isFullDay" => $this->isFullDay,
+            "start" => $this->start,
+            "end" => $this->end,
+            "cid" => $this->cid,
+            "cName" => $this->cName,
+            "cColor" => $this->cColor,
+            "gid" => $this->gid,
+            "gName" => $this->gName
         ];
+    }
+
+    public static function shareEvent($id)
+    {
+        global $conn;
+
+        $e = static::getEventById($id);
+
+        if ($e) {
+            if ($e->gid != null) {
+                return null;
+            } else {
+                if ($e->shareToken == null) {
+                    $uuid = null;
+                    while (true) {
+                        $uuid = bin2hex(random_bytes(16));
+                        $stmt = $conn->prepare("select count(*) from event where shareToken=?");
+                        if (!$stmt) {
+                            printf("Query Prep Failed: %s\n", $conn->error);
+                            exit;
+                        }
+                        $stmt->bind_param("s", $uuid);
+                        $stmt->execute();
+                        $stmt->bind_result($count);
+                        $stmt->fetch();
+                        $stmt->close();
+                        if ($count == 0) {
+                            break;
+                        }
+                    }
+
+                    $stmt = $conn->prepare("update event set shareToken=? where id=?");
+                    if (!$stmt) {
+                        printf("Query Prep Failed: %s\n", $conn->error);
+                        exit;
+                    }
+                    $stmt->bind_param("si", $uuid, $id);
+                    if ($stmt->execute()) {
+                        $id = $conn->insert_id;
+                        $stmt->close();
+                        return ["id" => $id, "shareToken" => $uuid];
+                    } else {
+                        $stmt->close();
+                        return null;
+                    }
+                } else {
+                    return ["id" => $id, "shareToken" => $e->shareToken];
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static function addShare($uid, $token)
+    {
+        global $conn;
+        $stmt = $conn->prepare(
+            "select                 
+                event.cid,
+                event.title,
+                event.detail,
+                event.isFullDay,
+                event.start,
+                event.end
+            from event
+            where event.shareToken=?"
+        );
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->bind_param('s', $token);
+        $stmt->execute();
+        $stmt->bind_result($cid, $title, $detail, $isFullDay, $start, $end);
+        if($stmt->fetch()){
+            $stmt->close();
+            
+            $ret = static::addEvent($uid, $cid, null, $title, $detail, $isFullDay, $start, $end);
+            if($ret){
+                return $ret;
+            } else {
+                return null;
+            }
+        } else {
+            $stmt->close();
+            return null;
+        }
+
     }
 }
