@@ -981,7 +981,26 @@
                             if(res["code"]){
                                 // initUserFunc();
                                 alert("Joined!");
-                                post("/group/joinGroup.php")
+                                post("/group/getGroup.php", {
+                                    uid: localStorage.uid,
+                                    token: localStorage.token,
+                                    
+                                }).then(res=>{
+                                    if(res["code"]){
+                                        // initUserFunc();
+                                        alert("Joined!");
+                                        for(let i of res['data']){
+                                            let gid = i['id'];
+                                            let gname = i['name'];
+                                        }
+                                        grouplink.textContent="gid: "+gid+"   ."+ 'Name is '+ gname;
+                                    } else if (res["code"] == 0){
+                                        // initGuestFunc();
+                                        alert("Invalid user credential!")
+                                    } else {
+                                        alert("Error, please refresh webpage!");
+                                    }
+                                })
                                 grouplink.textContent=res["data"]["uuid"];
                             } else if (res["code"] == 0){
                                 // initGuestFunc();
