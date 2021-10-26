@@ -39,6 +39,7 @@ create table event
   isFullDay boolean not null default false,
   start int not null,
   end int,
+  shareToken varchar(200),
   primary key (id),
   foreign key (uid) references user(id),
   foreign key (cid) references category(id),

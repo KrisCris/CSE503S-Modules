@@ -23,8 +23,17 @@
     </div>
 
     <div id="logout" class="displayNone">
-        <h1 id="hi"></h1>
-        <button id="logoutBtn">LOGOUT</button>
+        <div>
+            <h1 id="hi"></h1>
+            <button id="logoutBtn">LOGOUT</button>
+        </div>
+        <br><br>
+        <div>
+            <input type="text" name="joinGroup" id="joinGroup" placeholder="use code to join the group!"><br>
+            <button onclick="joinGroup()">Join!</button>
+        </div>
+
+        
     </div>
 
     <div class="calendar">
@@ -66,16 +75,11 @@
             <div class="col middle">
                 <div class="content">
                     <h2><span id="weekday">
-                        <!-- weekday -->
-                        <span><a id="addEvent" href="#">+</a></h2>
+                            <!-- weekday -->
+                    </span><a id="addEvent" href="#">+</a></h2>
                     <div class="events">
                         <ul class="eventList">
-                            <li>Event 1 dsfdsafdsafdsfas</li>
-                            <li>Event 2dsafdsafassfdsafdsf</li>
-                            <li>Event 3dfsfdasfdsaasfdsf</li>
-                            <li>Event 4dasfasfssfafafa</li>
-                            <li>Event 5dasfdsafasfdsadf</li>
-                            <li>Event 6adfasfsfafsafs</li>
+                            <!-- events -->
                         </ul>
                     </div>
                 </div>
@@ -83,11 +87,19 @@
 
             <div class="col right">
                 <div class="content">
-                    <input type="datetime-local" name="begin" id="date-begin">
-                    <input type="datetime-local" name="end" id="date-end">
-                    <textarea name="title" id="title" cols="30" rows="2" placeholder="Title"></textarea>
-                    <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
-                    <button id="submit">Submit</button>
+                    <div id = "editor">
+                        <input type="datetime-local" name="begin" id="date-begin">
+                        <input type="datetime-local" name="end" id="date-end">
+                        <select name="group" id="groups">
+                            <!-- groups -->
+                        </select>
+                        <textarea name="title" id="title" cols="30" rows="2" placeholder="Title"></textarea>
+                        <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
+                        <button id="submit">Submit</button>
+                    </div>
+                    <div id = "eventDetail" class="displayNone">
+                        test
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,11 +154,12 @@
 
         let currentCal = new Date();
         let selectedDay = null;
+        let monthlyEvents = null;
 
         regBtn.addEventListener('click', (event) => {
             let utxt = username.value;
             let pwtxt = password.value;
-            var regex = /^[\w_\.\-]+$/;
+            let regex = /^[\w_\.\-]+$/;
             if (!regex.test(utxt) || pwtxt == '') {
                 alert("Invalid Input");
             } else {
@@ -170,9 +183,9 @@
         loginBtn.addEventListener('click', (event) => {
             let utxt = username.value;
             let pwtxt = password.value;
-            var regex = /^[\w_\.\-]+$/;
+            let regex = /^[\w_\.\-]+$/;
             if (!regex.test(utxt) || pwtxt == '') {
-                alert("Invalid Input");
+                alert("Invalid Input!");
             } else {
                 post('/user/login.php', {
                     username: utxt,
@@ -185,7 +198,7 @@
                         // do something after login
                         initUserFunc();
                     } else {
-                        alert("Login Failed!;")
+                        alert("Wrong Username or Password!")
                     }
                 })
             }
@@ -301,26 +314,31 @@
                         a.append(date.getDate());
                         a.setAttribute("href", "#");
                         a.setAttribute("weekday", weekdays[date.getDay()]);
-                        a.setAttribute("timestamp", parseInt(date.getTime()/1000))
-                        
+                        a.setAttribute("timestamp", parseInt(date.getTime() / 1000))
+
                         if (
                             currnetDate.getDate() == date.getDate() &&
                             currnetDate.getMonth() == date.getMonth() &&
                             currnetDate.getFullYear() == date.getFullYear()
                         ) {
-                            a.setAttribute("class", "today");
+                            // a.setAttribute("class", "today");
+                            a.classList.add("today");
                         }
                         li.append(a);
                         days.append(li);
 
                         // update selected date
-                        if(selectedDay!=null && selectedDay.getAttribute("timestamp")>=beginTS && selectedDay.getAttribute("timestamp")<=endTS){
-                            if(selectedDay.getAttribute("timestamp")==a.getAttribute("timestamp")){
-                                setSelectedDate(a);
+                        if (selectedDay != null && selectedDay.getAttribute("timestamp") >= beginTS && selectedDay.getAttribute("timestamp") <= endTS) {
+                            if (selectedDay.getAttribute("timestamp") == a.getAttribute("timestamp")) {
+                                setSelectedDate(a, false);
                             }
                         } else {
-                            setSelectedDate(a);
+                            setSelectedDate(a, false);
                         }
+
+                        a.addEventListener("click", (event) => {
+                            setSelectedDate(a, false);
+                        }, false);
 
                     }
                 }
@@ -328,17 +346,6 @@
                 year.append(currentCal.getFullYear());
                 removeAllChildNodes(month);
                 month.append(months[currentCal.getMonth()]);
-
-                // draw events list
-                removeAllChildNodes(weekday);
-                weekday.append(selectedDay.getAttribute("weekday"));
-                removeAllChildNodes(eventList);
-                let noticeEvent = document.createElement("li");
-                noticeEvent.append("Login to access full feature!");
-                eventList.append(noticeEvent);
-                
-                
-
             } else {
                 post('/event/getMonthlyEvents.php', {
                     uid: localStorage.uid,
@@ -347,7 +354,10 @@
                     endTS: endTS
                 }).then(res => {
                     if (res['code'] == 1) {
-                        // draw
+                        // store events of this month;
+                        monthlyEvents = res['data'];
+
+                        // draw cal
                         removeAllChildNodes(days);
                         for (let week of weeks) {
                             for (let date of week.getDates()) {
@@ -356,29 +366,39 @@
                                 a.append(date.getDate());
                                 a.setAttribute("href", "#");
                                 a.setAttribute("weekday", weekdays[date.getDay()]);
+                                a.setAttribute("timestamp", parseInt(date.getTime() / 1000))
+
+                                // show if has event
+                                if(monthlyEvents[a.getAttribute("timestamp")].length){
+                                    a.classList.add("event");
+                                }
+
                                 if (
                                     currnetDate.getDate() == date.getDate() &&
                                     currnetDate.getMonth() == date.getMonth() &&
                                     currnetDate.getFullYear() == date.getFullYear()
                                 ) {
-                                    a.setAttribute("class", "today");
+                                    // a.setAttribute("class", "today");
+                                    a.classList.add("today");
                                 }
                                 li.append(a);
                                 days.append(li);
+                                
+                                // update selected date
+                                if (selectedDay != null && selectedDay.getAttribute("timestamp") >= beginTS && selectedDay.getAttribute("timestamp") <= endTS) {
+                                    if (selectedDay.getAttribute("timestamp") == a.getAttribute("timestamp")) {
+                                        setSelectedDate(a, true);
+                                    }
+                                } else {
+                                    setSelectedDate(a, true);
+                                }
+
+                                a.addEventListener("click", (event) => {
+                                    setSelectedDate(a, true);
+                                }, false);
+
                             }
                         }
-
-                        // update selected date
-                        if(selectedDay!=null && selectedDay.getAttribute("timestamp")>=beginTS && selectedDay.getAttribute("timestamp")<=endTS){
-                            if(selectedDay.getAttribute("timestamp")==a.getAttribute("timestamp")){
-                                setSelectedDate(a);
-                            }
-                        } else {
-                            setSelectedDate(a);
-                        }
-
-
-
                         removeAllChildNodes(year);
                         year.append(currentCal.getFullYear());
                         removeAllChildNodes(month);
@@ -387,7 +407,7 @@
 
                     } else {
                         initGuestFunc();
-                        alert("Invalid user credential!")
+                        alert("Invalid user credential!");
                     }
                 })
             }
@@ -405,21 +425,53 @@
             //todo
         }
 
-        function setSelectedDate(date) {
-            if(selectedDay==null){
-                selectedDay = date;
-                if(date.getAttribute("class")!="today"){
-                    date.setAttribute("class", "selected");
-                }
-            } else {
-                if(selectedDay.getAttribute("class")!="today"){
-                    selectedDay.removeAttribute("class");
-                }
-                if(date.getAttribute("class")!="today"){
-                    date.setAttribute("class", "selected");
-                }
-                selectedDay = date;
+        function setSelectedDate(date, isLogin) {
+            // set selected date class
+            date.classList.add("selected")
+
+            if (selectedDay != null) {
+                // remove old selected date's 'selected' class
+                selectedDay.classList.remove("selected");
             }
+            selectedDay = date;
+
+            // update event bar
+            removeAllChildNodes(weekday);
+            weekday.append(selectedDay.getAttribute("weekday"));
+            removeAllChildNodes(eventList);
+            if (!isLogin) {
+                let noticeEvent = document.createElement("li");
+                noticeEvent.append("Login to access full features!");
+                eventList.append(noticeEvent);
+            } else {
+                // if we successfully got event lists
+                if(monthlyEvents){
+                    let ts = date.getAttribute("timestamp");
+                    let dailyEvents = monthlyEvents[ts];
+                    let count = 0;
+                    for (let event of dailyEvents){
+                        let e = document.createElement("li");
+                        let a = document.createElement("a");
+                        e.append(event["title"]);
+                        eventList.append(e);
+                        count++;
+                    }
+                    // no event on that day...
+                    if(count==0){
+                        let noticeEvent = document.createElement("li");
+                        noticeEvent.append("Today has no event!");
+                        eventList.append(noticeEvent);
+                    }
+                } else {
+                    let noticeEvent = document.createElement("li");
+                    noticeEvent.append("Something went wrong, please refresh page!");
+                    eventList.append(noticeEvent);
+                }
+            }
+        }
+
+        function prepareAdd(){
+            post()
         }
 
         function removeAllChildNodes(parent) {
@@ -445,6 +497,31 @@
             colLeft.setAttribute("class", "col left");
             colMiddle.setAttribute("class", "col middle");
             colRight.setAttribute("class", "col right");
+        }
+
+        // extra credit
+        function joinGroup(){
+            let uuid = document.getElementById("joinGroup").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(uuid)) {
+                alert("Invalid Input!");
+            } else {
+                post("/group/joinGroup.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    uuid: localStorage.uuid
+                }).then(res=>{
+                    if(res["code"]){
+                        
+                    } else if (res["code"] == 0){
+                        initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
+
         }
 
     </script>
