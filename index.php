@@ -1,3 +1,3 @@
 <?php
-header("Location: view/myCalender.html");
+header("Location: view/calender.html");
 ?>

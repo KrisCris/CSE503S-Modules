@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset='UTF-8'>
+        <title>Calender</title>
+        <link rel="stylesheet" href="calender.css">
+        <script src="script/calender.js"></script>
+        <script src="script/query.js"></script>
+
+
+    </head>
+    <body>
+        <div class ="Log" id="log">
+            <input type="text" name="username" id="username" placeholder="Username"><br>
+            <input type="text" name="password" id="password" placeholder="Password"><br>
+            <button id="btn3">
+                Login
+            </button>
+    
+            <button id="Sign">
+                Signup
+            </button>
+
+
+            <button id="enable">
+                Enable/Disable
+            </button>
+
+        </div>
+
+
+        <div class ="Quit" id="quit">
+            
+            <button id="logout">
+                Logout
+            </button>
+
+            <button id="enable">
+                Enable/Disable
+            </button>
+
+        </div>
+       
+
+
+
+
+
+
+
+        <div class ="calender">
+            <div class="calender-top" id="calender-top">
+                <h1 id = "calender-year">Year</h1>
+            </div>
+
+
+            <div class="month">
+
+                <button id="btn" type="button">
+                    Prevmonth
+                </button>
+
+                <text id = "calender-month">
+                    <strong>Month</strong>
+                </text>
+                
+
+                <button id="btn2" type="button">
+                    Nextmonth
+                </button>
+
+            </div>
+
+
+            <div class="calender-day" id="calender-day">
+                <table id ="Days">
+                   
+                </table>
+
+            </div>
+
+
+            <div class="event-tags" id="event-tags">
+                <input type="text" name="tagname" id="tagname" placeholder="tagname"><br>
+
+
+                <button id="tag_add" type="button">
+                    Add
+                </button>
+
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <div class ="event" id = "event">
+
+            <div class ="add_new" id = "add_new">
+
+            </div>
+
+
+
+            <div class ="group" id = "group">
+               
+            </div>
+
+
+            <ul>
+                
+            </ul>
+
+
+            <div class ="share" id = "share">
+            
+            </div>
+
+            
+        </div>
+
+        
+
+        
+
+
+
+        <script>
+            var show = true;
+            var date = new Date();
+            var year = date.getFullYear();
+            var month = date.getMonth();
+
+            var groupname = []
+
+            var use = document.getElementById("username");
+            var pass = document.getElementById("password");
+            var event_list = document.getElementById("event").getElementsByTagName("ul")[0];
+            var add_new = document.getElementById("add_new");
+            var share = document.getElementById("share");
+
+
+            var group = document.getElementById("group");
+    
+            
+            
+            months = ["January","Febrary","March","April","May","June","July","Auguest","September","October","November","December"];
+
+            function printall() {
+
+                if(localStorage.getItem("username")==NaN||localStorage.getItem("username")==null){
+                    
+                    //didn't log in.
+                }
+
+                else{
+                    ///Display or show the button of signin and log out.
+                    var log = document.getElementById("log");
+                    var quit = document.getElementById("quit");
+
+                    log.style.display= "none";
+
+                    quit.style.display="block";
+
+                }
+                
+               
+                var now_days = document.getElementById("Days");
+                var days = "<td>Sun</td><td>Mon</td><td>Tue</td><td>Wed</td><td>THU</td><td>Fri</td><td>Sat</td>";
+                
+                var m = new Month(year, month);
+
+                var weeks = m.getWeeks();
+              
+
+                now_days.innerHTML=days;
+
+                var now_days = document.getElementById("Days").getElementsByTagName("tr")[0];
+                
+                
+                for(var z =0;z<weeks.length;z++){
+                    let day = weeks[z].getDates();
+                    for(let x = 0;x<7;x++){
+                        
+                        
+                        var td = document.createElement("td");
+                        if(day[x].getDate()==date.getDate()&&date.getFullYear()==year&&date.getMonth()==month){
+                            var strong = document.createElement("strong");
+                            
+                            
+                            strong.appendChild(document.createTextNode(day[x].getDate()));
+                            td.appendChild(strong);
+
+
+                            
+                            
+                            
+                            td.addEventListener("click",function(event){
+                               
+                                printEvent(day[x].getDate(),month,year);
+                                
+                            }, false);
+
+                        }
+                        else{
+                            
+                            td.appendChild(document.createTextNode(day[x].getDate()));
+                            
+                            td.addEventListener("click",function(event){
+                                
+                                printEvent(day[x].getDate(),month,year);
+                                
+                            }, false);
+
+                        }
+                        
+                        now_days.appendChild(td);
+                    }
+
+                }
+
+                
+                var now_year = document.getElementById("calender-year");
+                var now_month = document.getElementById("calender-month"); 
+
+                
+                
+                now_year.textContent = year;
+                now_month.textContent = months[month];
+            
+                
+            }
+
+
+
+
+            function printEvent(day,month,year){
+
+ 
+                if(localStorage.getItem("username")==NaN||localStorage.getItem("username")==null){
+                    console.log("You should log in firstly.");
+                    
+                }
+
+                else{
+                    
+                    
+                  
+                    groupname=[];
+
+                
+               
+                    var event_list = document.getElementById("event").getElementsByTagName("ul")[0];
+                    var add_new = document.getElementById("add_new");
+                    var share = document.getElementById("share");
+
+
+                    var group = document.getElementById("group");
+                    group.textContent="";
+                    event_list.textContent ="";
+                    add_new.textContent="";
+                    share.textContent="";
+                    
+
+
+
+                    
+
+
+                    var name = document.createElement("input");
+                    name.setAttribute("id","name");
+                    name.setAttribute("placeholder","group_memeber_name");
+                    
+
+
+                    var add = document.createElement("button");
+                    add.appendChild(document.createTextNode("Add"));
+                    add.addEventListener("click",function(event){
+                        //Add group memeber here.
+
+                        var temp = name.value.replace(" ","");
+
+                        if(temp==""||temp==undefined||temp==null){
+                            console.log("Name" + 'is empty.');
+                        }
+                        else{
+                            var a=true;
+                            for(var i =0;i<groupname.length;i++){
+                                if(groupname[i]==name.value){
+                                    console.log("Has input;");
+                                    a=false;
+                                }
+                            }
+                            if(a==true){
+
+                                ///need to implement
+                                groupname.push(name.value);
+                                var group_list = document.getElementById("group");
+                                var temp = document.createElement("li");
+                                temp.appendChild(document.createTextNode(name.value));
+                                group_list.appendChild(temp);
+                            }
+                            
+                            
+                        }
+
+                        
+                    }, false);
+
+                    
+
+                    let input = document.createElement("input");
+                    input.setAttribute("id","title");
+                    input.setAttribute("placeholder","title");
+
+                    let time = document.createElement("input");
+                    time.setAttribute("id","time");
+                    time.setAttribute("type","datetime-local");
+                    time.setAttribute("placeholder","starttime");
+
+
+                    let time2 = document.createElement("input");
+                    time2.setAttribute("id","time2");
+                    time2.setAttribute("type","datetime-local");
+                    time2.setAttribute("placeholder","endtime");
+
+
+
+                    let create = document.createElement("button");
+                    create.appendChild(document.createTextNode("Group"));
+                    create.addEventListener("click",function(event){
+                        //Submit group events here.
+                        ///need to implement
+
+
+                        let temp = input.value.replace(" ","");
+
+                        if(temp==""||temp==undefined||temp==null){
+                            console.log("title" + ' is empty.');
+                        }
+                        else{
+                            temp = time.value.replace(" ","");
+                            if(temp==""||temp==undefined||temp==null){
+                                console.log("start" + ' is empty.');
+                            }
+                            else{
+                                temp = time2.value.replace(" ","");
+                                if(temp==""||temp==undefined||temp==null){
+                                    console.log("end" + ' is empty.');
+                                }
+                                else{
+                                    ///need to implement
+                                    
+
+                                }
+                            }
+
+
+                        }
+                        
+                        printEvent(day,month,year);
+                        
+                    }, false);
+                    
+
+
+
+
+                    //make new event
+                   
+                    
+
+
+                    group.appendChild(name)
+                    
+                    group.appendChild(add);
+                    group.appendChild(create);
+                    
+
+                    add_new.appendChild(input);
+                    add_new.appendChild(time);
+                    add_new.appendChild(time2);
+
+
+                    // submit the event
+                    let button = document.createElement("button");
+                    button.appendChild(document.createTextNode("Submit"));
+                    button.addEventListener("click",function(event){
+                        //Submit the event here.
+                        var temp = input.value.replace(" ","");
+
+                        if(temp==""||temp==undefined||temp==null){
+                            console.log("title" + ' is empty.');
+                        }
+                        else{
+                            temp = time.value.replace(" ","");
+                            if(temp==""||temp==undefined||temp==null){
+                                console.log("start" + ' is empty.');
+                            }
+                            else{
+                                temp = time2.value.replace(" ","");
+                                if(temp==""||temp==undefined||temp==null){
+                                    console.log("end" + ' is empty.');
+                                }
+                                
+                                else{
+                                    if(time.valueAsNumber<time2.valueAsNumber){
+                                        post('/event/addEvent.php',{
+                                            uid:localStorage.uid,
+                                            token:localStorage.token,
+                                            cid:0,
+                                            gid:0,
+                                            title:input.value,
+                                            detail:0,
+                                            isFullDay:0,
+                                            start:parseInt(time.valueAsNumber/1000)+5*3600,
+                                            end:parseInt(time2.valueAsNumber/1000)+5*3600
+
+                                        },false).then(res => {
+                                            if(res['code']==1){
+                                            
+                                                console.log(res);
+                                            } else {
+                                                alert(res['msg']);
+                                            }
+                                        })
+
+
+                                        ///print again
+                                        input.value ="";
+                                        time.value ="";
+                                        time2.value ="";
+
+                                        printEvent(day,month,year);
+                                        
+
+                                    }
+
+                                    else{
+                                        console.log('Wrong time');
+                                    }
+                                    
+                                }
+                            }
+
+
+                        }
+
+
+
+                        
+                        
+                    }, false);
+
+
+                
+                    add_new.appendChild(button);
+                
+
+
+                    //input name to share to others
+                    var input2 = document.createElement("input");
+                    input2.setAttribute("id","sharename");
+                    input2.setAttribute("placeholder","get shared event");
+
+                    share.appendChild(input2);
+
+
+                    //get share button
+                    var add_share= document.createElement("button");
+                    add_share.appendChild(document.createTextNode("Share"));
+                    add_share.addEventListener("click",function(event){
+                        //share the current here.
+                        var temp = input2.value.replace(" ","");
+
+                        if(temp==""||temp==undefined||temp==null){
+                            console.log("username" + ' is empty.');
+                        }
+                        else{
+                            
+                        }
+
+
+                        ///need to implement
+
+
+
+                        printEvent(day,month,year);
+                        
+                    }, false);
+
+                    share.appendChild(add_share);
+
+
+
+
+                    
+
+
+
+                    let currentMonth = new Month(year, month);
+                    let weeks = currentMonth.getWeeks();
+
+                    let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+                    let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
+
+
+
+
+                    
+                    post('/event/getMonthlyEvents.php',{
+                        uid:localStorage.uid,
+                        token:localStorage.token,
+                        beginTS:beginTS,
+                        endTS:endTS
+
+                        },false).then(res => {
+                            if(res['code']==1){
+
+                                
+                                let cur_month=month+1;
+                                let stamp= year+"-"+cur_month+"-"+day+"T00:00:00.000-05:00";
+                                // console.log(res['data']);
+                                // console.log(Date.parse(stamp) / 1000);
+
+                                // console.log(res['data'][Date.parse(stamp) / 1000]);
+                                
+                                if(res['data'][Date.parse(stamp) / 1000]==NaN||res['data'][Date.parse(stamp) / 1000]==null){
+                                    
+                                }
+                                else{
+
+                                        event_list.textContent ="";
+                                        console.log(res['data'][Date.parse(stamp) / 1000]);
+                                        for(let i of res['data'][Date.parse(stamp) / 1000]){
+                                            //Add the event here.(Needs to implement here)
+                                            let newevent = document.createElement("p");
+                                            let newevent2 = document.createElement("p");
+                                            let newevent3 = document.createElement("p");
+
+                                            let get_title = i['title'];
+                                            let get_date = new Date(i['start']*1000);
+                                            let get_time = new Date(i['end']*1000);
+                                            let get_eid = i['id'];
+
+                                            
+
+                                        
+                                            newevent.textContent="Title: "+get_title;
+                                            
+                                            newevent2.textContent="Start: "+get_date;
+                                            newevent3.textContent="End: "+get_time;
+
+                                            
+
+
+
+                                            ///Event list
+                                            var li = document.createElement("li");
+
+                                            
+                            
+
+
+                                            var revise = document.createElement("button");
+                                            revise.appendChild(document.createTextNode("Revise"));
+                                            revise.addEventListener("click",function(event){
+                                                //Revise the event here.
+                                                var temp = input.value.replace(" ","");
+
+                                                if(temp==""||temp==undefined||temp==null){
+                                                    console.log("title" + ' is empty.');
+                                                }
+                                                else{
+                                                    temp = time.value.replace(" ","");
+                                                    if(temp==""||temp==undefined||temp==null){
+                                                        console.log("start" + ' is empty.');
+                                                    }
+                                                    else{
+                                                        temp = time2.value.replace(" ","");
+                                                        if(temp==""||temp==undefined||temp==null){
+                                                            console.log("end" + ' is empty.');
+                                                        }
+                                                        else{
+
+                                                            ///need to implement
+                                                            console.log(get_eid);
+                                                            post('/event/editEvent.php',{
+
+                                                                
+                                                                uid:localStorage.uid,
+                                                                token:localStorage.token,
+                                                                cid:0,
+                                                                eid:get_eid,
+                                                                gid:0,
+                                                                title:input.value,
+                                                                detail:0,
+                                                                isFullDay:0,
+                                                                start:parseInt(time.valueAsNumber/1000)+5*3600,
+                                                                end:parseInt(time2.valueAsNumber/1000)+5*3600
+
+
+                                                            },false).then(res => {
+                                                                if(res['code']==1){
+                                                                    printEvent(day,month,year);
+                                                                
+                                                                    console.log(res);
+                                                                } else {
+                                                                    alert(res['msg']);
+                                                                }
+                                                            })
+
+                                                            
+                                                        }
+                                                    }
+
+
+                                                }
+
+                                                
+                                                
+                                            }, false);
+
+
+                                            //add the delete event button
+                                            var Delete = document.createElement("button");
+                                            Delete.appendChild(document.createTextNode("Delete"));
+                                            Delete.addEventListener("click",function(event){
+
+                                                
+
+                                                // ///Delete the event here.
+                                                // event_list.removeChild(li);
+
+                                                post('/event/delEvent.php',{
+                                                    uid:localStorage.uid,
+                                                    token:localStorage.token,
+                                                    eid:get_eid
+
+                                                },false).then(res => {
+                                                    if(res['code']==1){
+                                                        printEvent(day,month,year);
+                                                    
+                                                        console.log(res);
+                                                    } else {
+                                                        alert(res['msg']);
+                                                    }
+                                                })
+
+                                                
+
+
+                                            }, false);
+
+                                            li.appendChild(newevent);
+                                            li.appendChild(newevent2);
+                                            li.appendChild(newevent3);
+
+                                            //add the tage button
+                                            var tag = document.createElement("button");
+                                            tag.appendChild(document.createTextNode("Tag"));
+                                            tag.addEventListener("click",function(event){
+
+                                                var temp = tagname.value.replace(" ","");
+
+                                                if(temp==""||temp==undefined||temp==null){
+                                                    console.log("tagname " + 'is empty.');
+                                                }
+                                                else{
+
+                                                    var t = document.createElement("strong");
+                                                    t.appendChild(document.createTextNode("("+tagname.value+")"));
+                                                    t.setAttribute("class","tag");
+
+
+                                                    
+                                                    //// refresh at this time to get tag
+                                                    li.appendChild(t);
+
+
+                                                    ///need to implement
+
+
+                                                }
+
+                                                
+
+                                            }, false);
+
+                                            li.appendChild(Delete);
+                                            li.appendChild(revise);
+
+
+
+                                            //input the tage name
+                                            var tagname = document.createElement("input");
+                                            tagname.setAttribute("id","tagname");
+                                            tagname.setAttribute("placeholder","tagname");
+                                            
+                                            li.appendChild(tagname);
+
+                                            li.appendChild(tag);
+                                            
+                                            event_list.appendChild(li);
+
+
+                                            
+
+
+                                            //share button
+                                            var button3 = document.createElement("button");
+                                            button3.appendChild(document.createTextNode("Share"));
+                                            button3.addEventListener("click",function(event){
+                                                //share the current here.
+                                                var temp = input2.value.replace(" ","");
+
+                                                if(temp==""||temp==undefined||temp==null){
+                                                    console.log("username" + ' is empty.');
+                                                }
+                                                else{
+
+
+
+
+
+                                                    li.appendChild(document.createTextNode("("+tagname.value+")"));
+                                                }
+
+
+                                            
+                                                
+                                                
+                                            }, false);
+
+                                            event_list.appendChild(button3);
+
+                                    }
+
+                                }
+
+                                
+                                
+                            } else {
+                                alert(res['msg']);
+                            }
+
+                        })
+
+
+
+
+                
+
+
+
+                    
+                }
+
+            }
+               
+
+                
+
+                
+
+            
+
+
+
+
+
+
+            
+            //intialize
+            document.addEventListener("DOMContentLoaded", printall(), false);
+
+
+            ////Prev month
+            document.getElementById("btn").addEventListener("click", function(event){
+                month-=1;
+                if(month<0){
+                    year-=1;
+                    month=11;
+                }
+                printall();
+            }, false);
+
+
+            ////Next month
+            document.getElementById("btn2").addEventListener("click", function(event){
+                month+=1;
+                if(month>11){
+                    year+=1;
+                    month=0;
+                }
+                printall();
+            }, false);
+
+
+            ///Login function
+            document.getElementById("btn3").addEventListener("click", function(event){
+                let username = document.getElementById("username").value;
+                let password = document.getElementById("password").value;
+                var regex = /^[\w_\.\-]+$/;
+                var match = regex.test(username);
+                
+                if (!match) {
+                    console.log(username + ' is not a number that has between 1,20 digits');
+                }
+                else{
+                    var temp = password.replace(" ","");
+
+                    if(temp==""||temp==undefined||temp==null){
+                        console.log(password + ' is empty.');
+                    }
+
+                    else{
+
+                        ///need to implement
+
+
+                        post('/user/login.php',{
+                            username:username,
+                            password:password,
+
+                        },false).then(res => {
+                            if(res['code']==1){
+                                localStorage.setItem("token", res['data']['token']);
+                                localStorage.setItem("uid", res['data']['uid']);
+                                localStorage.setItem("username", res['data']['username']);
+
+                                // console.log(res);
+
+                                ///Display or show the button of signin and log out.
+                               
+                                var log = document.getElementById("log");
+                                var quit = document.getElementById("quit");
+
+                                log.style.display= "none";
+
+                                quit.style.display="block";
+                            } else {
+                                
+                                alert(res['msg']);
+                                
+                            }
+                        })
+                        
+                    }
+
+                }
+                use.value="";
+                pass.value="";
+
+            }, false);
+
+
+
+            ///Sign function
+            document.getElementById("Sign").addEventListener("click", function(event){
+                let username = document.getElementById("username").value;
+                let password = document.getElementById("password").value;
+                var regex = /^[\w_\.\-]+$/;
+                var match = regex.test(username);
+                
+                if (!match) {
+                    console.log(username + ' is not a number that has between 1,20 digits');
+                }
+                else{
+                    var temp = password.replace(" ","");
+
+                    if(temp==""||temp==undefined||temp==null){
+                        console.log(password + ' is empty.');
+                    }
+                    else{
+
+                        ///need to implement
+                        post('/user/register.php',{
+                            username:username,
+                            password:password,
+
+
+                        },false).then(res => {
+                            if(res['code']==1){
+                                localStorage.setItem("token", res['data']['token']);
+                                localStorage.setItem("uid", res['data']['uid']);
+                                localStorage.setItem("username", res['data']['username']);
+
+                                // console.log(res);
+
+                                ///Display or show the button of signin and log out.
+                                var log = document.getElementById("log");
+                                var quit = document.getElementById("quit");
+
+                                log.style.display= "none";
+
+                                quit.style.display="block";
+
+
+
+                            } else {
+                                alert(res['msg']);
+                            }
+                        })
+                        
+
+
+
+
+                    }
+
+                }
+                use.value="";
+                pass.value="";
+               
+            }, false);
+
+            //Enable/disable tag
+            document.getElementById("enable").addEventListener("click", function(event){
+                if(show==true){
+                    var all_tag = document.getElementsByClassName("tag");
+                    for(var i=0;i<all_tag.length;i++){
+                        all_tag[i].style.display="none";
+                    }
+                    
+
+
+
+                    //sent to server
+                    show = false;
+
+                }
+                else{
+
+                    var all_tag = document.getElementsByClassName("tag");
+                    for(var i=0;i<all_tag.length;i++){
+                        all_tag[i].style.display="inline";
+                    }
+
+
+
+
+                    //sent to server
+                    show = true;
+
+                }
+                
+            }, false);
+
+            ///Log out
+            document.getElementById("logout").addEventListener("click", function(event){
+
+                let username = document.getElementById("username").value;
+                let password = document.getElementById("password").value;
+
+               
+
+
+                post('/user/logout.php',{
+                           uid:localStorage.uid,
+                           token:localStorage.token
+                        },false).then(res => {
+                            if(res['code']==1){
+                               
+                                localStorage.removeItem("token");
+                                localStorage.removeItem("uid");
+                                localStorage.removeItem("username");
+                                // console.log(res);
+
+
+
+                                ///Display or show the button of signin and log out.
+                                var log = document.getElementById("log");
+                                var quit = document.getElementById("quit");
+
+                                log.style.display= "block";
+
+                                quit.style.display= "none";
+
+                            } else {
+                                alert(res['msg']);
+                            }
+                    })
+
+
+                    event_list.textContent ="";
+                    add_new.textContent="";
+                    share.textContent="";
+                    group.textContent="";
+                    
+
+                    use.value="";
+                    pass.value="";
+                }, false);
+                
+
+
+                document.getElementById("tag_add").addEventListener("click", function(event){
+
+                    let a =  document.getElementById("tagname").value;
+                    post('/category/addCate.php',{
+                           uid:localStorage.uid,
+                           token:localStorage.token,
+                           name:a,
+                           color:'#000000'
+
+                            },false).then(res => {
+                                if(res['code']==1){
+                                
+                                    
+
+                                } else {
+                                    alert(res['msg']);
+                                }
+                    });
+
+
+                    post('/category/getCates.php',{
+                           uid:localStorage.uid,
+                           token:localStorage.token,
+                           
+
+                            },false).then(res => {
+                                if(res['code']==1){
+                                
+                                    console.log(res);
+
+                                } else {
+                                    alert(res['msg']);
+                                }
+                    })
+
+
+                    document.getElementById("event-tags");
+
+
+                   
+                    
+
+
+                }, false);
+            
+
+        </script>
+
+
+
+
+
+
+                        
+
+    </body>
+
+
+
+
+</html>
+
+
