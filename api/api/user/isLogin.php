@@ -16,6 +16,7 @@ if(isset($_SESSION["uid"]) && $_SESSION["uid"] == $_POST["uid"]){
         }
     }
     reply_json(0,[],"not login");
+    exit;
 }
 reply_json(0);
 
