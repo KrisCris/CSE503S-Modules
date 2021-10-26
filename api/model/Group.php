@@ -95,6 +95,7 @@ class Group{
 
     public static function joinGroup($uuid, $uid){
         global $conn;
+        // get group id
         $g = static::getGroupByUUID($uuid);
         $gid = null;
         if(!$g){
@@ -102,7 +103,26 @@ class Group{
         } else {
             $gid = $g->id;
         }
+        // check if already joined
+        $stmt = $conn->prepare("select count(*) from groupMember where gid=? and uid=?");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->bind_param("ii",$gid, $uid);
+        $stmt->execute();
+        $stmt->bind_result($count);
+        $stmt->fetch();
+        if($count>0){
+            return $g;
+        }
+
+        // join
         $stmt = $conn->prepare("insert into groupMember (uid, gid) values (?,?)");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
         $stmt->bind_param("ii", $uid, $gid);
         if($stmt->execute()){
             $stmt->close();
@@ -115,6 +135,24 @@ class Group{
 
     public function toDict(){
         return ["id"=>$this->id, "uid"=>$this->uid, "uuid"=>$this->uuid, "name"=>$this->name, "creator"=>$this->creator];
+    }
+
+    public static function getMyGroups($uid){
+        global $conn;
+        $stmt = $conn->prepare("select grp.id, grp.name from grp, groupMember where groupMember.uid=? and groupMember.gid=grp.id");
+        if (!$stmt) {
+            printf("Query Prep Failed: %s\n", $conn->error);
+            exit;
+        }
+        $stmt->bind_param("i", $uid);
+        $stmt->execute();
+        $stmt->bind_result($gid, $name);
+        $arr = array();
+        while($stmt->fetch()){
+            array_push($arr, ["gid"=>$gid, "name"=>$name]);
+        }
+        $stmt->close();
+        return $arr;
     }
 }
 ?>
