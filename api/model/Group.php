@@ -114,8 +114,10 @@ class Group{
         $stmt->bind_result($count);
         $stmt->fetch();
         if($count>0){
+            $stmt->close();
             return $g;
         }
+        $stmt->close();
 
         // join
         $stmt = $conn->prepare("insert into groupMember (uid, gid) values (?,?)");

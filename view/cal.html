@@ -29,11 +29,22 @@
         </div>
         <br><br>
         <div>
-            <input type="text" name="joinGroup" id="joinGroup" placeholder="use code to join the group!"><br>
+            <input type="text" name="joinGroup" id="joinGroup" placeholder="code for join group!"><br>
             <button onclick="joinGroup()">Join!</button>
         </div>
+        <br><br>
+        <div>
+            <input type="text" name="createGroup" id="createGroup" placeholder="create group!"><br>
+            <button onclick="createGroup()">Create!</button>
+            <p>Group Code: <br><span id="groupCode"></span></p>
+        </div>
+        <br><br>
+        <div>
+            <input type="text" name="sharedEvent" , id="sharedEvent" placeholder="code for shared event!"><br>
+            <button onclick="addSharedEvent()">Add!</button>
+        </div>
 
-        
+
     </div>
 
     <div class="calendar">
@@ -76,7 +87,7 @@
                 <div class="content">
                     <h2><span id="weekday">
                             <!-- weekday -->
-                    </span><a id="addEvent" href="#">+</a></h2>
+                        </span><a id="addEvent" href="#">+</a></h2>
                     <div class="events">
                         <ul class="eventList">
                             <!-- events -->
@@ -87,7 +98,7 @@
 
             <div class="col right">
                 <div class="content">
-                    <div id = "editor">
+                    <div id="editor">
                         <input type="datetime-local" name="begin" id="date-begin">
                         <input type="datetime-local" name="end" id="date-end">
                         <select name="group" id="groups">
@@ -97,7 +108,7 @@
                         <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
                         <button id="submit">Submit</button>
                     </div>
-                    <div id = "eventDetail" class="displayNone">
+                    <div id="eventDetail" class="displayNone">
                         test
                     </div>
                 </div>
@@ -303,6 +314,21 @@
             let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
             let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
 
+            // fix timezone switch
+            let offset = weeks[0].getDates()[0].getTimezoneOffset();
+            let endTS2 = 0;
+            let beginTS2 = 0;
+            breakFlag:
+            for (let week of weeks) {
+                for (let date of week.getDates()) {
+                    if(date.getTimezoneOffset() != offset){
+                        beginTS2 = parseInt(date.getTime()/1000);
+                        endTS2 = parseInt(date.getTime()/1000)-1;  
+                        break breakFlag;
+                    }
+                }
+            }
+
             // try query data
             if (localStorage.token === undefined || localStorage.uid === undefined) {
                 // draw cal
@@ -351,7 +377,9 @@
                     uid: localStorage.uid,
                     token: localStorage.token,
                     beginTS: beginTS,
-                    endTS: endTS
+                    endTS: endTS,
+                    beginTS2: beginTS2,
+                    endTS2: endTS2
                 }).then(res => {
                     if (res['code'] == 1) {
                         // store events of this month;
@@ -369,7 +397,10 @@
                                 a.setAttribute("timestamp", parseInt(date.getTime() / 1000))
 
                                 // show if has event
-                                if(monthlyEvents[a.getAttribute("timestamp")].length){
+                                if (!monthlyEvents[a.getAttribute("timestamp")]) {
+                                    console.log(a.getAttribute("timestamp"));
+                                }
+                                if (monthlyEvents[a.getAttribute("timestamp")].length) {
                                     a.classList.add("event");
                                 }
 
@@ -383,7 +414,7 @@
                                 }
                                 li.append(a);
                                 days.append(li);
-                                
+
                                 // update selected date
                                 if (selectedDay != null && selectedDay.getAttribute("timestamp") >= beginTS && selectedDay.getAttribute("timestamp") <= endTS) {
                                     if (selectedDay.getAttribute("timestamp") == a.getAttribute("timestamp")) {
@@ -445,11 +476,11 @@
                 eventList.append(noticeEvent);
             } else {
                 // if we successfully got event lists
-                if(monthlyEvents){
+                if (monthlyEvents) {
                     let ts = date.getAttribute("timestamp");
                     let dailyEvents = monthlyEvents[ts];
                     let count = 0;
-                    for (let event of dailyEvents){
+                    for (let event of dailyEvents) {
                         let e = document.createElement("li");
                         let a = document.createElement("a");
                         e.append(event["title"]);
@@ -457,7 +488,7 @@
                         count++;
                     }
                     // no event on that day...
-                    if(count==0){
+                    if (count == 0) {
                         let noticeEvent = document.createElement("li");
                         noticeEvent.append("Today has no event!");
                         eventList.append(noticeEvent);
@@ -470,8 +501,16 @@
             }
         }
 
-        function prepareAdd(){
-            post()
+        function prepareAdd() {
+            post("/category/getCates.php", {
+                uid: localStorage.uid,
+                token: localStorage.token
+            }).then(res => {
+                if (res["code"]) {
+
+
+                }
+            })
         }
 
         function removeAllChildNodes(parent) {
@@ -500,7 +539,7 @@
         }
 
         // extra credit
-        function joinGroup(){
+        function joinGroup() {
             let uuid = document.getElementById("joinGroup").value;
             let regex = /^[\w_\.\-]+$/;
             if (!regex.test(uuid)) {
@@ -509,11 +548,12 @@
                 post("/group/joinGroup.php", {
                     uid: localStorage.uid,
                     token: localStorage.token,
-                    uuid: localStorage.uuid
-                }).then(res=>{
-                    if(res["code"]){
-                        
-                    } else if (res["code"] == 0){
+                    uuid: uuid
+                }).then(res => {
+                    if (res["code"]) {
+                        initUserFunc();
+                        alert("Joined!");
+                    } else if (res["code"] == 0) {
                         initGuestFunc();
                         alert("Invalid user credential!")
                     } else {
@@ -522,6 +562,55 @@
                 })
             }
 
+        }
+
+        function createGroup() {
+            let groupName = document.getElementById("createGroup").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(groupName)) {
+                alert("Invalid Input!");
+            } else {
+                post("/group/addGroup.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    name: groupName
+                }).then(res => {
+                    if (res["code"]) {
+                        alert("Group " + name + " created!");
+                        removeAllChildNodes(document.getElementById("groupCode"));
+                        document.getElementById("groupCode").append(res["data"]["uuid"]);
+                    } else if (res["code"] == 0) {
+                        initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
+        }
+
+        function addSharedEvent() {
+            let shareToken = document.getElementById("sharedEvent").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(shareToken)) {
+                alert("Invalid Input!");
+            } else {
+                post("/event/addShare.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    shareToken: shareToken
+                }).then(res => {
+                    if (res["code"]) {
+                        initUserFunc();
+                        alert("Added!");
+                    } else if (res["code"] == 0) {
+                        initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
         }
 
     </script>
