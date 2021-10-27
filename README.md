@@ -46,7 +46,7 @@ Xingchen Yang-501890-xingcheny
      - [x] Safe from SQL Injection attacks (2 points)
      - [x] CSRF tokens are passed when adding/editing/deleting events (3 points)
      - [x] Session cookie is HTTP-Only (3 points)
-     - [ ] Page passes the W3C validator (2 points)
+     - [x] Page passes the W3C validator (2 points)
    - **Usability (5 Points):**
      - [x] Site is intuitive to use and navigate (4 points)
      - [x] Site is visually appealing (1 point)
