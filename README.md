@@ -25,6 +25,11 @@ Xingchen Yang-501890-xingcheny
   
     **Note:** password is the same as username
 
+4. Screenshots
+
+  ![1](img1.png)
+  ![2](img2.png)
+
 ## Grading
 
 1. AJAX Calendar (60 Points):

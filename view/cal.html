@@ -533,7 +533,11 @@
 
             if (selectedDay != null) {
                 // remove old selected date's 'selected' class
-                selectedDay.classList.remove("selected");
+                if(selectedDay === date){
+                    ;
+                } else {
+                    selectedDay.classList.remove("selected");
+                }
             }
             selectedDay = date;
 
