@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset='UTF-8'>
+    <title>Calender</title>
+    <link rel="stylesheet" href="calender.css">
+    <script src="script/calender.js"></script>
+    <script src="script/query.js"></script>
+
+
+</head>
+
+<body>
+    <div class="col left">
+        <div class="Log" id="log">
+            <input type="text" name="username" id="username" placeholder="Username"><br>
+            <input type="text" name="password" id="password" placeholder="Password"><br>
+            <button id="btn3">
+                Login
+            </button>
+
+            <button id="Sign">
+                Signup
+            </button>
+
+
+        </div>
+
+
+        <div class="Quit" id="quit">
+
+            <button id="logout">
+                Logout
+            </button>
+
+
+
+        </div>
+
+
+        <div class="calender">
+            <div class="calender-top" id="calender-top">
+                <h1 id="calender-year">Year</h1>
+            </div>
+
+
+            <div class="month">
+
+                <button id="btn" type="button">
+                    Prevmonth
+                </button>
+
+                <strong id="calender-month">
+                    
+                </strong>
+
+
+                <button id="btn2" type="button">
+                    Nextmonth
+                </button>
+
+            </div>
+
+
+            <div class="calender-day" id="calender-day">
+                <table id="Days">
+
+                </table>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="event-tags" id="event-tags">
+            <input type="text" name="tagname" id="tagname" placeholder="tagname"><br>
+
+
+            <button id="tag_add" type="button">
+                Add
+            </button>
+            <div class="tags" id="tags">
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+    <div class="col right">
+        <div class="event" id="event">
+
+            <div class="add_new" id="add_new">
+
+            </div>
+
+
+
+
+
+
+            <ul>
+
+            </ul>
+
+
+            <div class="share" id="share">
+
+            </div>
+
+            <div class="sharelink" id="sharelink">
+
+            </div>
+
+
+            <div class="group" id="group">
+
+            </div>
+
+
+            <div class="grouplink" id="grouplink">
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+
+
+        let enable = false;
+
+        let choose_id = ""
+
+        let show = true;
+        let date = new Date();
+        let year = date.getFullYear();
+        let month = date.getMonth();
+
+        let groupname = []
+
+        let sharelink = document.getElementById("sharelink");
+        let grouplink = document.getElementById("grouplink");
+
+        let cid = "";
+        let gid = "";
+
+
+        let name_of_tag = "";
+
+        let use = document.getElementById("username");
+        let pass = document.getElementById("password");
+        let event_list = document.getElementById("event").getElementsByTagName("ul")[0];
+        let add_new = document.getElementById("add_new");
+        let share = document.getElementById("share");
+
+
+        let group = document.getElementById("group");
+
+
+        let temp_a = null;
+        let temp_b = null;
+        let temp_c = null;
+
+        let tmsp = 0;
+
+
+
+
+
+
+        months = ["January", "Febrary", "March", "April", "May", "June", "July", "Auguest", "September", "October", "November", "December"];
+
+        function printall() {
+
+            if (localStorage.getItem("username") == NaN || localStorage.getItem("username") == null) {
+
+                //didn't log in.
+
+
+                ///Display or show the button of signin and log out.
+                var log = document.getElementById("log");
+                var quit = document.getElementById("quit");
+
+                log.style.display = "block";
+
+                quit.style.display = "none";
+
+            }
+
+            else {
+
+                print_tag();
+                ///Display or show the button of signin and log out.
+                var log = document.getElementById("log");
+                var quit = document.getElementById("quit");
+
+                log.style.display = "none";
+
+                quit.style.display = "block";
+
+            }
+
+
+            var now_days = document.getElementById("Days");
+            var days = "<td>Sun</td><td>Mon</td><td>Tue</td><td>Wed</td><td>THU</td><td>Fri</td><td>Sat</td>";
+
+            var m = new Month(year, month);
+
+            var weeks = m.getWeeks();
+
+
+            now_days.innerHTML = days;
+
+            var now_days = document.getElementById("Days").getElementsByTagName("tr")[0];
+
+
+            for (var z = 0; z < weeks.length; z++) {
+                let day = weeks[z].getDates();
+                for (let x = 0; x < 7; x++) {
+
+
+                    let td = document.createElement("td");
+
+
+
+                    if (enable == false) {
+                        td.appendChild(document.createTextNode(day[x].getDate()));
+
+                    }
+                    else {
+
+                        let currentMonth = new Month(year, month);
+                        let weeks = currentMonth.getWeeks();
+
+                        let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+                        let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
+
+                        let offset = weeks[0].getDates()[0].getTimezoneOffset();
+                        let endTS2 = 0;
+                        let beginTS2 = 0;
+                        breakFlag:
+                        for (let week of weeks) {
+                            for (let date of week.getDates()) {
+                                if (date.getTimezoneOffset() != offset) {
+                                    beginTS2 = parseInt(date.getTime() / 1000);
+                                    endTS2 = parseInt(date.getTime() / 1000) - 1;
+                                    break breakFlag;
+                                }
+                            }
+                        }
+
+                        post('/event/getMonthlyEvents.php', {
+                            uid: localStorage.uid,
+                            token: localStorage.token,
+                            beginTS: beginTS,
+                            endTS: endTS,
+                            beginTS2: beginTS2,
+                            endTS2: endTS2
+
+                        }, false).then(res => {
+                            if (res['code'] == 1) {
+                                let tmp_tmsp = parseInt(day[x].getTime()/1000);
+
+                                let cur_month = day[x].getMonth() + 1;
+                                let stamp = day[x].getFullYear() + "-" + cur_month + "-" + day[x].getDate() + "T00:00:00.000-04:00";
+
+
+
+                                let temp = document.createTextNode(day[x].getDate());
+
+                                if (res['data'][tmp_tmsp] == NaN || res['data'][tmp_tmsp] == null) {
+
+
+                                }
+                                else {
+                                    for (let i of res['data'][tmp_tmsp]) {
+                                        if (i['cid'] == choose_id) {
+
+                                            temp = document.createElement("strong");
+                                            temp.append(day[x].getDate());
+
+                                        }
+                                    }
+
+                                }
+
+                                td.appendChild(temp);
+
+
+                            }
+
+                        })
+
+
+
+
+                    }
+
+
+
+
+
+
+                    // td.appendChild(document.createTextNode(day[x].getDate()));
+
+                    td.addEventListener("click", function (event) {
+                        tmsp = parseInt(day[x].getTime()/1000);
+                        printEvent(day[x].getDate(), day[x].getMonth(), day[x].getFullYear());
+                        
+
+                    }, false);
+
+                    // }
+
+                    now_days.appendChild(td);
+                }
+
+            }
+
+
+            let now_year = document.getElementById("calender-year");
+            let now_month = document.getElementById("calender-month");
+
+
+
+            now_year.textContent = year;
+            now_month.textContent = months[month];
+
+
+        }
+
+
+
+
+        function printEvent(day, month, year) {
+
+            temp_a = day;
+            temp_b = month;
+            temp_c = year;
+
+
+            if (localStorage.getItem("username") == NaN || localStorage.getItem("username") == null) {
+                alert("You should log in firstly.");
+
+            }
+
+            else {
+
+
+
+                print_tag();
+                groupname = [];
+
+
+                let event_list = document.getElementById("event").getElementsByTagName("ul")[0];
+                let add_new = document.getElementById("add_new");
+                let share = document.getElementById("share");
+
+
+                let group = document.getElementById("group");
+                group.textContent = "";
+                event_list.textContent = "";
+                add_new.textContent = "";
+                share.textContent = "";
+                sharelink.textContent = "";
+                grouplink.textContent = "";
+
+
+                //the function of group
+                let name = document.createElement("input");
+                name.setAttribute("id", "name");
+                name.setAttribute("placeholder", "group_link");
+
+
+
+                let add = document.createElement("button");
+                add.appendChild(document.createTextNode("Add"));
+                add.addEventListener("click", function (event) {
+
+                    joinGroup();
+
+                    printEvent(day, month, year);
+                }, false);
+
+
+                let name2 = document.createElement("input");
+                name2.setAttribute("id", "name2");
+                name2.setAttribute("placeholder", "group_name");
+
+                let create = document.createElement("button");
+                create.appendChild(document.createTextNode("Create Group"));
+                create.addEventListener("click", function (event) {
+                    //Submit group events here.
+                    ///need to implement
+
+
+                    createGroup();
+                    printEvent(day, month, year);
+
+                }, false);
+
+
+                group.appendChild(name)
+
+                group.appendChild(add);
+                group.appendChild(name2);
+                group.appendChild(create);
+
+
+
+
+
+                /// input of title, start and end time
+                let input = document.createElement("input");
+                input.setAttribute("id", "title");
+                input.setAttribute("placeholder", "title");
+
+                let time = document.createElement("input");
+                time.setAttribute("id", "time");
+                time.setAttribute("type", "datetime-local");
+                time.setAttribute("placeholder", "starttime");
+
+
+                let time2 = document.createElement("input");
+                time2.setAttribute("id", "time2");
+                time2.setAttribute("type", "datetime-local");
+                time2.setAttribute("placeholder", "endtime");
+
+
+                // submit the event
+                let button = document.createElement("button");
+                button.appendChild(document.createTextNode("Submit"));
+                button.addEventListener("click", function (event) {
+                    //Submit the event here.
+                    var temp = input.value.replace(" ", "");
+
+                    if (temp == "" || temp == undefined || temp == null) {
+                        alert("title" + ' is empty.');
+                    }
+                    else {
+                        temp = time.value.replace(" ", "");
+                        if (temp == "" || temp == undefined || temp == null) {
+                            alert("start" + ' is empty.');
+                        }
+                        else {
+                            temp = time2.value.replace(" ", "");
+                            if (temp == "" || temp == undefined || temp == null) {
+                                alert("end" + ' is empty.');
+                            }
+
+                            else {
+
+                                //set the title, start and end time
+                                if (time.valueAsNumber < time2.valueAsNumber) {
+                                    post('/event/addEvent.php', {
+                                        uid: localStorage.uid,
+                                        token: localStorage.token,
+                                        cid: 0,
+                                        gid: 0,
+                                        title: input.value,
+                                        detail: 0,
+                                        isFullDay: 0,
+                                        start: parseInt(time.valueAsNumber / 1000) + 5 * 3600,
+                                        end: parseInt(time2.valueAsNumber / 1000) + 5 * 3600
+
+                                    }, false).then(res => {
+                                        if (res['code'] == 1) {
+
+                                           
+                                        } else {
+                                            alert(res['msg']);
+                                        }
+                                    })
+
+
+                                    ///print again
+                                    input.value = "";
+                                    time.value = "";
+                                    time2.value = "";
+
+                                 
+                                    printEvent(day, month, year);
+                                }
+
+                                else {
+                                    alert('Wrong time');
+                                }
+                                printEvent(day, month, year);
+
+                            }
+                            printEvent(day, month, year);
+                        }
+
+
+                    }
+
+
+                }, false);
+
+                //thge part of submit the new event
+                add_new.appendChild(input);
+                add_new.appendChild(time);
+                add_new.appendChild(time2);
+                add_new.appendChild(button);
+
+
+
+                //input name to share to others
+                var input2 = document.createElement("input");
+                input2.setAttribute("id", "sharelink");
+                input2.setAttribute("placeholder", "enter share link here");
+
+                
+
+
+                //get share button
+                var add_share = document.createElement("button");
+                add_share.appendChild(document.createTextNode("Add_Share"));
+                add_share.addEventListener("click", function (event) {
+                    //share the current here.
+                    var temp = input2.value.replace(" ", "");
+
+                    if (temp == "" || temp == undefined || temp == null) {
+                        alert("username" + ' is empty.');
+                    }
+                    else {
+                        addSharedEvent();
+                        printEvent(day, month, year);
+
+                    }
+
+
+                    ///need to implement
+
+
+
+
+                    printEvent(day, month, year);
+
+                }, false);
+
+
+
+                //the part of get shared event
+                share.appendChild(input2);
+
+                share.appendChild(add_share);
+
+
+
+
+
+
+
+                ////show the event
+                let currentMonth = new Month(year, month);
+                let weeks = currentMonth.getWeeks();
+
+                let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
+                let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
+
+                let offset = weeks[0].getDates()[0].getTimezoneOffset();
+                let endTS2 = 0;
+                let beginTS2 = 0;
+                breakFlag:
+                for (let week of weeks) {
+                    for (let date of week.getDates()) {
+                        if (date.getTimezoneOffset() != offset) {
+                            beginTS2 = parseInt(date.getTime() / 1000);
+                            endTS2 = parseInt(date.getTime() / 1000) - 1;
+                            break breakFlag;
+                        }
+                    }
+                }
+
+
+
+                post('/event/getMonthlyEvents.php', {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    beginTS: beginTS,
+                    endTS: endTS,
+                    beginTS2: beginTS2,
+                    endTS2: endTS2
+
+                }, false).then(res => {
+                    if (res['code'] == 1) {
+
+
+                        let cur_month = month + 1;
+                        let stamp = year + "-" + cur_month + "-" + day + "T00:00:00.000-05:00";
+                       
+
+                        if (res['data'][tmsp] == NaN || res['data'][tmsp] == null) {
+
+                        }
+                        else {
+
+                            event_list.textContent = "";
+                           
+                            for (let i of res['data'][tmsp]) {
+                                
+
+
+                                /// print the title, start and end time
+                                let newevent = document.createElement("p");
+                                let newevent2 = document.createElement("p");
+                                let newevent3 = document.createElement("p");
+
+                                let get_title = i['title'];
+                                let get_date = new Date(i['start'] * 1000);
+                                let get_time = new Date(i['end'] * 1000);
+                                let get_eid = i['id'];
+
+
+                                ///Event list
+                                var li = document.createElement("li");
+
+
+                                newevent.textContent = "Title: " + get_title;
+
+                                newevent2.textContent = "Start: " + get_date;
+                                newevent3.textContent = "End: " + get_time;
+
+                                li.appendChild(newevent);
+                                li.appendChild(newevent2);
+                                li.appendChild(newevent3);
+
+
+                                //if it has a tag
+                                if (i['cid'] != 0) {
+                                    let newevent4 = document.createElement("p");
+                                    newevent4.textContent = "Tag: " + i['cName'];
+                                    li.appendChild(newevent4);
+                                }
+
+
+
+                                ///set the revise button
+                                let revise = document.createElement("button");
+                                revise.appendChild(document.createTextNode("Revise"));
+                                revise.addEventListener("click", function (event) {
+                                //Revise the event here.
+                                var temp = input.value.replace(" ", "");
+
+                                if (temp == "" || temp == undefined || temp == null) {
+                                    alert("title" + ' is empty.');
+                                }
+                                else {
+                                    temp = time.value.replace(" ", "");
+                                    if (temp == "" || temp == undefined || temp == null) {
+                                        alert("start" + ' is empty.');
+                                    }
+                                    else {
+                                        temp = time2.value.replace(" ", "");
+                                        if (temp == "" || temp == undefined || temp == null) {
+                                            alert("end" + ' is empty.');
+                                        }
+                                        else {
+
+                                            //revise the titel,start and end here.
+                                            post('/event/editEvent.php', {
+
+
+                                                uid: localStorage.uid,
+                                                token: localStorage.token,
+                                                cid: 0,
+                                                eid: get_eid,
+                                                gid: 0,
+                                                title: input.value,
+                                                detail: 0,
+                                                isFullDay: 0,
+                                                start: parseInt(time.valueAsNumber / 1000) + 5 * 3600,
+                                                end: parseInt(time2.valueAsNumber / 1000) + 5 * 3600
+
+
+                                            }, false).then(res => {
+                                                if (res['code'] == 1) {
+                                                    printEvent(day, month, year);
+
+                                                } else {
+                                                    alert(res['msg']);
+                                                }
+                                            })
+
+                                        }
+                                    }
+
+
+                                }
+
+
+
+                                }, false);
+
+
+                                //add the delete event button
+                                let Delete = document.createElement("button");
+                                Delete.appendChild(document.createTextNode("Delete"));
+                                Delete.addEventListener("click", function (event) {
+
+
+
+                                    // ///Delete the event here.
+                                    // event_list.removeChild(li);
+
+                                    post('/event/delEvent.php', {
+                                        uid: localStorage.uid,
+                                        token: localStorage.token,
+                                        eid: get_eid
+
+                                    }, false).then(res => {
+                                        if (res['code'] == 1) {
+                                            printEvent(day, month, year);
+
+                                           
+                                        } else {
+                                            alert(res['msg']);
+                                        }
+                                    })
+
+                                }, false);
+
+
+
+
+                                 //input the tage name
+                                let tagname = document.createElement("select");
+                                tagname.setAttribute("id", "tagnames");
+
+
+                                post('/category/getCates.php', {
+                                    uid: localStorage.uid,
+                                    token: localStorage.token,
+
+
+                                }, false).then(res => {
+                                    if (res['code'] == 1) {
+                                        //read and add the options of tag
+                                        for (let i of res['data']) {
+                                            let temp = document.createElement("option");
+                                            temp.setAttribute("value", i['id']);
+
+                                            temp.append(i['name']);
+                                            tagname.append(temp);
+                                        }
+                                    } else {
+                                        alert(res['msg']);
+                                    }
+                                })
+
+
+                                ///add new tag
+                                let tag = document.createElement("button");
+                                tag.appendChild(document.createTextNode("Tag"));
+                                
+                                tag.addEventListener("click", function (event) {
+
+                                    let temp = tagname.value.replace(" ", "");
+
+                                    if (temp == "" || temp == undefined || temp == null) {
+                                        alert("tagname " + 'is empty.');
+                                    }
+                                    else {
+
+                                        if (tagname != null) {
+                                            for (let i of tagname.children) {
+                                                if (i.selected == true) {
+                                                    
+                                                    cid = i.value;
+                                                }
+                                            }
+                                        }
+                                        
+                                        ///revise the cid here.
+                                        post('/event/editEvent.php', {
+
+                                            uid: localStorage.uid,
+                                            token: localStorage.token,
+                                            cid: cid,
+                                            eid: get_eid,
+                                            gid: 0,
+                                            title: get_title,
+                                            detail: 0,
+                                            isFullDay: 0,
+                                            start: i['start'],
+                                            end: i['end']
+
+
+                                        }, false).then(res => {
+                                            if (res['code'] == 1) {
+                                                
+                                                printEvent(day, month, year);
+
+
+                                            } else {
+                                                alert(res['msg']);
+                                            }
+                                        })
+
+
+                                    }
+
+                                }, false);
+
+
+                                
+                                ///input group id
+                                let choosed = document.createElement("select");
+                                choosed.setAttribute("id", "choosed");
+
+
+                                post('/group/getGroups.php', {
+                                    uid: localStorage.uid,
+                                    token: localStorage.token,
+
+
+                                }, false).then(res => {
+                                    if (res['code'] == 1) {
+
+                                        // console.log(res['data']);
+                                        //read and add the options of group name
+                                        for (let i of res['data']) {
+                                            let temp = document.createElement("option");
+                                            temp.setAttribute("value", i['gid']);
+
+                                            temp.append(i['name']);
+                                            choosed.append(temp);
+                                        }
+                                    } else {
+                                        alert(res['msg']);
+                                    }
+                                })
+
+
+                                
+                                //add the group file
+                                let set = document.createElement("button");
+                                set.appendChild(document.createTextNode("Set as group"));
+                                
+
+                                set.addEventListener("click", function (event) {
+                                    //FIEO
+                                    let temp = choosed.value.replace(" ", "");
+
+                                    if (temp == "" || temp == undefined || temp == null) {
+                                        alert("group id " + 'is empty.');
+                                    }
+                                    else {
+                                        if (choosed != null) {
+                                            for (let i of choosed.children) {
+                                                
+                                                if (i.selected == true) {
+                                                    
+                                                    gid = i.value;
+                                                }
+                                            }
+                                        }
+
+                                        ///revise the gid here.
+                                        post('/event/editEvent.php', {
+
+                                            uid: localStorage.uid,
+                                            token: localStorage.token,
+                                            cid: cid,
+                                            eid: get_eid,
+                                            gid: gid,
+                                            title: get_title,
+                                            detail: 0,
+                                            isFullDay: 0,
+                                            start: i['start'],
+                                            end: i['end']
+
+
+                                        }, false).then(res => {
+                                            if (res['code'] == 1) {
+                                                
+                                                printEvent(day, month, year);
+
+
+                                            } else {
+                                                alert(res['msg']);
+                                            }
+                                        })
+
+
+                                    }
+
+
+
+                                }, false);
+
+
+                                //share button
+                                let button3 = document.createElement("button");
+                                button3.appendChild(document.createTextNode("Share"));
+                                button3.addEventListener("click", function (event) {
+                                    //share the current here.
+                                    post('/event/shareEvent.php', {
+                                        uid: localStorage.uid,
+                                        token: localStorage.token,
+                                        eid: get_eid
+
+                                    }, false).then(res => {
+                                        if (res['code'] == 1) {
+                                            
+                                            sharelink.textContent = "share link is " + res['data']['shareToken'];
+
+                                        } else {
+                                            alert(res['msg']);
+                                        }
+                                    })
+
+
+                                    // sharelink.appendChild(document.createTextNode("("+"link"+")"));
+
+                                }, false);
+
+
+                                
+                                //add functions to each event
+                                li.appendChild(Delete);
+                                li.appendChild(revise);
+                                li.appendChild(tagname);
+                                li.appendChild(tag);
+                                li.appendChild(choosed);
+                                li.appendChild(set);
+                                li.appendChild(button3);
+                                event_list.appendChild(li);
+
+
+                            }
+
+                        }
+
+
+
+                    } else {
+                        alert(res['msg']);
+                    }
+
+                })
+
+
+            }
+
+        }
+
+        
+
+
+        function joinGroup() {
+            let uuid = document.getElementById("name").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(uuid)) {
+                alert("Invalid Input!");
+            } else {
+                post("/group/joinGroup.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    uuid: uuid
+                }).then(res => {
+                    if (res["code"]) {
+                        // initUserFunc();
+                        alert("Joined!");
+                       
+                        printEvent(temp_a, temp_b, temp_c);
+                    } else if (res["code"] == 0) {
+                        // initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
+
+        }
+
+        function createGroup() {
+            let groupName = document.getElementById("name2").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(groupName)) {
+                alert("Invalid Input!");
+            } else {
+                console.log(groupName);
+                post("/group/addGroup.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    name: groupName
+                }).then(res => {
+                    if (res["code"]) {
+                        alert("Group " + name + " created!");
+                        // removeAllChildNodes(document.getElementById("groupCode"));
+                        // document.getElementById("groupCode").append(res["data"]["uuid"]);
+                        grouplink.textContent = "group link is "+res["data"]["uuid"];
+                    } else if (res["code"] == 0) {
+                        // initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
+        }
+
+
+        function addSharedEvent() {
+            let shareToken = document.getElementById("sharelink").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(shareToken)) {
+                alert("Invalid Input!");
+            } else {
+                post("/event/addShare.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    shareToken: shareToken
+                }).then(res => {
+                    if (res["code"]) {
+                        // initUserFunc();
+                        alert("Added!");
+                    } else if (res["code"] == 0) {
+                        // initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //intialize
+        document.addEventListener("DOMContentLoaded", printall(), false);
+
+
+        ////Prev month
+        document.getElementById("btn").addEventListener("click", function (event) {
+            month -= 1;
+            if (month < 0) {
+                year -= 1;
+                month = 11;
+            }
+            printall();
+        }, false);
+
+
+        ////Next month
+        document.getElementById("btn2").addEventListener("click", function (event) {
+            month += 1;
+            if (month > 11) {
+                year += 1;
+                month = 0;
+            }
+            printall();
+        }, false);
+
+
+        ///Login function
+        document.getElementById("btn3").addEventListener("click", function (event) {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            var regex = /^[\w_\.\-]+$/;
+            var match = regex.test(username);
+
+            if (!match) {
+                alert(username + ' is not a number that has between 1,20 digits');
+            }
+            else {
+                var temp = password.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    alert(password + ' is empty.');
+                }
+
+                else {
+
+
+                    post('/user/login.php', {
+                        username: username,
+                        password: password,
+
+                    }, false).then(res => {
+                        if (res['code'] == 1) {
+                            localStorage.setItem("token", res['data']['token']);
+                            localStorage.setItem("uid", res['data']['uid']);
+                            localStorage.setItem("username", res['data']['username']);
+
+              
+
+                            ///Display or show the button of signin and log out.
+
+                            var log = document.getElementById("log");
+                            var quit = document.getElementById("quit");
+
+                            log.style.display = "none";
+
+                            quit.style.display = "block";
+                        } else {
+
+                            alert(res['msg']);
+
+                        }
+                    })
+
+                }
+
+            }
+            use.value = "";
+            pass.value = "";
+
+        }, false);
+
+
+
+        ///Sign function
+        document.getElementById("Sign").addEventListener("click", function (event) {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            var regex = /^[\w_\.\-]+$/;
+            var match = regex.test(username);
+
+            if (!match) {
+                alert(username + ' is not a number that has between 1,20 digits');
+            }
+            else {
+                var temp = password.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    alert(password + ' is empty.');
+                }
+                else {
+
+                    ///need to implement
+                    post('/user/register.php', {
+                        username: username,
+                        password: password,
+
+
+                    }, false).then(res => {
+                        if (res['code'] == 1) {
+                            localStorage.setItem("token", res['data']['token']);
+                            localStorage.setItem("uid", res['data']['uid']);
+                            localStorage.setItem("username", res['data']['username']);
+
+            
+
+                            ///Display or show the button of signin and log out.
+                            var log = document.getElementById("log");
+                            var quit = document.getElementById("quit");
+
+                            log.style.display = "none";
+
+                            quit.style.display = "block";
+
+
+
+                        } else {
+                            alert(res['msg']);
+                        }
+                    })
+
+
+
+
+
+                }
+
+            }
+            use.value = "";
+            pass.value = "";
+
+        }, false);
+
+
+        ///Log out
+        document.getElementById("logout").addEventListener("click", function (event) {
+
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            post('/user/logout.php', {
+                uid: localStorage.uid,
+                token: localStorage.token
+            }, false).then(res => {
+                if (res['code'] == 1) {
+
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("uid");
+                    localStorage.removeItem("username");
+
+                    ///Display or show the button of signin and log out.
+                    var log = document.getElementById("log");
+                    var quit = document.getElementById("quit");
+
+                    log.style.display = "block";
+
+                    quit.style.display = "none";
+
+                } else {
+                    alert(res['msg']);
+                }
+            })
+
+
+            event_list.textContent = "";
+            add_new.textContent = "";
+            share.textContent = "";
+            group.textContent = "";
+            grouplink.textContent="";
+            sharelink.textContent="";
+
+
+            use.value = "";
+            pass.value = "";
+
+            let temp = document.getElementById("tags");
+
+            temp.textContent = "";
+        }, false);
+
+
+
+        document.getElementById("tag_add").addEventListener("click", function (event) {
+            add_tag();
+
+        }, false);
+
+        function add_tag() {
+            if (localStorage.getItem("username") == NaN || localStorage.getItem("username") == null) {
+                alert("You should log in firstly.");
+
+            }
+
+            else {
+
+
+                let a = document.getElementById("tagname").value;
+                var temp = a.replace(" ", "");
+
+                if (temp == "" || temp == undefined || temp == null) {
+                    alert("tagname" + ' is empty.');
+                }
+                else {
+
+                    post('/category/addCate.php', {
+                        uid: localStorage.uid,
+                        token: localStorage.token,
+                        name: a,
+                        color: '#000000'
+
+                    }, false).then(res => {
+                        if (res['code'] == 1) {
+                            print_tag();
+                            printEvent(temp_a, temp_b, temp_c);
+
+
+                        } else {
+                            alert(res['msg']);
+                        }
+                    });
+
+
+
+
+                }
+
+
+            }
+
+        }
+
+        
+
+
+        function print_tag() {
+            let temp = document.getElementById("tags");
+            temp.textContent = "";
+
+            post('/category/getCates.php', {
+                uid: localStorage.uid,
+                token: localStorage.token,
+            }, false).then(res => {
+                if (res['code'] == 1) {
+                    temp.textContent = "";
+
+                    for (let i of res['data']) {
+                        let p = document.createElement("p");
+                        p.appendChild(document.createTextNode(i['name']));
+                        p.addEventListener("click", function (event) {
+
+                            if (enable == false) {
+                                enable = true;
+
+                     
+                                choose_id = i['id'];
+                                printall();
+                                printEvent(temp_a, temp_b, temp_c);
+
+                            }
+                            else {
+                                enable = false;
+                                choose_id = i['id'];
+                                printall();
+                                printEvent(temp_a, temp_b, temp_c);
+                            }
+
+                        })
+
+                        temp.appendChild(p);
+                    }
+
+                } else {
+                    alert(res['msg']);
+                }
+            })
+
+
+        }
+
+
+
+
+
+
+    </script>
+
+
+
+
+
+
+
+
+</body>
+
+
+
+
+</html>
