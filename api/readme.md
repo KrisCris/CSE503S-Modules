@@ -1,0 +1,32 @@
+# api
+
+- api
+  - category
+    - addCate.php
+    - getCates.php
+  - event
+    - addEvent.php
+    - addShare.php
+    - delEvent.php
+    - editEvent.php
+    - getEvent.php
+    - getMonthlyEvents.php
+    - shareEvent.php
+  - group
+    - addGroup.php
+    - getGroups.php
+    - joinGroup.php
+  - user
+    - isLogin.php - check user online status for the first time webpage loaded.
+    - require-login.php - prerequisites for all other api calls, check $_SESSION, Token, etc., against user provided credentials.
+    - login.php
+    - register.php
+    - logout.php
+- model
+  - DB.php - DB connection
+  - Category.php
+  - Event.php
+  - Group.php
+  - User.php
+- util
+  - reply.php - encapsulated echo function
