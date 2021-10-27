@@ -7,10 +7,7 @@
     <link rel="stylesheet" href="style/calender.css">
     <script src="script/calender.js"></script>
     <script src="script/query.js"></script>
-
-
 </head>
-
 <body>
     <div class="col left">
         <div class="Log" id="log">
@@ -19,137 +16,73 @@
             <button id="btn3">
                 Login
             </button>
-
             <button id="Sign">
                 Signup
             </button>
-
-
         </div>
 
-
         <div class="Quit" id="quit">
-
             <button id="logout">
                 Logout
             </button>
-
-
-
         </div>
-
 
         <div class="calender">
             <div class="calender-top" id="calender-top">
                 <h1 id="calender-year">Year</h1>
             </div>
-
-
             <div class="month">
-
                 <button id="btn" type="button">
                     Prevmonth
                 </button>
-
                 <strong id="calender-month">
-                    
+
                 </strong>
-
-
                 <button id="btn2" type="button">
                     Nextmonth
                 </button>
-
             </div>
-
 
             <div class="calender-day" id="calender-day">
                 <table id="Days">
 
                 </table>
-
             </div>
-
-
         </div>
-
 
         <div class="event-tags" id="event-tags">
             <input type="text" name="tagname" id="tagname" placeholder="tagname"><br>
-
-
             <button id="tag_add" type="button">
                 Add
             </button>
             <div class="tags" id="tags">
 
             </div>
-
-
         </div>
-
     </div>
-
-
-
-
-
-
-
     <div class="col right">
         <div class="event" id="event">
-
             <div class="add_new" id="add_new">
 
             </div>
-
-
-
-
-
-
             <ul>
 
             </ul>
-
-
             <div class="share" id="share">
 
             </div>
-
             <div class="sharelink" id="sharelink">
 
             </div>
-
-
             <div class="group" id="group">
 
             </div>
-
-
             <div class="grouplink" id="grouplink">
 
             </div>
-
-
-
         </div>
-
     </div>
-
-
-
-
-
-
-
-
-
-
-
     <script>
-
-
         let enable = false;
 
         let choose_id = ""
@@ -167,7 +100,6 @@
         let cid = "";
         let gid = "";
 
-
         let name_of_tag = "";
 
         let use = document.getElementById("username");
@@ -176,9 +108,7 @@
         let add_new = document.getElementById("add_new");
         let share = document.getElementById("share");
 
-
         let group = document.getElementById("group");
-
 
         let temp_a = null;
         let temp_b = null;
@@ -186,72 +116,39 @@
 
         let tmsp = 0;
 
-
-
-
-
-
         months = ["January", "Febrary", "March", "April", "May", "June", "July", "Auguest", "September", "October", "November", "December"];
 
         function printall() {
-
             if (localStorage.getItem("username") == NaN || localStorage.getItem("username") == null) {
-
                 //didn't log in.
-
-
                 ///Display or show the button of signin and log out.
                 var log = document.getElementById("log");
                 var quit = document.getElementById("quit");
-
                 log.style.display = "block";
-
                 quit.style.display = "none";
-
-            }
-
-            else {
-
+            } else {
                 print_tag();
                 ///Display or show the button of signin and log out.
                 var log = document.getElementById("log");
                 var quit = document.getElementById("quit");
-
                 log.style.display = "none";
-
                 quit.style.display = "block";
-
             }
-
 
             var now_days = document.getElementById("Days");
             var days = "<td>Sun</td><td>Mon</td><td>Tue</td><td>Wed</td><td>THU</td><td>Fri</td><td>Sat</td>";
-
             var m = new Month(year, month);
-
             var weeks = m.getWeeks();
-
-
             now_days.innerHTML = days;
-
             var now_days = document.getElementById("Days").getElementsByTagName("tr")[0];
-
 
             for (var z = 0; z < weeks.length; z++) {
                 let day = weeks[z].getDates();
                 for (let x = 0; x < 7; x++) {
-
-
                     let td = document.createElement("td");
-
-
-
                     if (enable == false) {
                         td.appendChild(document.createTextNode(day[x].getDate()));
-
-                    }
-                    else {
-
+                    } else {
                         let currentMonth = new Month(year, month);
                         let weeks = currentMonth.getWeeks();
 
@@ -280,107 +177,59 @@
                             beginTS2: beginTS2,
                             endTS2: endTS2
 
-                        }, false).then(res => {
+                        }).then(res => {
                             if (res['code'] == 1) {
-                                let tmp_tmsp = parseInt(day[x].getTime()/1000);
+                                let tmp_tmsp = parseInt(day[x].getTime() / 1000);
 
                                 let cur_month = day[x].getMonth() + 1;
                                 let stamp = day[x].getFullYear() + "-" + cur_month + "-" + day[x].getDate() + "T00:00:00.000-04:00";
-
-
 
                                 let temp = document.createTextNode(day[x].getDate());
 
                                 if (res['data'][tmp_tmsp] == NaN || res['data'][tmp_tmsp] == null) {
 
-
-                                }
-                                else {
+                                } else {
                                     for (let i of res['data'][tmp_tmsp]) {
                                         if (i['cid'] == choose_id) {
-
                                             temp = document.createElement("strong");
                                             temp.append(day[x].getDate());
-
                                         }
                                     }
-
                                 }
-
                                 td.appendChild(temp);
-
-
                             }
-
                         })
-
-
-
-
                     }
-
-
-
-
-
-
                     // td.appendChild(document.createTextNode(day[x].getDate()));
-
                     td.addEventListener("click", function (event) {
-                        tmsp = parseInt(day[x].getTime()/1000);
+                        tmsp = parseInt(day[x].getTime() / 1000);
                         printEvent(day[x].getDate(), day[x].getMonth(), day[x].getFullYear());
-                        
-
                     }, false);
-
                     // }
-
                     now_days.appendChild(td);
                 }
-
             }
-
-
             let now_year = document.getElementById("calender-year");
             let now_month = document.getElementById("calender-month");
-
-
-
             now_year.textContent = year;
             now_month.textContent = months[month];
-
-
         }
 
-
-
-
         function printEvent(day, month, year) {
-
             temp_a = day;
             temp_b = month;
             temp_c = year;
-
-
             if (localStorage.getItem("username") == NaN || localStorage.getItem("username") == null) {
                 alert("You should log in firstly.");
-
-            }
-
-            else {
-
-
-
+            } else {
                 print_tag();
                 groupname = [];
-
 
                 let event_list = document.getElementById("event").getElementsByTagName("ul")[0];
                 let add_new = document.getElementById("add_new");
                 let share = document.getElementById("share");
-
-
                 let group = document.getElementById("group");
+
                 group.textContent = "";
                 event_list.textContent = "";
                 add_new.textContent = "";
@@ -388,23 +237,17 @@
                 sharelink.textContent = "";
                 grouplink.textContent = "";
 
-
                 //the function of group
                 let name = document.createElement("input");
                 name.setAttribute("id", "name");
                 name.setAttribute("placeholder", "group_link");
 
-
-
                 let add = document.createElement("button");
                 add.appendChild(document.createTextNode("Add"));
                 add.addEventListener("click", function (event) {
-
                     joinGroup();
-
                     printEvent(day, month, year);
                 }, false);
-
 
                 let name2 = document.createElement("input");
                 name2.setAttribute("id", "name2");
@@ -415,23 +258,14 @@
                 create.addEventListener("click", function (event) {
                     //Submit group events here.
                     ///need to implement
-
-
                     createGroup();
                     printEvent(day, month, year);
-
                 }, false);
 
-
                 group.appendChild(name)
-
                 group.appendChild(add);
                 group.appendChild(name2);
                 group.appendChild(create);
-
-
-
-
 
                 /// input of title, start and end time
                 let input = document.createElement("input");
@@ -443,12 +277,10 @@
                 time.setAttribute("type", "datetime-local");
                 time.setAttribute("placeholder", "starttime");
 
-
                 let time2 = document.createElement("input");
                 time2.setAttribute("id", "time2");
                 time2.setAttribute("type", "datetime-local");
                 time2.setAttribute("placeholder", "endtime");
-
 
                 // submit the event
                 let button = document.createElement("button");
@@ -459,20 +291,15 @@
 
                     if (temp == "" || temp == undefined || temp == null) {
                         alert("title" + ' is empty.');
-                    }
-                    else {
+                    } else {
                         temp = time.value.replace(" ", "");
                         if (temp == "" || temp == undefined || temp == null) {
                             alert("start" + ' is empty.');
-                        }
-                        else {
+                        } else {
                             temp = time2.value.replace(" ", "");
                             if (temp == "" || temp == undefined || temp == null) {
                                 alert("end" + ' is empty.');
-                            }
-
-                            else {
-
+                            } else {
                                 //set the title, start and end time
                                 if (time.valueAsNumber < time2.valueAsNumber) {
                                     post('/event/addEvent.php', {
@@ -486,55 +313,38 @@
                                         start: parseInt(time.valueAsNumber / 1000) + 5 * 3600,
                                         end: parseInt(time2.valueAsNumber / 1000) + 5 * 3600
 
-                                    }, false).then(res => {
+                                    }).then(res => {
                                         if (res['code'] == 1) {
-
-                                           
                                         } else {
                                             alert(res['msg']);
                                         }
                                     })
-
 
                                     ///print again
                                     input.value = "";
                                     time.value = "";
                                     time2.value = "";
 
-                                 
                                     printEvent(day, month, year);
-                                }
-
-                                else {
+                                } else {
                                     alert('Wrong time');
                                 }
                                 printEvent(day, month, year);
-
                             }
                             printEvent(day, month, year);
                         }
-
-
                     }
-
-
                 }, false);
-
                 //thge part of submit the new event
                 add_new.appendChild(input);
                 add_new.appendChild(time);
                 add_new.appendChild(time2);
                 add_new.appendChild(button);
 
-
-
                 //input name to share to others
                 var input2 = document.createElement("input");
                 input2.setAttribute("id", "sharelink");
                 input2.setAttribute("placeholder", "enter share link here");
-
-                
-
 
                 //get share button
                 var add_share = document.createElement("button");
@@ -545,35 +355,16 @@
 
                     if (temp == "" || temp == undefined || temp == null) {
                         alert("username" + ' is empty.');
-                    }
-                    else {
+                    } else {
                         addSharedEvent();
                         printEvent(day, month, year);
-
                     }
-
-
-                    ///need to implement
-
-
-
-
                     printEvent(day, month, year);
-
                 }, false);
-
-
 
                 //the part of get shared event
                 share.appendChild(input2);
-
                 share.appendChild(add_share);
-
-
-
-
-
-
 
                 ////show the event
                 let currentMonth = new Month(year, month);
@@ -596,8 +387,6 @@
                     }
                 }
 
-
-
                 post('/event/getMonthlyEvents.php', {
                     uid: localStorage.uid,
                     token: localStorage.token,
@@ -605,26 +394,15 @@
                     endTS: endTS,
                     beginTS2: beginTS2,
                     endTS2: endTS2
-
-                }, false).then(res => {
+                }).then(res => {
                     if (res['code'] == 1) {
-
-
                         let cur_month = month + 1;
                         let stamp = year + "-" + cur_month + "-" + day + "T00:00:00.000-05:00";
-                       
-
                         if (res['data'][tmsp] == NaN || res['data'][tmsp] == null) {
 
-                        }
-                        else {
-
+                        } else {
                             event_list.textContent = "";
-                           
                             for (let i of res['data'][tmsp]) {
-                                
-
-
                                 /// print the title, start and end time
                                 let newevent = document.createElement("p");
                                 let newevent2 = document.createElement("p");
@@ -635,20 +413,16 @@
                                 let get_time = new Date(i['end'] * 1000);
                                 let get_eid = i['id'];
 
-
                                 ///Event list
                                 var li = document.createElement("li");
 
-
                                 newevent.textContent = "Title: " + get_title;
-
                                 newevent2.textContent = "Start: " + get_date;
                                 newevent3.textContent = "End: " + get_time;
 
                                 li.appendChild(newevent);
                                 li.appendChild(newevent2);
                                 li.appendChild(newevent3);
-
 
                                 //if it has a tag
                                 if (i['cid'] != 0) {
@@ -657,113 +431,80 @@
                                     li.appendChild(newevent4);
                                 }
 
-
-
                                 ///set the revise button
                                 let revise = document.createElement("button");
                                 revise.appendChild(document.createTextNode("Revise"));
                                 revise.addEventListener("click", function (event) {
-                                //Revise the event here.
-                                var temp = input.value.replace(" ", "");
+                                    //Revise the event here.
+                                    var temp = input.value.replace(" ", "");
 
-                                if (temp == "" || temp == undefined || temp == null) {
-                                    alert("title" + ' is empty.');
-                                }
-                                else {
-                                    temp = time.value.replace(" ", "");
                                     if (temp == "" || temp == undefined || temp == null) {
-                                        alert("start" + ' is empty.');
-                                    }
-                                    else {
-                                        temp = time2.value.replace(" ", "");
+                                        alert("title" + ' is empty.');
+                                    } else {
+                                        temp = time.value.replace(" ", "");
                                         if (temp == "" || temp == undefined || temp == null) {
-                                            alert("end" + ' is empty.');
-                                        }
-                                        else {
-
-                                            //revise the titel,start and end here.
-                                            post('/event/editEvent.php', {
-
-
-                                                uid: localStorage.uid,
-                                                token: localStorage.token,
-                                                cid: 0,
-                                                eid: get_eid,
-                                                gid: 0,
-                                                title: input.value,
-                                                detail: 0,
-                                                isFullDay: 0,
-                                                start: parseInt(time.valueAsNumber / 1000) + 5 * 3600,
-                                                end: parseInt(time2.valueAsNumber / 1000) + 5 * 3600
-
-
-                                            }, false).then(res => {
-                                                if (res['code'] == 1) {
-                                                    printEvent(day, month, year);
-
-                                                } else {
-                                                    alert(res['msg']);
-                                                }
-                                            })
-
+                                            alert("start" + ' is empty.');
+                                        } else {
+                                            temp = time2.value.replace(" ", "");
+                                            if (temp == "" || temp == undefined || temp == null) {
+                                                alert("end" + ' is empty.');
+                                            } else {
+                                                //revise the titel,start and end here.
+                                                post('/event/editEvent.php', {
+                                                    uid: localStorage.uid,
+                                                    token: localStorage.token,
+                                                    cid: 0,
+                                                    eid: get_eid,
+                                                    gid: 0,
+                                                    title: input.value,
+                                                    detail: 0,
+                                                    isFullDay: 0,
+                                                    start: parseInt(time.valueAsNumber / 1000) + 5 * 3600,
+                                                    end: parseInt(time2.valueAsNumber / 1000) + 5 * 3600
+                                                }).then(res => {
+                                                    if (res['code'] == 1) {
+                                                        printEvent(day, month, year);
+                                                    } else {
+                                                        alert(res['msg']);
+                                                    }
+                                                })
+                                            }
                                         }
                                     }
-
-
-                                }
-
-
-
                                 }, false);
-
 
                                 //add the delete event button
                                 let Delete = document.createElement("button");
                                 Delete.appendChild(document.createTextNode("Delete"));
                                 Delete.addEventListener("click", function (event) {
-
-
-
                                     // ///Delete the event here.
                                     // event_list.removeChild(li);
-
                                     post('/event/delEvent.php', {
                                         uid: localStorage.uid,
                                         token: localStorage.token,
                                         eid: get_eid
-
-                                    }, false).then(res => {
+                                    }).then(res => {
                                         if (res['code'] == 1) {
                                             printEvent(day, month, year);
-
-                                           
                                         } else {
                                             alert(res['msg']);
                                         }
                                     })
-
                                 }, false);
 
-
-
-
-                                 //input the tage name
+                                //input the tage name
                                 let tagname = document.createElement("select");
                                 tagname.setAttribute("id", "tagnames");
-
 
                                 post('/category/getCates.php', {
                                     uid: localStorage.uid,
                                     token: localStorage.token,
-
-
-                                }, false).then(res => {
+                                }).then(res => {
                                     if (res['code'] == 1) {
                                         //read and add the options of tag
                                         for (let i of res['data']) {
                                             let temp = document.createElement("option");
                                             temp.setAttribute("value", i['id']);
-
                                             temp.append(i['name']);
                                             tagname.append(temp);
                                         }
@@ -772,32 +513,23 @@
                                     }
                                 })
 
-
                                 ///add new tag
                                 let tag = document.createElement("button");
                                 tag.appendChild(document.createTextNode("Tag"));
-                                
                                 tag.addEventListener("click", function (event) {
-
                                     let temp = tagname.value.replace(" ", "");
-
                                     if (temp == "" || temp == undefined || temp == null) {
                                         alert("tagname " + 'is empty.');
-                                    }
-                                    else {
-
+                                    } else {
                                         if (tagname != null) {
                                             for (let i of tagname.children) {
                                                 if (i.selected == true) {
-                                                    
                                                     cid = i.value;
                                                 }
                                             }
                                         }
-                                        
                                         ///revise the cid here.
                                         post('/event/editEvent.php', {
-
                                             uid: localStorage.uid,
                                             token: localStorage.token,
                                             cid: cid,
@@ -808,39 +540,25 @@
                                             isFullDay: 0,
                                             start: i['start'],
                                             end: i['end']
-
-
-                                        }, false).then(res => {
+                                        }).then(res => {
                                             if (res['code'] == 1) {
-                                                
                                                 printEvent(day, month, year);
-
-
                                             } else {
                                                 alert(res['msg']);
                                             }
                                         })
-
-
                                     }
-
                                 }, false);
 
-
-                                
                                 ///input group id
                                 let choosed = document.createElement("select");
                                 choosed.setAttribute("id", "choosed");
 
-
                                 post('/group/getGroups.php', {
                                     uid: localStorage.uid,
                                     token: localStorage.token,
-
-
-                                }, false).then(res => {
+                                }).then(res => {
                                     if (res['code'] == 1) {
-
                                         // console.log(res['data']);
                                         //read and add the options of group name
                                         for (let i of res['data']) {
@@ -855,34 +573,26 @@
                                     }
                                 })
 
-
-                                
                                 //add the group file
                                 let set = document.createElement("button");
                                 set.appendChild(document.createTextNode("Set as group"));
-                                
-
                                 set.addEventListener("click", function (event) {
                                     //FIEO
                                     let temp = choosed.value.replace(" ", "");
-
                                     if (temp == "" || temp == undefined || temp == null) {
                                         alert("group id " + 'is empty.');
-                                    }
-                                    else {
+                                    } else {
                                         if (choosed != null) {
                                             for (let i of choosed.children) {
-                                                
+
                                                 if (i.selected == true) {
-                                                    
+
                                                     gid = i.value;
                                                 }
                                             }
                                         }
-
                                         ///revise the gid here.
                                         post('/event/editEvent.php', {
-
                                             uid: localStorage.uid,
                                             token: localStorage.token,
                                             cid: cid,
@@ -893,27 +603,15 @@
                                             isFullDay: 0,
                                             start: i['start'],
                                             end: i['end']
-
-
-                                        }, false).then(res => {
+                                        }).then(res => {
                                             if (res['code'] == 1) {
-                                                
                                                 printEvent(day, month, year);
-
-
                                             } else {
                                                 alert(res['msg']);
                                             }
                                         })
-
-
                                     }
-
-
-
                                 }, false);
-
-
                                 //share button
                                 let button3 = document.createElement("button");
                                 button3.appendChild(document.createTextNode("Share"));
@@ -923,24 +621,16 @@
                                         uid: localStorage.uid,
                                         token: localStorage.token,
                                         eid: get_eid
-
-                                    }, false).then(res => {
+                                    }).then(res => {
                                         if (res['code'] == 1) {
-                                            
                                             sharelink.textContent = "share link is " + res['data']['shareToken'];
-
                                         } else {
                                             alert(res['msg']);
                                         }
                                     })
-
-
                                     // sharelink.appendChild(document.createTextNode("("+"link"+")"));
-
                                 }, false);
 
-
-                                
                                 //add functions to each event
                                 li.appendChild(Delete);
                                 li.appendChild(revise);
@@ -950,27 +640,14 @@
                                 li.appendChild(set);
                                 li.appendChild(button3);
                                 event_list.appendChild(li);
-
-
                             }
-
                         }
-
-
-
                     } else {
                         alert(res['msg']);
                     }
-
                 })
-
-
             }
-
         }
-
-        
-
 
         function joinGroup() {
             let uuid = document.getElementById("name").value;
@@ -986,7 +663,7 @@
                     if (res["code"]) {
                         // initUserFunc();
                         alert("Joined!");
-                       
+
                         printEvent(temp_a, temp_b, temp_c);
                     } else if (res["code"] == 0) {
                         // initGuestFunc();
@@ -1015,7 +692,7 @@
                         alert("Group " + name + " created!");
                         // removeAllChildNodes(document.getElementById("groupCode"));
                         // document.getElementById("groupCode").append(res["data"]["uuid"]);
-                        grouplink.textContent = "group link is "+res["data"]["uuid"];
+                        grouplink.textContent = "group link is " + res["data"]["uuid"];
                     } else if (res["code"] == 0) {
                         // initGuestFunc();
                         alert("Invalid user credential!")
@@ -1025,7 +702,6 @@
                 })
             }
         }
-
 
         function addSharedEvent() {
             let shareToken = document.getElementById("sharelink").value;
@@ -1051,22 +727,8 @@
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         //intialize
         document.addEventListener("DOMContentLoaded", printall(), false);
-
 
         ////Prev month
         document.getElementById("btn").addEventListener("click", function (event) {
@@ -1078,7 +740,6 @@
             printall();
         }, false);
 
-
         ////Next month
         document.getElementById("btn2").addEventListener("click", function (event) {
             month += 1;
@@ -1088,7 +749,6 @@
             }
             printall();
         }, false);
-
 
         ///Login function
         document.getElementById("btn3").addEventListener("click", function (event) {
@@ -1102,28 +762,20 @@
             }
             else {
                 var temp = password.replace(" ", "");
-
                 if (temp == "" || temp == undefined || temp == null) {
                     alert(password + ' is empty.');
                 }
-
                 else {
-
-
                     post('/user/login.php', {
                         username: username,
                         password: password,
-
-                    }, false).then(res => {
+                    }).then(res => {
                         if (res['code'] == 1) {
                             localStorage.setItem("token", res['data']['token']);
                             localStorage.setItem("uid", res['data']['uid']);
                             localStorage.setItem("username", res['data']['username']);
 
-              
-
                             ///Display or show the button of signin and log out.
-
                             var log = document.getElementById("log");
                             var quit = document.getElementById("quit");
 
@@ -1131,21 +783,15 @@
 
                             quit.style.display = "block";
                         } else {
-
                             alert(res['msg']);
-
                         }
                     })
-
                 }
-
             }
             use.value = "";
             pass.value = "";
 
         }, false);
-
-
 
         ///Sign function
         document.getElementById("Sign").addEventListener("click", function (event) {
@@ -1164,20 +810,16 @@
                     alert(password + ' is empty.');
                 }
                 else {
-
                     ///need to implement
                     post('/user/register.php', {
                         username: username,
                         password: password,
 
-
-                    }, false).then(res => {
+                    }).then(res => {
                         if (res['code'] == 1) {
                             localStorage.setItem("token", res['data']['token']);
                             localStorage.setItem("uid", res['data']['uid']);
                             localStorage.setItem("username", res['data']['username']);
-
-            
 
                             ///Display or show the button of signin and log out.
                             var log = document.getElementById("log");
@@ -1187,25 +829,16 @@
 
                             quit.style.display = "block";
 
-
-
                         } else {
                             alert(res['msg']);
                         }
                     })
-
-
-
-
-
                 }
-
             }
             use.value = "";
             pass.value = "";
 
         }, false);
-
 
         ///Log out
         document.getElementById("logout").addEventListener("click", function (event) {
@@ -1216,7 +849,7 @@
             post('/user/logout.php', {
                 uid: localStorage.uid,
                 token: localStorage.token
-            }, false).then(res => {
+            }).then(res => {
                 if (res['code'] == 1) {
 
                     localStorage.removeItem("token");
@@ -1236,14 +869,12 @@
                 }
             })
 
-
             event_list.textContent = "";
             add_new.textContent = "";
             share.textContent = "";
             group.textContent = "";
-            grouplink.textContent="";
-            sharelink.textContent="";
-
+            grouplink.textContent = "";
+            sharelink.textContent = "";
 
             use.value = "";
             pass.value = "";
@@ -1252,8 +883,6 @@
 
             temp.textContent = "";
         }, false);
-
-
 
         document.getElementById("tag_add").addEventListener("click", function (event) {
             add_tag();
@@ -1265,10 +894,7 @@
                 alert("You should log in firstly.");
 
             }
-
             else {
-
-
                 let a = document.getElementById("tagname").value;
                 var temp = a.replace(" ", "");
 
@@ -1276,36 +902,22 @@
                     alert("tagname" + ' is empty.');
                 }
                 else {
-
                     post('/category/addCate.php', {
                         uid: localStorage.uid,
                         token: localStorage.token,
                         name: a,
                         color: '#000000'
-
-                    }, false).then(res => {
+                    }).then(res => {
                         if (res['code'] == 1) {
                             print_tag();
                             printEvent(temp_a, temp_b, temp_c);
-
-
                         } else {
                             alert(res['msg']);
                         }
                     });
-
-
-
-
                 }
-
-
             }
-
         }
-
-        
-
 
         function print_tag() {
             let temp = document.getElementById("tags");
@@ -1314,7 +926,7 @@
             post('/category/getCates.php', {
                 uid: localStorage.uid,
                 token: localStorage.token,
-            }, false).then(res => {
+            }).then(res => {
                 if (res['code'] == 1) {
                     temp.textContent = "";
 
@@ -1326,11 +938,9 @@
                             if (enable == false) {
                                 enable = true;
 
-                     
                                 choose_id = i['id'];
                                 printall();
                                 printEvent(temp_a, temp_b, temp_c);
-
                             }
                             else {
                                 enable = false;
@@ -1338,37 +948,14 @@
                                 printall();
                                 printEvent(temp_a, temp_b, temp_c);
                             }
-
                         })
-
                         temp.appendChild(p);
                     }
-
                 } else {
                     alert(res['msg']);
                 }
             })
-
-
         }
-
-
-
-
-
-
     </script>
-
-
-
-
-
-
-
-
 </body>
-
-
-
-
 </html>
