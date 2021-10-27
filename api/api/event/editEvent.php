@@ -13,9 +13,19 @@ foreach ($required as $each) {
     $inputs[$each] = $_POST[$each];
 }
 
+$cid = $inputs["cid"];
+if(isset($_POST["newTag"]) && $_POST["newTag"] != ""){
+    require '../../model/Category.php';
+    $ret = Category::addCate($_POST["uid"], $_POST["newTag"], "#000000");
+    if($ret){
+        $cid = $ret;
+    }
+}
+
 if(Event::editEvent(
     $inputs["eid"],
-    $inputs["cid"] == 0 ? null : $inputs["cid"],
+    $_POST["uid"],
+    $cid == 0 ? null : $cid,
     $inputs["gid"] == 0 ? null : $inputs["gid"],
     $inputs["title"],
     $inputs["detail"],
@@ -25,6 +35,6 @@ if(Event::editEvent(
 )){
     reply_json(1);
 } else {
-    reply_json(-1, [], "error");
+    reply_json(-1, [], "Invalid Operation");
 }
 ?>
