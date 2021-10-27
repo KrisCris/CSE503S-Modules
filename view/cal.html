@@ -12,9 +12,7 @@
 </head>
 
 <body>
-    <button onclick="wide()">wide</button>
-    <button onclick="narrow()">narrow</button>
-
+    <!-- login/logout -->
     <div id=login class="displayNone">
         <input type="text" name="username" id="username" placeholder="username">
         <input type="password" name="password" id="password" placeholder="password">
@@ -27,6 +25,7 @@
             <h1 id="hi">hi</h1>
             <button id="logoutBtn">LOGOUT</button>
         </div>
+        <!-- some user functions that require login -->
         <br><br>
         <div>
             <input type="text" name="joinGroup" id="joinGroup" placeholder="code for join group!"><br>
@@ -44,21 +43,12 @@
             <button onclick="addSharedEvent()">Add Event!</button>
         </div>
         <br><br>
-        <!-- <div>
-            <input type="text" name="addCate" id="addCate" placeholder="create new category"><br>
-            <button onclick="createNewCate()">Create Tag!</button>
-        </div> -->
-
-
     </div>
 
+    <!-- calender -->
     <div class="calendar">
         <div id="tags" class="row top">
             <!-- tags -->
-            <!-- <h3><a href="#">work</a></h3>
-            <h3><a href="#">home</a></h3>
-            <h3><a href="#">course</a></h3>
-            <h3><a href="#">group1</a></h3> -->
         </div>
         <div class="row bottom">
             <div class="col left">
@@ -120,19 +110,18 @@
                         </select>
                         <textarea name="title" id="title" cols="30" rows="2" placeholder="Title"></textarea>
                         <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
+                        <!-- btn for add event -->
                         <div id="new">
                             <button id="submit">Submit</button>
                         </div>
+                        <!-- btns for existing event -->
                         <div id="exist">
                             <button id="edit">Edit</button>
                             <button id="del">Delete</button>
                             <button id="share">Share</button>
                             <p id="shareToken"></p>
                         </div>
-
-
                         <button onclick="narrow()">Back</button>
-
                     </div>
                 </div>
             </div>
@@ -156,7 +145,7 @@
         const month = document.getElementById("month");
         const weekday = document.getElementById("weekday");
 
-        // cal
+        // nav in calender
         const prev = document.getElementsByClassName("prev")[0];
         const next = document.getElementsByClassName("next")[0];
 
@@ -253,6 +242,7 @@
             })
         }, false)
 
+        // after login
         function showLogout() {
             removeAllChildNodes(hiMsg);
             hiMsg.append("Hi " + localStorage.username + "!");
@@ -260,6 +250,7 @@
             logoutDiv.removeAttribute("class");
         }
 
+        // after logout
         function showLogin() {
             loginDiv.removeAttribute("class");
             logoutDiv.setAttribute("class", "displayNone");
@@ -267,21 +258,23 @@
             document.getElementById("createGroup").value = null;
             document.getElementById("groupCode").value = null;
             document.getElementById("sharedEvent").value = null;
-            // document.getElementById("addCate").value = null;
         }
 
         const addEvent = document.getElementById("addEvent");
         const eventList = document.getElementsByClassName("eventList")[0];
-
-        // Doc Init
         const tags = document.getElementById("tags");
 
+        // register init func
         document.addEventListener("DOMContentLoaded", initCalender, false);
 
+        // init func
         function initCalender() {
+            // if obviously not login
             if (localStorage.token === undefined || localStorage.uid === undefined) {
                 initGuestFunc();
             } else {
+                // check login status
+                // check if uid match $_SESSION["uid"] and token match token on server side
                 post(
                     "/user/isLogin.php", {
                     uid: localStorage.uid,
@@ -289,7 +282,6 @@
                 }).then(res => {
                     if (res["code"] == 1) {
                         initUserFunc();
-
                     } else {
                         initGuestFunc();
                     }
@@ -297,6 +289,7 @@
             }
         }
 
+        // func for login user
         function initUserFunc() {
             showLogout();
             addEvent.addEventListener("click", prepareAdd, false);
@@ -306,7 +299,7 @@
             drawCalender()
         }
 
-
+        // func for guests
         function initGuestFunc() {
             localStorage.removeItem('uid');
             localStorage.removeItem('token');
@@ -319,6 +312,7 @@
             narrow();
         }
 
+        // render the calender
         function drawCalender() {
             let currnetDate = new Date();
             let currentMonth = new Month(currentCal.getFullYear(), currentCal.getMonth());
@@ -326,7 +320,7 @@
             let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
             let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
 
-            // fix timezone switch
+            // fix timezone switch e.g. CDT -> CST
             let offset = weeks[0].getDates()[0].getTimezoneOffset();
             let endTS2 = 0;
             let beginTS2 = 0;
@@ -343,7 +337,7 @@
 
             // try query data
             if (localStorage.token === undefined || localStorage.uid === undefined) {
-                // draw cal
+                // draw calender by weeks
                 removeAllChildNodes(days);
                 for (let week of weeks) {
                     for (let date of week.getDates()) {
@@ -359,7 +353,6 @@
                             currnetDate.getMonth() == date.getMonth() &&
                             currnetDate.getFullYear() == date.getFullYear()
                         ) {
-                            // a.setAttribute("class", "today");
                             a.classList.add("today");
                         }
                         li.append(a);
@@ -374,17 +367,19 @@
                             setSelectedDate(a, false);
                         }
 
+                        // register click event for each date
                         a.addEventListener("click", (event) => {
                             setSelectedDate(a, false);
                         }, false);
-
                     }
                 }
+                // update year and month
                 removeAllChildNodes(year);
                 year.append(currentCal.getFullYear());
                 removeAllChildNodes(month);
                 month.append(months[currentCal.getMonth()]);
             } else {
+                // fetch events
                 post('/event/getMonthlyEvents.php', {
                     uid: localStorage.uid,
                     token: localStorage.token,
@@ -397,7 +392,8 @@
                         // store events of this month;
                         monthlyEvents = res['data'];
                         let activeTags = getActivatedTags();
-                        // draw cal
+
+                        // draw calender
                         removeAllChildNodes(days);
                         for (let week of weeks) {
                             for (let date of week.getDates()) {
@@ -418,13 +414,12 @@
                                         }
                                     }
                                 }
-
+                                // if it is today
                                 if (
                                     currnetDate.getDate() == date.getDate() &&
                                     currnetDate.getMonth() == date.getMonth() &&
                                     currnetDate.getFullYear() == date.getFullYear()
                                 ) {
-                                    // a.setAttribute("class", "today");
                                     a.classList.add("today");
                                 }
                                 li.append(a);
@@ -439,6 +434,7 @@
                                     setSelectedDate(a, true);
                                 }
 
+                                // register click event for each date
                                 a.addEventListener("click", (event) => {
                                     setSelectedDate(a, true);
                                 }, false);
@@ -449,9 +445,8 @@
                         year.append(currentCal.getFullYear());
                         removeAllChildNodes(month);
                         month.append(months[currentCal.getMonth()]);
-
-
                     } else {
+                        // not login, force logout
                         initGuestFunc();
                         alert("Invalid user credential!");
                     }
@@ -586,6 +581,7 @@
             narrow();
         }
 
+        // operations related to events
         const cateSelect = document.getElementById("categories");
         const grpSelect = document.getElementById("groups");
         const dateBegin = document.getElementById("date-begin");
@@ -600,6 +596,7 @@
         const share = document.getElementById("share");
         const displayShareToken = document.getElementById("shareToken");
 
+        // delete
         del.addEventListener("click", (event) => {
             post('/event/delEvent.php', {
                 uid: localStorage.uid,
@@ -617,6 +614,7 @@
             })
         }, false);
 
+        // share
         share.addEventListener("click", (event) => {
             post('/event/shareEvent.php', {
                 uid: localStorage.uid,
@@ -635,7 +633,9 @@
             })
         }, false);
 
+        // edit
         edit.addEventListener("click", (event) => {
+            // process inputs
             if (isNaN(dateBegin.valueAsNumber) || isNaN(dateEnd.valueAsNumber)) {
                 alert("Invalid Time!")
                 return;
@@ -672,6 +672,7 @@
 
             let newTagTxt = newTag.value.trim();
 
+            // request edit
             post('/event/editEvent.php', {
                 uid: localStorage.uid,
                 token: localStorage.token,
@@ -696,11 +697,15 @@
             })
         }, false);
 
+        // some necessary steps before open edit panel
         function prepareEdit(eid) {
+            // clean
             clearInputs();
             edit.classList.remove("displayNone");
             del.classList.remove("displayNone");
             share.classList.remove("displayNone");
+
+            // get event data
             post("/event/getEvent.php", {
                 uid: localStorage.uid,
                 token: localStorage.token,
@@ -714,6 +719,7 @@
                         del.classList.add("displayNone");
                         share.classList.add("displayNone");
                     }
+                    // map value to editor
                     title.value = data["title"];
                     detail.value = data["detail"];
 
@@ -794,8 +800,6 @@
                         }
                     })
                     // end of getting tags/ groups
-
-
                 } else if (res["code"] == 0) {
                     initGuestFunc();
                     alert("Invalid user credential!");
@@ -803,11 +807,13 @@
                     alert("Something wrong, please refresh the page");
                 }
             })
+            // show and unshow some btns
             document.getElementById("exist").classList.remove("displayNone");
             document.getElementById("new").classList.add("displayNone");
             wide();
         }
 
+        // same to above
         function prepareAdd() {
             clearInputs();
             post("/category/getCates.php", {
@@ -869,7 +875,9 @@
             wide();
         }
 
+        // add an event
         function submitEvent() {
+            // filter input
             if (isNaN(dateBegin.valueAsNumber) || isNaN(dateEnd.valueAsNumber)) {
                 alert("Invalid Time!")
                 return;
@@ -931,6 +939,8 @@
                 }
             });
         }
+
+        // some helper functions
 
         function clearInputs() {
             title.value = null;
@@ -1052,32 +1062,6 @@
                 })
             }
         }
-
-        // function createNewCate() {
-        //     let cateName = document.getElementById("addCate").value;
-        //     let regex = /^[\w_\.\-]+$/;
-        //     if (!regex.test(cateName)) {
-        //         alert("Invalid Input!");
-        //     } else {
-        //         post("/category/addCate.php", {
-        //             uid: localStorage.uid,
-        //             token: localStorage.token,
-        //             name: cateName,
-        //             color: "#000000"
-        //         }).then(res => {
-        //             if (res["code"]) {
-        //                 initUserFunc();
-        //                 alert("Created!");
-        //             } else if (res["code"] == 0) {
-        //                 initGuestFunc();
-        //                 alert("Invalid user credential!")
-        //             } else {
-        //                 alert("Error, please refresh webpage!");
-        //             }
-        //         })
-        //     }
-        // }
-
     </script>
 </body>
 
