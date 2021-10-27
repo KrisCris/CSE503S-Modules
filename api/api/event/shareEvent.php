@@ -8,7 +8,7 @@ if(isset($_POST["eid"])){
     if($ret){
         reply_json(1, $ret);
     } else {
-        reply_json(-1);
+        reply_json(-1, [], "Invalid Operation");
     }
 } else {
     reply_json(-1);

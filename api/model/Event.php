@@ -127,24 +127,29 @@ class Event
         return null;
     }
 
-    public static function editEvent($id, $cid, $gid, $title, $detail, $isFullDay, $start, $end = null)
+    public static function editEvent($id, $uid, $cid, $gid, $title, $detail, $isFullDay, $start, $end = null)
     {
         global $conn;
-        $stmt = $conn->prepare("update event set cid=?, gid=?, title=?, detail=?, isFullDay=?, start=?, end=? where id=?");
+        $stmt = $conn->prepare("update event set cid=?, gid=?, title=?, detail=?, isFullDay=?, start=?, end=? where id=? and uid=?");
         if (!$stmt) {
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
-        $stmt->bind_param('iissiiii', $cid, $gid, $title, $detail, $isFullDay, $start, $end, $id);
+        $stmt->bind_param('iissiiiii', $cid, $gid, $title, $detail, $isFullDay, $start, $end, $id, $uid);
         if ($stmt->execute()) {
-            $stmt->close();
-            return true;
+            if($stmt->affected_rows){
+                $stmt->close();
+                return true;
+            } else {
+                $stmt->close();
+                return false;
+            }
         } else {
             return false;
         }
     }
 
-    public static function removeEvent($id)
+    public static function removeEvent($id, $uid)
     {
         $tmpE = static::getEventById($id);
         $cid = null;
@@ -153,17 +158,22 @@ class Event
         }
 
         global $conn;
-        $stmt = $conn->prepare("delete from event where id=?");
+        $stmt = $conn->prepare("delete from event where id=? and uid=?");
         if (!$stmt) {
             printf("Query Prep Failed: %s\n", $conn->error);
             exit;
         }
-        $stmt->bind_param('i', $id);
+        $stmt->bind_param('ii', $id, $uid);
         if ($stmt->execute()) {
-            $stmt->close();
-            require 'Category.php';
-            Category::removeUnused($cid);
-            return true;
+            if($stmt->affected_rows){
+                $stmt->close();
+                require 'Category.php';
+                Category::removeUnused($cid);
+                return true;
+            } else {
+                $stmt->close();
+                return false;
+            }
         }
         $stmt->close();
         return false;

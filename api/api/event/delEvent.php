@@ -8,8 +8,8 @@ if(!isset($_POST["eid"])){
     exit;
 }
 
-if(Event::removeEvent($_POST["eid"])){
+if(Event::removeEvent($_POST["eid"], $_POST["uid"])){
     reply_json(1);
 } else {
-    reply_json(-1, [], "err");
+    reply_json(-1,[],"Invalid Operation!");
 }
