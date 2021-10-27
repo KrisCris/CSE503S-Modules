@@ -12,9 +12,9 @@ Xingchen Yang-501890-xingcheny
 
 2. Link to webpage
 
-    - [Link using my domain](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
+    - [Link using my domain name](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
 
-    - [Link using domain provided by AWS](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
+    - [Link using domain name provided by AWS](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
 
 3. Created Accounts
 
