@@ -8,13 +8,22 @@ Xingchen Yang-501890-xingcheny
 
 1. Database
 
-   ![Database UML](DB.png)
+  ![Database UML](DB.png)
 
 2. Link to webpage
 
-  - [Link using my domain](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
+    - [Link using my domain](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
 
-  - [Link using domain provided by AWS](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
+    - [Link using domain provided by AWS](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
+
+3. Created Accounts
+
+    - user1
+    - user2
+    - groupuser1
+    - groupuser2 
+  
+    **Note:** password is the same as username
 
 ## Grading
 
@@ -46,7 +55,7 @@ Xingchen Yang-501890-xingcheny
 
    - Additional Calendars Features (worth 15 points):
 
-     - [ ] Users can tag an event with a particular category and enable/disable those tags in the calendar view. (5 points)
+     - [x] Users can tag an event with a particular category and enable/disable those tags in the calendar view. (5 points)
      - [x] Users can share their calendar with additional users. (5 points)
        - User can click an event, then click `share` button to share that event via a sharing code.
      - [x] Users can create group events that display on multiple users calendars (5 points)

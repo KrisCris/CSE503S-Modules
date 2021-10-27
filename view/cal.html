@@ -44,10 +44,10 @@
             <button onclick="addSharedEvent()">Add Event!</button>
         </div>
         <br><br>
-        <div>
+        <!-- <div>
             <input type="text" name="addCate" id="addCate" placeholder="create new category"><br>
             <button onclick="createNewCate()">Create Tag!</button>
-        </div>
+        </div> -->
 
 
     </div>
@@ -112,7 +112,8 @@
                             <!-- categories -->
                         </select>
                         <p>New tags?</p>
-                        <textarea name="newTag" id="newTag" cols="30" rows="2" placeholder="Input tag name to create a new one"></textarea>
+                        <textarea name="newTag" id="newTag" cols="30" rows="2"
+                            placeholder="Input tag name to create a new one"></textarea>
                         <p>Group</p>
                         <select name="group" id="groups">
                             <!-- groups -->
@@ -266,7 +267,7 @@
             document.getElementById("createGroup").value = null;
             document.getElementById("groupCode").value = null;
             document.getElementById("sharedEvent").value = null;
-            document.getElementById("addCate").value = null;
+            // document.getElementById("addCate").value = null;
         }
 
         const addEvent = document.getElementById("addEvent");
@@ -395,7 +396,7 @@
                     if (res['code'] == 1) {
                         // store events of this month;
                         monthlyEvents = res['data'];
-
+                        let activeTags = getActivatedTags();
                         // draw cal
                         removeAllChildNodes(days);
                         for (let week of weeks) {
@@ -409,7 +410,13 @@
 
                                 // show if has event
                                 if (monthlyEvents[a.getAttribute("timestamp")].length) {
-                                    a.classList.add("event");
+                                    // disable some based on tags
+                                    for(let event of monthlyEvents[a.getAttribute("timestamp")]){
+                                        if(activeTags.includes(event['cid'])){
+                                            // has event
+                                            a.classList.add("event");
+                                        }
+                                    }
                                 }
 
                                 if (
@@ -469,8 +476,21 @@
                     noneTag.setAttribute("href", "#");
                     noneTag.append("NoneTag");
                     noneTag.setAttribute("cid", 0);
+
+                    // enable / disable a tag
+                    noneTag.setAttribute("activated", "true");
+                    noneTag.addEventListener("click", (event) => {
+                        if (event.target.getAttribute("activated")=="true") {
+                            event.target.setAttribute("activated", "false");
+                        } else {
+                            event.target.setAttribute("activated", "true");
+                        }
+                        drawCalender();
+                    }, false);
+
                     h3.append(noneTag);
                     tags.append(h3);
+
 
                     for (let c of res["data"]) {
                         let h3 = document.createElement('h3');
@@ -478,6 +498,18 @@
                         tag.setAttribute("href", "#");
                         tag.append(c["name"]);
                         tag.setAttribute("cid", c["id"]);
+
+                        // enable / disable a tag
+                        tag.setAttribute("activated", "true");
+                        tag.addEventListener("click", (event) => {
+                            if (event.target.getAttribute("activated")=="true") {
+                                event.target.setAttribute("activated", "false");
+                            } else {
+                                event.target.setAttribute("activated", "true");
+                            }
+                            drawCalender();
+                        }, false);
+
                         h3.append(tag);
                         tags.append(h3);
                     }
@@ -488,6 +520,16 @@
                     alert("Something wrong, please refresh the page");
                 }
             })
+        }
+
+        function getActivatedTags() {
+            let arr = [];
+            for(let i = 0; i < tags.children.length; i++){
+                if(tags.children[i].children[0].getAttribute("activated")=='true'){
+                    arr[arr.length] = tags.children[i].children[0].getAttribute("cid")==0 ? null : parseInt(tags.children[i].children[0].getAttribute("cid"));
+                }
+            }
+            return arr;
         }
 
         function setSelectedDate(date, isLogin) {
@@ -511,23 +553,28 @@
             } else {
                 // if we successfully got event lists
                 if (monthlyEvents) {
+                    let activeTags = getActivatedTags();
                     let ts = date.getAttribute("timestamp");
                     let dailyEvents = monthlyEvents[ts];
                     let count = 0;
                     for (let event of dailyEvents) {
+                        // skip events from disabled tags
+                        if(!activeTags.includes(event["cid"])){
+                            continue;
+                        }
                         let e = document.createElement("li");
                         e.append(event["title"]);
                         e.addEventListener("click", function () {
                             prepareEdit(event["id"]);
                         }, false);
-
+                        e.setAttribute("isEvent",true);
                         eventList.append(e);
                         count++;
                     }
                     // no event on that day...
                     if (count == 0) {
                         let noticeEvent = document.createElement("li");
-                        noticeEvent.append("Today has no event!");
+                        noticeEvent.append("Today has no event from selected tags!");
                         eventList.append(noticeEvent);
                     }
                 } else {
@@ -662,7 +709,7 @@
                 if (res["code"] == 1) {
                     let data = res["data"];
                     // prevent modifying group events that belong to others
-                    if(data["uid"]!=localStorage.uid){
+                    if (data["uid"] != localStorage.uid) {
                         edit.classList.add("displayNone");
                         del.classList.add("displayNone");
                         share.classList.add("displayNone");
@@ -892,9 +939,9 @@
             removeAllChildNodes(displayShareToken);
         }
 
-        function getPickerTime(picker){
+        function getPickerTime(picker) {
             let t = new Date(picker.value);
-            return parseInt(t.getTime()/1000);
+            return parseInt(t.getTime() / 1000);
         }
 
         function timestampToISOLocalTime(timestamp) {
@@ -1006,30 +1053,30 @@
             }
         }
 
-        function createNewCate() {
-            let cateName = document.getElementById("addCate").value;
-            let regex = /^[\w_\.\-]+$/;
-            if (!regex.test(cateName)) {
-                alert("Invalid Input!");
-            } else {
-                post("/category/addCate.php", {
-                    uid: localStorage.uid,
-                    token: localStorage.token,
-                    name: cateName,
-                    color: "#000000"
-                }).then(res => {
-                    if (res["code"]) {
-                        initUserFunc();
-                        alert("Created!");
-                    } else if (res["code"] == 0) {
-                        initGuestFunc();
-                        alert("Invalid user credential!")
-                    } else {
-                        alert("Error, please refresh webpage!");
-                    }
-                })
-            }
-        }
+        // function createNewCate() {
+        //     let cateName = document.getElementById("addCate").value;
+        //     let regex = /^[\w_\.\-]+$/;
+        //     if (!regex.test(cateName)) {
+        //         alert("Invalid Input!");
+        //     } else {
+        //         post("/category/addCate.php", {
+        //             uid: localStorage.uid,
+        //             token: localStorage.token,
+        //             name: cateName,
+        //             color: "#000000"
+        //         }).then(res => {
+        //             if (res["code"]) {
+        //                 initUserFunc();
+        //                 alert("Created!");
+        //             } else if (res["code"] == 0) {
+        //                 initGuestFunc();
+        //                 alert("Invalid user credential!")
+        //             } else {
+        //                 alert("Error, please refresh webpage!");
+        //             }
+        //         })
+        //     }
+        // }
 
     </script>
 </body>
