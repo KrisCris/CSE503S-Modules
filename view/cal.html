@@ -24,24 +24,29 @@
 
     <div id="logout" class="displayNone">
         <div>
-            <h1 id="hi"></h1>
+            <h1 id="hi">hi</h1>
             <button id="logoutBtn">LOGOUT</button>
         </div>
         <br><br>
         <div>
             <input type="text" name="joinGroup" id="joinGroup" placeholder="code for join group!"><br>
-            <button onclick="joinGroup()">Join!</button>
+            <button onclick="joinGroup()">Join Group!</button>
         </div>
         <br><br>
         <div>
             <input type="text" name="createGroup" id="createGroup" placeholder="create group!"><br>
-            <button onclick="createGroup()">Create!</button>
+            <button onclick="createGroup()">Create Group!</button>
             <p>Group Code: <br><span id="groupCode"></span></p>
         </div>
         <br><br>
         <div>
-            <input type="text" name="sharedEvent" , id="sharedEvent" placeholder="code for shared event!"><br>
-            <button onclick="addSharedEvent()">Add!</button>
+            <input type="text" name="sharedEvent" id="sharedEvent" placeholder="code for shared event!"><br>
+            <button onclick="addSharedEvent()">Add Event!</button>
+        </div>
+        <br><br>
+        <div>
+            <input type="text" name="addCate" id="addCate" placeholder="create new category"><br>
+            <button onclick="createNewCate()">Create Tag!</button>
         </div>
 
 
@@ -49,21 +54,22 @@
 
     <div class="calendar">
         <div id="tags" class="row top">
-            <h3><a href="#">work</a></h3>
+            <!-- tags -->
+            <!-- <h3><a href="#">work</a></h3>
             <h3><a href="#">home</a></h3>
             <h3><a href="#">course</a></h3>
-            <h3><a href="#">group1</a></h3>
+            <h3><a href="#">group1</a></h3> -->
         </div>
         <div class="row bottom">
             <div class="col left">
                 <div class="content">
                     <h1 id="year">
-                        <!-- year -->
+                        YEAR
                     </h1>
                     <h2 class="month">
                         <a class="prev" href="#">←</a>
                         <span id="month">
-                            <!-- month -->
+                            MONTH
                         </span>
                         <a class="next" href="#">→</a>
                     </h2>
@@ -78,7 +84,7 @@
                         <li><a href="#">SAT</a></li>
                     </ul>
                     <ul id="days" class="days">
-                        <!-- dates -->
+                        <!-- DATES -->
                     </ul>
                 </div>
             </div>
@@ -86,11 +92,11 @@
             <div class="col middle">
                 <div class="content">
                     <h2><span id="weekday">
-                            <!-- weekday -->
+                            WEEKDAY
                         </span><a id="addEvent" href="#">+</a></h2>
                     <div class="events">
                         <ul class="eventList">
-                            <!-- events -->
+                            <!-- EVENT -->
                         </ul>
                     </div>
                 </div>
@@ -99,17 +105,33 @@
             <div class="col right">
                 <div class="content">
                     <div id="editor">
-                        <input type="datetime-local" name="begin" id="date-begin">
-                        <input type="datetime-local" name="end" id="date-end">
+                        <p>Start Date</p><input type="datetime-local" name="begin" id="date-begin">
+                        <p>End Date</p><input type="datetime-local" name="end" id="date-end">
+                        <p>Category (Tag)</p>
+                        <select name="categories" id="categories">
+                            <!-- categories -->
+                        </select>
+                        <p>New tags?</p>
+                        <textarea name="newTag" id="newTag" cols="30" rows="2" placeholder="Input tag name to create a new one"></textarea>
+                        <p>Group</p>
                         <select name="group" id="groups">
                             <!-- groups -->
                         </select>
                         <textarea name="title" id="title" cols="30" rows="2" placeholder="Title"></textarea>
                         <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
-                        <button id="submit">Submit</button>
-                    </div>
-                    <div id="eventDetail" class="displayNone">
-                        test
+                        <div id="new">
+                            <button id="submit">Submit</button>
+                        </div>
+                        <div id="exist">
+                            <button id="edit">Edit</button>
+                            <button id="del">Delete</button>
+                            <button id="share">Share</button>
+                            <p id="shareToken"></p>
+                        </div>
+
+
+                        <button onclick="narrow()">Back</button>
+
                     </div>
                 </div>
             </div>
@@ -148,10 +170,6 @@
             currentCal = m.nextMonth().getWeeks()[1].getDates()[1];
             drawCalender();
         }, false);
-
-        //
-
-
 
         // Login Logout Register
         const regBtn = document.getElementById("regBtn");
@@ -244,19 +262,18 @@
         function showLogin() {
             loginDiv.removeAttribute("class");
             logoutDiv.setAttribute("class", "displayNone");
+            document.getElementById("joinGroup").value = null;
+            document.getElementById("createGroup").value = null;
+            document.getElementById("groupCode").value = null;
+            document.getElementById("sharedEvent").value = null;
+            document.getElementById("addCate").value = null;
         }
-        //
 
-        const dateBegin = document.getElementById("date-begin");
-        const dateEnd = document.getElementById("date-end");
-        const submit = document.getElementById("submit");
-        const title = document.getElementById("title");
-        const detail = document.getElementById("detail");
-        const tags = document.getElementById("tags");
         const addEvent = document.getElementById("addEvent");
         const eventList = document.getElementsByClassName("eventList")[0];
 
         // Doc Init
+        const tags = document.getElementById("tags");
 
         document.addEventListener("DOMContentLoaded", initCalender, false);
 
@@ -281,8 +298,10 @@
 
         function initUserFunc() {
             showLogout();
-            addEvent.addEventListener("click", wide, false);
+            addEvent.addEventListener("click", prepareAdd, false);
             submit.addEventListener("click", submitEvent, false);
+            narrow();
+            showTags();
             drawCalender()
         }
 
@@ -292,19 +311,11 @@
             localStorage.removeItem('token');
             localStorage.removeItem('username');
             showLogin();
-            addEvent.removeEventListener("click", wide, false);
+            addEvent.removeEventListener("click", prepareAdd, false);
             submit.removeEventListener("click", submitEvent, false)
+            clearTags();
             drawCalender();
-        }
-
-        function submitEvent() {
-            console.log(parseInt(dateBegin.valueAsNumber / 1000));
-            console.log(parseInt(dateEnd.valueAsNumber / 1000));
-            if (dateEnd.valueAsNumber < dateBegin.valueAsNumber) {
-                //wrong
-            }
-            console.log(title.value);
-            console.log(detail.value);
+            narrow();
         }
 
         function drawCalender() {
@@ -321,9 +332,9 @@
             breakFlag:
             for (let week of weeks) {
                 for (let date of week.getDates()) {
-                    if(date.getTimezoneOffset() != offset){
-                        beginTS2 = parseInt(date.getTime()/1000);
-                        endTS2 = parseInt(date.getTime()/1000)-1;  
+                    if (date.getTimezoneOffset() != offset) {
+                        beginTS2 = parseInt(date.getTime() / 1000);
+                        endTS2 = parseInt(date.getTime() / 1000) - 1;
                         break breakFlag;
                     }
                 }
@@ -397,9 +408,6 @@
                                 a.setAttribute("timestamp", parseInt(date.getTime() / 1000))
 
                                 // show if has event
-                                if (!monthlyEvents[a.getAttribute("timestamp")]) {
-                                    console.log(a.getAttribute("timestamp"));
-                                }
                                 if (monthlyEvents[a.getAttribute("timestamp")].length) {
                                     a.classList.add("event");
                                 }
@@ -444,16 +452,42 @@
             }
         }
 
-        function getMonthlyData(yr, mo) {
-            let isLogin = false;
+        function clearTags() {
+            removeAllChildNodes(tags);
+        }
 
-            let currentMonth = new Month(yr, mo);
-            let weeks = currentMonth.getWeeks();
+        function showTags() {
+            post("/category/getCates.php", {
+                uid: localStorage.uid,
+                token: localStorage.token
+            }).then(res => {
+                if (res["code"] == 1) {
+                    removeAllChildNodes(tags);
+                    // default choice
+                    let h3 = document.createElement('h3');
+                    let noneTag = document.createElement("a");
+                    noneTag.setAttribute("href", "#");
+                    noneTag.append("NoneTag");
+                    noneTag.setAttribute("cid", 0);
+                    h3.append(noneTag);
+                    tags.append(h3);
 
-            let beginTS = parseInt((weeks[0].getDates()[0].getTime()) / 1000);
-            let endTS = parseInt((weeks[weeks.length - 1].nextWeek().getDates()[0].getTime() - 1) / 1000);
-
-            //todo
+                    for (let c of res["data"]) {
+                        let h3 = document.createElement('h3');
+                        let tag = document.createElement("a");
+                        tag.setAttribute("href", "#");
+                        tag.append(c["name"]);
+                        tag.setAttribute("cid", c["id"]);
+                        h3.append(tag);
+                        tags.append(h3);
+                    }
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert("Something wrong, please refresh the page");
+                }
+            })
         }
 
         function setSelectedDate(date, isLogin) {
@@ -482,8 +516,11 @@
                     let count = 0;
                     for (let event of dailyEvents) {
                         let e = document.createElement("li");
-                        let a = document.createElement("a");
                         e.append(event["title"]);
+                        e.addEventListener("click", function () {
+                            prepareEdit(event["id"]);
+                        }, false);
+
                         eventList.append(e);
                         count++;
                     }
@@ -499,18 +536,374 @@
                     eventList.append(noticeEvent);
                 }
             }
+            narrow();
+        }
+
+        const cateSelect = document.getElementById("categories");
+        const grpSelect = document.getElementById("groups");
+        const dateBegin = document.getElementById("date-begin");
+        const dateEnd = document.getElementById("date-end");
+        const submit = document.getElementById("submit");
+        const title = document.getElementById("title");
+        const detail = document.getElementById("detail");
+        const newTag = document.getElementById("newTag");
+
+        const edit = document.getElementById("edit");
+        const del = document.getElementById("del");
+        const share = document.getElementById("share");
+        const displayShareToken = document.getElementById("shareToken");
+
+        del.addEventListener("click", (event) => {
+            post('/event/delEvent.php', {
+                uid: localStorage.uid,
+                token: localStorage.token,
+                eid: del.getAttribute("eid")
+            }).then(res => {
+                if (res['code'] == 1) {
+                    initUserFunc();
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert(res['msg']);
+                }
+            })
+        }, false);
+
+        share.addEventListener("click", (event) => {
+            post('/event/shareEvent.php', {
+                uid: localStorage.uid,
+                token: localStorage.token,
+                eid: share.getAttribute("eid")
+            }).then(res => {
+                if (res['code'] == 1) {
+                    removeAllChildNodes(displayShareToken);
+                    displayShareToken.append(res['data']['shareToken']);
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert(res['msg']);
+                }
+            })
+        }, false);
+
+        edit.addEventListener("click", (event) => {
+            if (isNaN(dateBegin.valueAsNumber) || isNaN(dateEnd.valueAsNumber)) {
+                alert("Invalid Time!")
+                return;
+            }
+            let startTime = getPickerTime(dateBegin);
+            let endTime = getPickerTime(dateEnd);
+            let currentTime = parseInt(new Date().getTime() / 1000)
+            if (endTime < startTime || startTime < currentTime) {
+                alert("Invalid Time!")
+                return;
+            }
+            let titleTxt = title.value.trim();
+            let detailTxt = detail.value.trim();
+
+            if (titleTxt == "") {
+                alert("Write something for event title!")
+                return;
+            }
+
+            let cid = 0;
+            let gid = 0;
+            for (let c of cateSelect.children) {
+                if (c.selected) {
+                    cid = c.value;
+                    break;
+                }
+            }
+            for (let g of grpSelect.children) {
+                if (g.selected) {
+                    gid = g.value;
+                    break;
+                }
+            }
+
+            let newTagTxt = newTag.value.trim();
+
+            post('/event/editEvent.php', {
+                uid: localStorage.uid,
+                token: localStorage.token,
+                eid: edit.getAttribute("eid"),
+                cid: cid,
+                gid: gid,
+                title: titleTxt,
+                detail: detailTxt,
+                isFullDay: 0,
+                start: startTime,
+                end: endTime,
+                newTag: newTagTxt
+            }).then(res => {
+                if (res['code'] == 1) {
+                    initUserFunc();
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert(res['msg']);
+                }
+            })
+        }, false);
+
+        function prepareEdit(eid) {
+            clearInputs();
+            edit.classList.remove("displayNone");
+            del.classList.remove("displayNone");
+            share.classList.remove("displayNone");
+            post("/event/getEvent.php", {
+                uid: localStorage.uid,
+                token: localStorage.token,
+                eid: eid
+            }).then(res => {
+                if (res["code"] == 1) {
+                    let data = res["data"];
+                    // prevent modifying group events that belong to others
+                    if(data["uid"]!=localStorage.uid){
+                        edit.classList.add("displayNone");
+                        del.classList.add("displayNone");
+                        share.classList.add("displayNone");
+                    }
+                    title.value = data["title"];
+                    detail.value = data["detail"];
+
+                    let min = timestampToISOLocalTime();
+
+                    let oldBegin = timestampToISOLocalTime(data["start"] * 1000);
+                    let oldEnd = timestampToISOLocalTime(data["end"] * 1000);
+
+                    dateBegin.setAttribute("min", min);
+                    dateEnd.setAttribute("min", min);
+                    dateBegin.value = oldBegin;
+                    dateEnd.value = oldEnd;
+
+
+                    edit.setAttribute("eid", eid);
+                    del.setAttribute("eid", eid);
+                    share.setAttribute("eid", eid);
+
+                    // get all available group/tag choices
+                    post("/category/getCates.php", {
+                        uid: localStorage.uid,
+                        token: localStorage.token
+                    }).then(res => {
+                        if (res["code"] == 1) {
+                            removeAllChildNodes(cateSelect);
+                            // default choice
+                            let defaultOpt = document.createElement("option");
+                            defaultOpt.setAttribute("value", 0);
+                            defaultOpt.append("No Category");
+                            cateSelect.append(defaultOpt);
+                            // set current choice
+                            if (data["cid"] == null) {
+                                defaultOpt.selected = true;
+                            }
+
+                            for (let c of res["data"]) {
+                                let choice = document.createElement("option");
+                                choice.setAttribute("value", c["id"]);
+                                choice.append(c["name"]);
+                                cateSelect.append(choice);
+                                // set current choice
+                                if (data["cid"] && data["cid"] == c["id"]) {
+                                    choice.selected = true;
+                                }
+                            }
+
+                            post("/group/getGroups.php", {
+                                uid: localStorage.uid,
+                                token: localStorage.token
+                            }).then(res => {
+                                if (res['code'] == 1) {
+                                    removeAllChildNodes(grpSelect);
+                                    let defaultOpt = document.createElement("option");
+                                    defaultOpt.setAttribute("value", 0);
+                                    defaultOpt.append("No Group");
+                                    grpSelect.append(defaultOpt);
+                                    // set current choice
+                                    if (data["gid"] == null) {
+                                        defaultOpt.selected = true;
+                                    }
+
+                                    for (let g of res["data"]) {
+                                        let choice = document.createElement("option");
+                                        choice.setAttribute("value", g["gid"]);
+                                        choice.append(g["name"]);
+                                        grpSelect.append(choice);
+                                        // set current choice
+                                        if (data["gid"] && data["gid"] == g["gid"]) {
+                                            choice.selected = true;
+                                        }
+                                    }
+                                } else {
+                                    alert(res["msg"]);
+                                }
+                            })
+                        } else {
+                            alert(res["msg"]);
+                        }
+                    })
+                    // end of getting tags/ groups
+
+
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert("Something wrong, please refresh the page");
+                }
+            })
+            document.getElementById("exist").classList.remove("displayNone");
+            document.getElementById("new").classList.add("displayNone");
+            wide();
         }
 
         function prepareAdd() {
+            clearInputs();
             post("/category/getCates.php", {
                 uid: localStorage.uid,
                 token: localStorage.token
             }).then(res => {
-                if (res["code"]) {
+                if (res["code"] == 1) {
+                    removeAllChildNodes(cateSelect);
+                    // default choice
+                    let defaultOpt = document.createElement("option");
+                    defaultOpt.setAttribute("value", 0);
+                    defaultOpt.append("No Category");
+                    cateSelect.append(defaultOpt);
 
+                    for (let c of res["data"]) {
+                        let choice = document.createElement("option");
+                        choice.setAttribute("value", c["id"]);
+                        choice.append(c["name"]);
+                        cateSelect.append(choice);
+                    }
 
+                    post("/group/getGroups.php", {
+                        uid: localStorage.uid,
+                        token: localStorage.token
+                    }).then(res => {
+                        if (res['code'] == 1) {
+                            removeAllChildNodes(grpSelect);
+                            let defaultOpt = document.createElement("option");
+                            defaultOpt.setAttribute("value", 0);
+                            defaultOpt.append("No Group");
+                            grpSelect.append(defaultOpt);
+
+                            for (let g of res["data"]) {
+                                let choice = document.createElement("option");
+                                choice.setAttribute("value", g["gid"]);
+                                choice.append(g["name"]);
+                                grpSelect.append(choice);
+                            }
+                        }
+                    })
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert("Something wrong, please refresh the page");
                 }
             })
+
+            dft = timestampToISOLocalTime(selectedDay.getAttribute("timestamp") * 1000);
+            min = timestampToISOLocalTime()
+
+            dateBegin.setAttribute("min", min);
+            dateBegin.value = dft;
+            dateEnd.setAttribute("min", min);
+            dateEnd.value = dft;
+
+            document.getElementById("new").classList.remove("displayNone");
+            document.getElementById("exist").classList.add("displayNone");
+            wide();
+        }
+
+        function submitEvent() {
+            if (isNaN(dateBegin.valueAsNumber) || isNaN(dateEnd.valueAsNumber)) {
+                alert("Invalid Time!")
+                return;
+            }
+            let startTime = getPickerTime(dateBegin);
+            let endTime = getPickerTime(dateEnd);
+            let currentTime = parseInt(new Date().getTime() / 1000)
+            if (endTime < startTime || startTime < currentTime) {
+                alert("Invalid Time!")
+                return;
+            }
+            let titleTxt = title.value.trim();
+            let detailTxt = detail.value.trim();
+
+            if (titleTxt == "") {
+                alert("Write something for event title!")
+                return;
+            }
+
+            let cid = 0;
+            let gid = 0;
+            for (let c of cateSelect.children) {
+                if (c.selected) {
+                    cid = c.value;
+                    break;
+                }
+            }
+            for (let g of grpSelect.children) {
+                if (g.selected) {
+                    gid = g.value;
+                    break;
+                }
+            }
+
+            let newTagTxt = newTag.value.trim();
+
+            let data = {
+                uid: localStorage.uid,
+                token: localStorage.token,
+                cid: cid,
+                gid: gid,
+                title: titleTxt,
+                detail: detailTxt,
+                isFullDay: 0,
+                start: startTime,
+                end: endTime,
+                newTag: newTagTxt
+            };
+
+            post("/event/addEvent.php", data).then(res => {
+                if (res["code"] == 1) {
+                    clearInputs();
+                    initUserFunc();
+                } else if (res["code"] == 0) {
+                    initGuestFunc();
+                    alert("Invalid user credential!");
+                } else {
+                    alert("Something wrong, please refresh the page");
+                }
+            });
+        }
+
+        function clearInputs() {
+            title.value = null;
+            detail.value = null;
+            newTag.value = null;
+            removeAllChildNodes(displayShareToken);
+        }
+
+        function getPickerTime(picker){
+            let t = new Date(picker.value);
+            return parseInt(t.getTime()/1000);
+        }
+
+        function timestampToISOLocalTime(timestamp) {
+            let t = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString();
+            if (timestamp) {
+                t = new Date(new Date(timestamp).toString().split('GMT')[0] + ' UTC').toISOString();
+            }
+            t = t.substr(0, t.length - 1);
+            return t;
         }
 
         function removeAllChildNodes(parent) {
@@ -590,19 +983,44 @@
         }
 
         function addSharedEvent() {
-            let shareToken = document.getElementById("sharedEvent").value;
+            let shareTokenTxt = document.getElementById("sharedEvent").value;
             let regex = /^[\w_\.\-]+$/;
-            if (!regex.test(shareToken)) {
+            if (!regex.test(shareTokenTxt)) {
                 alert("Invalid Input!");
             } else {
                 post("/event/addShare.php", {
                     uid: localStorage.uid,
                     token: localStorage.token,
-                    shareToken: shareToken
+                    shareToken: shareTokenTxt
                 }).then(res => {
                     if (res["code"]) {
                         initUserFunc();
                         alert("Added!");
+                    } else if (res["code"] == 0) {
+                        initGuestFunc();
+                        alert("Invalid user credential!")
+                    } else {
+                        alert("Error, please refresh webpage!");
+                    }
+                })
+            }
+        }
+
+        function createNewCate() {
+            let cateName = document.getElementById("addCate").value;
+            let regex = /^[\w_\.\-]+$/;
+            if (!regex.test(cateName)) {
+                alert("Invalid Input!");
+            } else {
+                post("/category/addCate.php", {
+                    uid: localStorage.uid,
+                    token: localStorage.token,
+                    name: cateName,
+                    color: "#000000"
+                }).then(res => {
+                    if (res["code"]) {
+                        initUserFunc();
+                        alert("Created!");
                     } else if (res["code"] == 0) {
                         initGuestFunc();
                         alert("Invalid user credential!")

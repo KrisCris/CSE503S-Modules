@@ -1,3 +1,4 @@
+CREATE DATABASE module5 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 use module5;
 create table user
 (
@@ -22,7 +23,7 @@ create table grp
 (
     id mediumint auto_increment not null,
     uid mediumint not null,
-    uuid varchar(100) not null;
+    uuid varchar(100) not null,
     name varchar(100),
     primary key (id),
     foreign key (uid) references user(id)
