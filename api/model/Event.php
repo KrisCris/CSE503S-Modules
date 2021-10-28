@@ -254,7 +254,6 @@ class Event
         global $conn;
         $stmt = $conn->prepare(
             "select                 
-                event.cid,
                 event.title,
                 event.detail,
                 event.isFullDay,
@@ -269,11 +268,11 @@ class Event
         }
         $stmt->bind_param('s', $token);
         $stmt->execute();
-        $stmt->bind_result($cid, $title, $detail, $isFullDay, $start, $end);
+        $stmt->bind_result($title, $detail, $isFullDay, $start, $end);
         if($stmt->fetch()){
             $stmt->close();
             
-            $ret = static::addEvent($uid, $cid, null, $title, $detail, $isFullDay, $start, $end);
+            $ret = static::addEvent($uid, null, null, $title, $detail, $isFullDay, $start, $end);
             if($ret){
                 return $ret;
             } else {
