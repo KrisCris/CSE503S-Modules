@@ -53,7 +53,7 @@ class DataManager{
             // gen token to maintain status
             let randToken = require('crypto').randomBytes(64).toString('hex');
             this.tokens[randToken] = {username:username, time:Date.now()};
-            socket.token = randToken;
+            socket.data.token = randToken;
             return randToken;
         } else {
             return false;
