@@ -172,7 +172,8 @@ a{
     width:90%;
     background-color: #6e7480;
     border: 0px;
-
+    border-radius: 0.5rem;
+    padding: 0.5rem;
 }
 
 
