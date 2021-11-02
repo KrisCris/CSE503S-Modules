@@ -44,8 +44,8 @@ class DataManager{
                 sockets: [socket],
                 online: true,
                 status: 1,
-                ownedServers:{ },
-                joinedServers:{ }
+                ownedServers:[],
+                joinedServers:[]
             };
             this.users[username] = user;
             socket.data.username = username;
@@ -93,22 +93,24 @@ class DataManager{
             } else {
                 this.tokens[token]["time"] = Date.now();
                 socket.data.token = token;
+                socket.data.username = username;
 
                 // normally this won't happen 
                 if(this.users[username].sockets.includes(socket)){
-                    return randToken;
+                    return true;
                 }
 
                 // multi device
                 this.users[username].sockets.push(socket);
-                return token;
+                return true;
             }
         }
     }
 
     logoutUser(socket){
         if(socket.data.token && this.tokens[socket.data.token]){
-            delete this.tokens[socket.data.token]
+            delete this.tokens[socket.data.token];
+            socket.data.username = undefined;
         }
         this.disconnUser(socket);
     }
@@ -123,6 +125,97 @@ class DataManager{
                 this.users[socket.data.username].sockets.splice(idx, 1);
             }
         }
+    }
+
+    createNamespace(socket, name, password = null){
+        // check availability
+        if(!this.hasNamespace(name)){
+            // add this server under owner's name
+            let username = socket.data.username;
+            if(this.hasUser(username)){
+                this.users[username].ownedServers.push(name)
+                // add server specs to server list
+                let server = {
+                    name: name,
+                    password: password,
+                    owner:[username],
+                    channels:{
+                        "Default":{
+                            chats:{}
+                        }
+                    },
+                    members:[],
+                    banned:[]
+                }
+                this.servers[name] = server
+                return server;
+            } else {
+                return false
+            }
+        } else {
+            return false;
+        }
+    }
+
+    joinNamespace(socket, name, password = null){
+        if(this.hasNamespace(name)){
+            let username = socket.data.username;
+            if(this.servers[name].password != password){
+                return false;
+            }
+            if(this.hasUser(username)){
+                if(this.users[username].joinedServers.includes(name) || this.users[username].ownedServers.includes(name)){
+                    return false;
+                }
+                this.users[username].joinedServers.push(name)
+                // add user to the server's member list
+                this.servers[name].members.push(username)
+                return this.servers[name];
+            }
+        }
+        return false;
+    }
+
+    hasNamespace(name){
+        if(this.servers[name] === undefined){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    retriveStatus(socket){
+        let username = socket.data.username;
+
+        let data = {
+            username: socket.data.username,
+            token:socket.data.token,
+            ownedServers:this.users[username].ownedServers,
+            joinedServers:this.users[username].joinedServers
+        }
+
+        return data
+    }
+
+    fetchServer(name){
+        if(this.hasNamespace(name)){
+            return this.servers[name];
+        } else {
+            return false
+        }
+    }
+
+    authServerUser(serverName, username, token){
+        if(this.hasNamespace(serverName) && this.hasUser(username)){
+            if(this.tokens[token] !== undefined && this.tokens[token]["username"]==username){
+                if(this.users[username]['ownedServers'].includes(serverName) || this.users[username]['joinedServers'].includes(serverName)){
+                    if(!this.servers[serverName]["banned"].includes(username) && (this.servers[serverName]['members'].includes(username) || this.servers[serverName]['owner'].includes(username))){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false
     }
 }
 

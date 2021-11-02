@@ -71,10 +71,15 @@ const io = new Server(httpServer);
 const DM = DataManager.getInstance();
 
 io.on('connection', (socket) => {
+	console.log(socket.id + " connected to /");
+	socket.on('disconnect', () => {
+        console.log('one disconnected');
+    });
+
 	socket.on("tryLogin", (data) => {
 		let ret = DM.loginUser(data["username"], data["password"], socket);
 		if(ret){
-			socket.emit("loginResp", toJson(1, {token:ret}));
+			socket.emit("loginResp", toJson(1, DM.retriveStatus(socket)));
 		} else {
 			socket.emit("loginResp", toJson(-1, {}, "wrong username or password"));
 		}
@@ -83,16 +88,15 @@ io.on('connection', (socket) => {
 	socket.on("tryReg", (data)=>{
 		let ret = DM.newUser(data["username"], data["password"], socket);
 		if(ret){
-			socket.emit("loginResp", toJson(1, {token:ret}));
+			socket.emit("loginResp", toJson(1, DM.retriveStatus(socket)));
 		} else {
 			socket.emit("loginResp", toJson(-1, {}, "invalid name, choose another one!"));
 		}
 	})
 
 	socket.on("tryRetriveStatus", (data)=>{
-		let ret = DM.loginUserByToken(data["token"], socket);
-		if(ret){
-			socket.emit("loginResp", toJson(1, {token:ret}));
+		if(DM.loginUserByToken(data["token"], socket)){
+			socket.emit("loginResp", toJson(1, DM.retriveStatus(socket)));
 		} else {
 			socket.emit("loginResp", toJson(0));
 		}
@@ -105,6 +109,34 @@ io.on('connection', (socket) => {
 
 	socket.on("disconnect", (res)=>{
 		DM.disconnUser(socket, false);
+	})
+
+	socket.on("tryJoinServer", (data)=>{
+		let name = data["name"];
+		let pw = data["password"]
+		if(pw == ""){
+			pw = null;
+		}
+		let ret = DM.joinNamespace(socket, name, pw);
+		if(ret){
+			socket.emit("joinServerResp", toJson(1, ret))
+		} else {
+			socket.emit("joinServerResp", toJson(-1, {}, "unable to join"))
+		}
+	})
+
+	socket.on("tryCreateServer", (data)=>{
+		let name = data["name"];
+		let pw = data["password"]
+		if(pw == ""){
+			pw = null;
+		}
+		let ret = DM.createNamespace(socket, name, pw);
+		if(ret){
+			socket.emit("joinServerResp", toJson(1, ret))
+		} else {
+			socket.emit("joinServerResp", toJson(-1, {}, "server already exists"))
+		}
 	})
 	// const count = io.engine.clientsCount;
 
@@ -128,6 +160,31 @@ io.on('connection', (socket) => {
     //     io.emit('chat message', msg);
     // });
 });
+
+io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
+	console.log(socket.data.username+" w/ id "+socket.id + " joined "+socket.nsp.name);
+
+	socket.emit("authUser");
+
+	socket.on("tryAuth", data=>{
+		if(DM.authServerUser(socket.nsp.name, data.username, data.token)){
+			let ret = DM.fetchServer(socket.nsp.name);
+			if(ret){
+				socket.data.username = data.username
+				socket.emit("syncServer", toJson(1, ret));
+				console.log(socket.data.username+" w/ id "+socket.id + " joined "+socket.nsp.name);
+			}
+		} else {
+			socket.disconnect();
+		}
+		// else do some other things
+	})
+
+
+	socket.on("disconnect", ()=>{
+		console.log(socket.data.username + " disconnected from "+socket.nsp.name);
+	})
+})
 
 httpServer.listen(3456, () => {
     console.log('Server running on http://0.0.0.0:3456/');

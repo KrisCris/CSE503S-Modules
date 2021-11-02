@@ -87,10 +87,12 @@ a{
     outline: none;
     border-radius: 0.5rem;
     font-size: 1.2rem;
+    transition: all 0.3s ease-in-out;
 }
 
 #btnLogin:hover{
     background-color: #1b49b4;
+    transition: all 0.3s ease-in-out;
 }
 
 #btnReg{
@@ -103,10 +105,12 @@ a{
     outline: none;
     border-radius: 0.5rem;
     font-size: 1.2rem;
+    transition: all 0.3s ease-in-out;
 }
 
 #btnReg:hover{
     background-color: #288653;
+    transition: all 0.3s ease-in-out;
 }
 
 .chatroom{
@@ -136,7 +140,7 @@ a{
     position: absolute;
     top:0rem;
     left:0rem;
-    height:3.1rem;
+    height:6.2rem;
     width:100%;
     font-size: 1.1rem;
     background-color: #353b3f;
@@ -144,12 +148,12 @@ a{
     color: #b7c7d1;
 }
 
-.namespaces .add input{
+.namespaces .add #inputServerName{
     position: absolute;
     top:0.3rem;
     left:0.3rem;
     height: 2.5rem;
-    width: 70%;
+    width: 60%;
     background-color: #6e7480;
     border: none;
     outline: none;
@@ -157,32 +161,85 @@ a{
     font-size: 1rem;
     padding-left: 0.7rem;
     padding-right: 0.7rem;
+    color:whitesmoke;
 }
 
-.namespaces .add a{
+#inputServerName::placeholder{
+    color:rgb(185, 185, 185);
+}
+
+.namespaces .add #inputServerPW{
     position: absolute;
-    top:0.5rem;
+    left:0.3rem;
+    bottom:0.3rem;
+    height: 2.5rem;
+    width: 60%;
+    background-color: #6e7480;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+    color:whitesmoke;
+}
+
+#inputServerPW::placeholder{
+    color:rgb(185, 185, 185);
+}
+
+.namespaces .add #btnJoinServer{
+    position: absolute;
+    top:0.3rem;
     right:0.3rem;
     color: #969ead;
-    font-size: 1.8rem;
-    width: 2rem;
-    height: 2rem;
+    font-size: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
     text-align: center;
+    margin: 0px;
+    
+    background-color: #3365da;
+    color: whitesmoke;
+    border: none;
+    outline: none;
     border-radius: 0.5rem;
     transition: all 0.3s ease-in-out;
-    margin: 0px;
 }
 
-.namespaces .add a:hover{
-    background-color: #ffffff10;
+.namespaces .add #btnJoinServer:hover{
+    background-color: #1b49b4;
     transition: all 0.3s ease-in-out;
 }
 
+.namespaces .add #btnNewServer{
+    position: absolute;
+    bottom:0.3rem;
+    right:0.3rem;
+    color: #969ead;
+    font-size: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    text-align: center;
+    margin: 0px;
+    
+    background-color: #33a868;
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.namespaces .add #btnNewServer:hover{
+    background-color: #288653;
+    transition: all 0.3s ease-in-out;
+}
 
 .namespaces .server-list{
     position: absolute;
     left: 0rem;
-    top: 3.1rem;
+    top: 6.2rem;
     bottom: 0rem;
     background-color: #23272A;
     width: 100%;
@@ -213,6 +270,12 @@ a{
     transition: all 0.3s ease-in-out;
 }
 
+.namespaces .server-list li.selected{
+    background-color: #26465c;
+    font-weight: bold;
+    color:whitesmoke;
+}
+
 
 .rooms{
     position: absolute;
@@ -223,9 +286,27 @@ a{
     width: 15%;
     overflow-y: hidden;
 }
+.rooms .newChannel{
+    position:absolute;
+    top: 0;
+    left:0;
+    height: 6.2rem;
+    width:100%;
+    background-color: #23272A;
+}
+
+#inputChannelName{
+    position:absolute;
+    
+}
+
+#btnCreateChannel{
+
+}
 
 .rooms .room-list{
     position: absolute;
+    top:6.2rem;
     left: 0rem;
     top: 0rem;
     bottom: 3.6rem;
@@ -274,6 +355,7 @@ a{
 
 .rooms .user #btnUser:hover{
     background-color: #288653;
+    transition: all 0.3s ease-in-out;
 }
 
 .rooms .user #btnLogout{
@@ -293,6 +375,7 @@ a{
 
 .rooms .user #btnLogout:hover{
     background-color: #af2727;
+    transition: all 0.3s ease-in-out;
 }
 
 .chats{
