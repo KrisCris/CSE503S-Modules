@@ -530,7 +530,14 @@ a{
     transition: all 0.3s ease-in-out;
 }
 
+.members .member-list li.owner a{
+    color: #ca1d48;
+    font-weight: bold;
+}
 
+/* .members .member-list li.owner{
+    color:
+} */
 
 
 

@@ -85,9 +85,6 @@
         <!-- members -->
         <div class="members">
             <ul class="member-list">
-                <li>
-                    <a href="#">fadfasd</a>
-                </li>
             </ul>
         </div>
     </div>
@@ -320,6 +317,26 @@
             }
 
             // 3. show users
+            removeAllChildNodes(member_list);
+            for (let username of servers[key]["data"]["owner"]) {
+                let li = document.createElement('li')
+                let a = document.createElement('a')
+                a.setAttribute("href", "#");
+                a.append(username);
+                li.append(a);
+                li.classList.add('owner');
+                member_list.append(li);
+            }
+
+            for (let username of servers[key]["data"]["members"]) {
+                let li = document.createElement('li')
+                let a = document.createElement('a')
+                a.setAttribute("href", "#");
+                a.append(username);
+                li.append(a);
+                li.classList.add('user');
+                member_list.append(li);
+            }
 
 
         }
