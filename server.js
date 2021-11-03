@@ -12,7 +12,8 @@ const msgList = {
 	'1':"Success",
 	'0':"Login required",
 	'-1': "Input Error",
-	'-2':"already exist"
+	'-2':"already exist",
+	'-3':"permission denied"
 };
 
 function toJson(code, data={}, msg=null) {
@@ -131,7 +132,7 @@ io.on('connection', (socket) => {
 		if(pw == ""){
 			pw = null;
 		}
-		let ret = DM.createNamespace(socket, name, pw);
+		let ret = DM.createServer(socket, name, pw);
 		if(ret){
 			socket.emit("joinServerResp", toJson(1, ret))
 		} else {
@@ -170,7 +171,8 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 		if(DM.authServerUser(socket.nsp.name, data.username, data.token)){
 			let ret = DM.fetchServer(socket.nsp.name);
 			if(ret){
-				socket.data.username = data.username
+				socket.data.username = data.username;
+				socket.data.token = data.token;
 				socket.emit("syncServer", toJson(1, ret));
 				console.log(socket.data.username+" w/ id "+socket.id + " joined "+socket.nsp.name);
 			}
@@ -180,6 +182,19 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 		// else do some other things
 	})
 
+	socket.on("tryCreateRoom", data=>{
+		let name = data["name"];
+		if(DM.isServerOwner(socket)){
+			let ret = DM.createChannel(name, socket)
+			if(ret){
+				socket.emit("createChannelResp", toJson(1, ret))
+			} else {
+				socket.emit("createChannelResp", toJson(-2))
+			}
+		} else {
+			socket.emit("createChannelResp", toJson(-3))
+		}
+	})
 
 	socket.on("disconnect", ()=>{
 		console.log(socket.data.username + " disconnected from "+socket.nsp.name);

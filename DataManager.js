@@ -127,26 +127,26 @@ class DataManager{
         }
     }
 
-    createNamespace(socket, name, password = null){
+    createServer(socket, name, password = null){
         // check availability
-        if(!this.hasNamespace(name)){
+        if(!this.hasServer(name)){
             // add this server under owner's name
             let username = socket.data.username;
             if(this.hasUser(username)){
                 this.users[username].ownedServers.push(name)
                 // add server specs to server list
+                let defChannName = name+"::default";
                 let server = {
                     name: name,
                     password: password,
                     owner:[username],
-                    channels:{
-                        "Default":{
-                            chats:{}
-                        }
-                    },
+                    channels:{},
                     members:[],
                     banned:[]
-                }
+                };
+                server.channels[defChannName] = {
+                    chats:{}
+                };
                 this.servers[name] = server
                 return server;
             } else {
@@ -158,7 +158,7 @@ class DataManager{
     }
 
     joinNamespace(socket, name, password = null){
-        if(this.hasNamespace(name)){
+        if(this.hasServer(name)){
             let username = socket.data.username;
             if(this.servers[name].password != password){
                 return false;
@@ -176,7 +176,7 @@ class DataManager{
         return false;
     }
 
-    hasNamespace(name){
+    hasServer(name){
         if(this.servers[name] === undefined){
             return false;
         } else {
@@ -198,7 +198,7 @@ class DataManager{
     }
 
     fetchServer(name){
-        if(this.hasNamespace(name)){
+        if(this.hasServer(name)){
             return this.servers[name];
         } else {
             return false
@@ -206,7 +206,7 @@ class DataManager{
     }
 
     authServerUser(serverName, username, token){
-        if(this.hasNamespace(serverName) && this.hasUser(username)){
+        if(this.hasServer(serverName) && this.hasUser(username)){
             if(this.tokens[token] !== undefined && this.tokens[token]["username"]==username){
                 if(this.users[username]['ownedServers'].includes(serverName) || this.users[username]['joinedServers'].includes(serverName)){
                     if(!this.servers[serverName]["banned"].includes(username) && (this.servers[serverName]['members'].includes(username) || this.servers[serverName]['owner'].includes(username))){
@@ -217,6 +217,29 @@ class DataManager{
         }
         return false
     }
+
+    isServerOwner(socket){
+        if(this.authServerUser(socket.nsp.name, socket.data.username, socket.data.token)){
+            if(this.servers[socket.nsp.name].owner.includes(socket.data.username)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    createChannel(channelName, socket){
+        channelName = socket.nsp.name+"::"+channelName;
+        if(this.servers[socket.nsp.name].channels[channelName] === undefined){
+            this.servers[socket.nsp.name].channels[channelName] = {
+                chats:{}
+            }
+            return this.servers[socket.nsp.name];
+        } else {
+            return false;
+        }
+    }
+    
 }
 
 module.exports = { DataManager }
