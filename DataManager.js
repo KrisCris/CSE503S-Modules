@@ -145,7 +145,16 @@ class DataManager{
                     banned:[]
                 };
                 server.channels[defChannName] = {
-                    chats:{}
+                    chats:{
+                        0:{
+                            id:0,
+                            username:'SERVER',
+                            type: 0,
+                            msg:['Welcome, You can start chat!'],
+                            attachment: null,
+                            time: Date.now()
+                        }
+                    }
                 };
                 this.servers[name] = server
                 return server;
@@ -224,7 +233,6 @@ class DataManager{
                 return true;
             }
         }
-
         return false;
     }
 
@@ -232,12 +240,47 @@ class DataManager{
         channelName = socket.nsp.name+"::"+channelName;
         if(this.servers[socket.nsp.name].channels[channelName] === undefined){
             this.servers[socket.nsp.name].channels[channelName] = {
-                chats:{}
+                chats:{
+                    0:{
+                        id:0,
+                        username:'SERVER',
+                        type: 0,
+                        msg:['Welcome, You can start chat!'],
+                        attachment: null,
+                        time: Date.now()
+                    }
+                }
             }
             return this.servers[socket.nsp.name];
         } else {
             return false;
         }
+    }
+
+    chat(socket, data){
+        // {
+		// 	channel: selectedChannel[0],
+		// 	msg: strArr,
+		// 	attachment: null,
+		// 	token: localStorage.token,
+		// 	username: localStorage.username
+        // }
+        if(this.servers[socket.nsp.name].channels[data.channel]){
+            let chats = this.servers[socket.nsp.name].channels[data.channel].chats;
+            let keys = Object.keys(chats);
+            let newId = Number(keys[keys.length-1]) + 1;
+            let c = {
+                id: newId,
+                username: data.username,
+                type: 1,
+                msg: data.msg,
+                attachment: data.attachment,
+                time: Date.now()
+            };
+            chats[newId] = c;
+            return c;
+        }
+        return false;
     }
     
 }

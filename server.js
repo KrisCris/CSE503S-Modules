@@ -196,6 +196,26 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 		}
 	})
 
+	socket.on("chat", data=>{
+		// {
+		// 	channel: selectedChannel[0],
+		// 	msg: strArr,
+		// 	attachment: null,
+		// 	token: localStorage.token,
+		// 	username: localStorage.username
+        // }
+		if(DM.authServerUser(socket.nsp.name, data.username, data.token)){
+			let ret = DM.chat(socket, data);
+			if(ret){
+				io.of(socket.nsp.name).emit("chatResp", toJson(1, {channel:data.channel, chat:ret}));
+			} else {
+				socket.emit("chatResp", toJson(-1, {}, "something wrong please refresh webpage"));
+			}
+		} else {
+			socket.disconnect();
+		}
+	})
+
 	socket.on("disconnect", ()=>{
 		console.log(socket.data.username + " disconnected from "+socket.nsp.name);
 	})

@@ -294,7 +294,7 @@ a{
     left:0;
     height: 6.2rem;
     width:100%;
-    background-color: #23272A;
+    background-color: #30353a;
     text-align: center;
 }
 
@@ -467,11 +467,18 @@ a{
     white-space: pre-wrap;      /* current browsers */
 }
 
-.chats .chat-list li p{
+.chats .chat-list li p .name{
     font-weight: bold;
     color: whitesmoke;
     font-size: 1rem;
     margin-bottom: 0.3rem;
+}
+
+.chats .chat-list li p .time{
+    color: rgb(202, 202, 202);
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    font-style: italic;
 }
 
 

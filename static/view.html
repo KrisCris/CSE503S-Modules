@@ -58,25 +58,9 @@
         <!-- chats -->
         <div class="chats">
             <ul class="chat-list">
-                <li>
-                    <p>KrisCris 10/12/2021 14:23 :</p>
-                    <a href="#">fadfasd</a>
-                </li>
-                <li>
-                    <p>KrisCris 10/12/2021 14:23 :</p>
-                    <a href="#">fadfasd</a>
-                </li>
-                <li>
-                    <p>KrisCris 10/12/2021 14:23 :</p>
-                    <a href="#">fadfasd</a>
-                </li>
-                <li>
-                    <p>KrisCris 10/12/2021 14:23 :</p>
-                    <a href="#">fadfasd</a>
-                </li>
             </ul>
             <div class="text-field">
-                <div contenteditable role="textbox" id="textarea">
+                <div role="textbox" id="textarea">
 
                 </div>
             </div>
@@ -188,6 +172,63 @@
                     alert(data['msg']);
                 }
             })
+
+            server.on('chatResp', data => {
+                if (data['code'] == 1) {
+                    let chat = data['data']['chat'];
+                    let channel = data['data']['channel']
+                    servers[server_name]['data']['channels'][channel]['chats'][chat['id']] = chat;
+                    if (selectedServer[0] == server_name) {
+                        if (selectedChannel[0] == channel) {
+                            // show msg
+                            let cid = chat['id'];
+                            let username = chat["username"];
+                            let type = chat["type"];
+                            let msgArr = chat["msg"];
+                            let attachment = chat["attachment"];
+                            let tsp = chat["time"];
+                            let dateArr = new Date(tsp).toString().split(" ");
+                            let time = " " + dateArr[0] + " " + dateArr[1] + " " + dateArr[2] + " " + dateArr[3] + " " + dateArr[4] + " :";
+                            
+                            let li = document.createElement('li');
+                            let p = document.createElement('p');
+                            let sp1 = document.createElement("span");
+                            let sp2 = document.createElement("span");
+                            li.setAttribute("id", cid);
+                            li.setAttribute("type", type);
+                            sp1.append(username);
+                            sp1.classList.add("name");
+                            sp2.append(time)
+                            sp2.classList.add("time");
+                            p.append(sp1);
+                            p.append(sp2);
+                            let a = document.createElement('a');
+                            a.setAttribute("href", "#");
+                            for (let msg of msgArr) {
+                                a.append(msg);
+                                a.append(document.createElement("br"));
+                            }
+                            a.removeChild(a.lastChild)
+                            // attachment?
+                            li.append(p);
+                            li.append(a);
+                            chat_list.append(li);
+                        } else {
+                            // hightlight that channel
+                        }
+                    } else {
+                        // hightlight that server
+                    }
+
+                } else {
+                    alert(data['msg']);
+                }
+            })
+
+            server.on("disconnect", () => {
+                delete servers[server_name];
+                updateChats();
+            })
         }
 
         function initUserFunc(data) {
@@ -229,12 +270,19 @@
             removeAllChildNodes(inputServerName);
             removeAllChildNodes(inputServerPW);
             removeAllChildNodes(server_list)
+            removeAllChildNodes(room_list);
+            removeAllChildNodes(member_list);
+            removeAllChildNodes(chat_list);
+            removeAllChildNodes(textarea);
+            textarea.setAttribute("contenteditable", false);
         }
 
 
         const server_list = document.getElementsByClassName("server-list")[0];
         const room_list = document.getElementsByClassName("room-list")[0];
         const member_list = document.getElementsByClassName("member-list")[0];
+        const chat_list = document.getElementsByClassName("chat-list")[0];
+
 
         var selectedServer = [null, null];
         var selectedChannel = [null, null];
@@ -309,10 +357,10 @@
                 }
 
                 a.addEventListener('click', (e) => {
-                    processChannelSelection(key, li);
+                    processChannelSelection(channelKey, li);
                 })
                 li.addEventListener('click', (e) => {
-                    processChannelSelection(key, li);
+                    processChannelSelection(channelKey, li);
                 })
             }
 
@@ -350,6 +398,54 @@
             }
             selectedChannel[1] = li;
             li.classList.add("selected")
+
+            // display chats
+            // chat[id=0] = {
+            //     id: 0,
+            //     username: 'SERVER',
+            //     type: 0,
+            //     msg: ['Welcome, You can start chat!'],
+            //     attachment: null,
+            //     time: Date.now()
+            // };
+            removeAllChildNodes(chat_list);
+            let chats = servers[selectedServer[0]]["data"]["channels"][key]["chats"]
+            for (let cid in chats) {
+                //display chats
+                let username = chats[cid]["username"];
+                let type = chats[cid]["type"];
+                let msgArr = chats[cid]["msg"];
+                let attachment = chats[cid]["attachment"];
+                let tsp = chats[cid]["time"];
+
+                let dateArr = new Date(tsp).toString().split(" ");
+                let time = " " + dateArr[0] + " " + dateArr[1] + " " + dateArr[2] + " " + dateArr[3] + " " + dateArr[4] + " :";
+                let li = document.createElement('li');
+                let p = document.createElement('p');
+                let sp1 = document.createElement("span");
+                let sp2 = document.createElement("span");
+                li.setAttribute("id", cid);
+                li.setAttribute("type", type);
+                sp1.append(username);
+                sp1.classList.add("name");
+                sp2.append(time)
+                sp2.classList.add("time");
+                p.append(sp1);
+                p.append(sp2);
+                let a = document.createElement('a');
+                a.setAttribute("href", "#");
+                for (let msg of msgArr) {
+                    a.append(msg);
+                    a.append(document.createElement("br"));
+                }
+                a.removeChild(a.lastChild)
+                // attachment?
+
+                li.append(p);
+                li.append(a);
+                chat_list.append(li);
+            }
+            textarea.setAttribute("contenteditable", true);
         }
 
         // add server
@@ -414,23 +510,22 @@
             }
         })
 
-        // styling textarea
+        // styling textarea && chat
         const textarea = document.getElementById("textarea");
-        const chatList = document.getElementsByClassName("chat-list")[0];
         function fixHeight() {
             let flag = false;
             let parent = textarea.parentNode;
             let rem = 1.2;
             let base = rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-            if (chatList.scrollHeight - chatList.offsetHeight == chatList.scrollTop) {
+            if (chat_list.scrollHeight - chat_list.offsetHeight == chat_list.scrollTop) {
                 flag = true;
             }
             parent.style.height = '5rem';
             parent.style.height = (textarea.scrollHeight + base) + "px";
-            chatList.style.bottom = (textarea.scrollHeight + base) + "px";
+            chat_list.style.bottom = (textarea.scrollHeight + base) + "px";
 
             if (flag) {
-                chatList.scroll(chatList.scrollWidth, chatList.scrollHeight);
+                chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
             }
         }
         textarea.addEventListener("input", fixHeight)
@@ -458,37 +553,45 @@
                     return;
                 }
 
-                let li = document.createElement("li");
+                // let li = document.createElement("li");
 
-                let p = document.createElement('p');
-                p.append("KrisCris 10/12/2021 14:23 :");
-                li.append(p)
+                // let p = document.createElement('p');
+                // p.append("KrisCris 10/12/2021 14:23 :");
+                // li.append(p)
 
-                let a = document.createElement("a");
-                a.setAttribute("href", "#");
-
+                // tool a
+                // let a = document.createElement("a");
+                // a.setAttribute("href", "#");
+                let strArr = [];
                 let textArr = textarea.innerHTML.split("<br>");
                 for (let idx = 0; idx < textArr.length; idx++) {
                     if (textArr[idx].replaceAll(" ", "").replaceAll("&nbsp;", "") == "" &&
                         idx < textArr.length - 1 && textArr[idx + 1].replaceAll(" ", "").replaceAll("&nbsp;", "") == "") {
                         continue;
                     }
-                    a.append(
-                        textArr[idx].replace(/&amp;/g, "&")
-                            .replace(/&lt;/g, "<")
-                            .replace(/&gt;/g, ">")
-                            .replace(/&quot;/g, "\"")
-                            .replace(/&#039;/g, "'")
-                            .replace(/&nbsp;/g, " ")
+                    strArr.push(textArr[idx]
+                        .replace(/&amp;/g, "&")
+                        .replace(/&lt;/g, "<")
+                        .replace(/&gt;/g, ">")
+                        .replace(/&quot;/g, "\"")
+                        .replace(/&#039;/g, "'")
+                        .replace(/&nbsp;/g, " ")
                     );
-                    a.append(document.createElement("br"));
                 }
 
-                a.removeChild(a.lastChild);
+                // a.removeChild(a.lastChild);
+                console.log(strArr);
+                servers[selectedServer[0]].socket.emit("chat", {
+                    channel: selectedChannel[0],
+                    msg: strArr,
+                    attachment: null,
+                    token: localStorage.token,
+                    username: localStorage.username
+                });
 
-                li.append(a);
-                chatList.append(li);
-                chatList.scroll(chatList.scrollWidth, chatList.scrollHeight);
+                // li.append(a);
+                // chat_list.append(li);
+                chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
                 e.target.textContent = "";
                 _clear();
             } else if (e.key === 'Enter' && e.shiftKey) {
