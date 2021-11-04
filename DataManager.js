@@ -293,6 +293,24 @@ class DataManager{
         return false;
     }
 
+    globalNoti(serverName, msg){
+        for(let key of Object.keys(this.servers[serverName].channels)){
+            let chats = this.servers[serverName].channels[key].chats;
+            let keys = Object.keys(chats);
+            let newId = Number(keys[keys.length-1]) + 1;
+            let c = {
+                id: newId,
+                username: 'SERVER',
+                type: 0,
+                msg: [msg],
+                attachment: null,
+                time: Date.now()
+            };
+            chats[newId] = c;
+            return c;
+        }
+    }
+
     isOwner(serverName, username){
         if(this.servers[serverName].owner[username]){
             return true;
@@ -306,6 +324,15 @@ class DataManager{
             this.servers[serverName].owner[username].status = status;
         } else {
             this.servers[serverName].members[username].status = status;
+        }
+    }
+
+    kick(username, serverName){
+        delete this.servers[serverName].members[username];
+        let idx = this.users[username].joinedServers.indexOf(serverName);
+        if(idx != -1){
+            this.users[username].joinedServers.pop(idx);
+            return true;
         }
     }
     

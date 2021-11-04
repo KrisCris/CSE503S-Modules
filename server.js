@@ -170,6 +170,8 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 				);
 			}
 		} else {
+			socket.data.username = undefined;
+			socket.data.token = undefined;
 			socket.disconnect();
 		}
 	})
@@ -198,6 +200,24 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 			}
 		} else {
 			socket.disconnect();
+		}
+	})
+
+	socket.on('tryKick', data=>{
+		if(DM.authServerUser(socket.nsp.name, socket.data.username, socket.data.token)){
+			if(DM.isServerOwner(socket)){
+				DM.kick(data.username, socket.nsp.name);
+				io.of(socket.nsp.name).emit("authUser");
+				for(let chann of Object.keys(DM.servers[socket.nsp.name].channels)){
+					io.of(socket.nsp.name).emit(
+						"chatResp", 
+						toJson(1, {
+							channel:chann, 
+							chat:DM.globalNoti(socket.nsp.name, data.username + " is kicked from this server!")
+						}));
+				}
+			
+			}
 		}
 	})
 

@@ -186,7 +186,6 @@
 
             server.on('announceStatus', data => {
                 data = data['data'];
-                console.log(data);
                 let owner = servers[server_name]['data']['owner'];
                 let members = servers[server_name]['data']['members'];
 
@@ -206,8 +205,6 @@
                 // need to implement partial update;
                 updateChats();
             })
-
-
 
             server.on('chatResp', data => {
                 if (data['code'] == 1) {
@@ -263,6 +260,10 @@
 
             server.on("disconnect", () => {
                 delete servers[server_name];
+                removeAllChildNodes(server_list)
+                removeAllChildNodes(room_list);
+                removeAllChildNodes(member_list);
+                removeAllChildNodes(chat_list);
                 updateChats();
             })
         }
@@ -542,7 +543,7 @@
         kick.addEventListener('click', e => {
             let u = e.target.parentNode.getAttribute('username');
             let s = e.target.parentNode.getAttribute('server');
-            console.log('you kick ' + u + " from " + s);
+            servers[s].socket.emit('tryKick', {username: u});
         })
 
         ban.addEventListener('click', e => {
@@ -742,7 +743,6 @@
                 }
 
                 // a.removeChild(a.lastChild);
-                console.log(strArr);
                 servers[selectedServer[0]].socket.emit("chat", {
                     channel: selectedChannel[0],
                     msg: strArr,
