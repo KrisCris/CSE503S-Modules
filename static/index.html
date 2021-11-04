@@ -1,97 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-   <title>Socket.IO chat</title>
-   <style>
-      body {
-         margin: 0;
-         padding-bottom: 3rem;
-         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      }
-
-      #form {
-         background: rgba(0, 0, 0, 0.15);
-         padding: 0.25rem;
-         position: fixed;
-         bottom: 0;
-         left: 0;
-         right: 0;
-         display: flex;
-         height: 3rem;
-         box-sizing: border-box;
-         backdrop-filter: blur(10px);
-      }
-
-      #input {
-         border: none;
-         padding: 0 1rem;
-         flex-grow: 1;
-         border-radius: 2rem;
-         margin: 0.25rem;
-      }
-
-      #input:focus {
-         outline: none;
-      }
-
-      #form>button {
-         background: #333;
-         border: none;
-         padding: 0 1rem;
-         margin: 0.25rem;
-         border-radius: 3px;
-         outline: none;
-         color: #fff;
-      }
-
-      #messages {
-         list-style-type: none;
-         margin: 0;
-         padding: 0;
-      }
-
-      #messages>li {
-         padding: 0.5rem 1rem;
-      }
-
-      #messages>li:nth-child(odd) {
-         background: #efefef;
-      }
-   </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatRoom</title>
+    <link rel="stylesheet" href="./style/index.css">
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-   <ul id="messages"></ul>
-   <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
-   </form>
-   <script src="/socket.io/socket.io.js"></script>
-   <script src="./message.js"></script>
+    <!-- login -->
+    <div class="login">
+        <img id="connStatus" src="./res/offline.png" alt="connStatus"><br>
+        <input id="username" type="text" placeholder="Nickname"><br>
+        <input id="password" type="password" placeholder="Password"><br>
+        <button id="btnLogin">Login</button><br>
+        <button id="btnReg">Register</button><br>
+    </div>
 
 
-   <script>
-      var socket = io();
+    <div class="chatroom displayNone">
+        <!-- namespaces -->
+        <div class="namespaces">
+            <div class="add">
+                <input type="text" name="servername" id="inputServerName" placeholder="Server Name">
+                <input type="password" name="serverpw" id="inputServerPW" placeholder="Password">
+                <button id="btnJoinServer">Join</button>
+                <button id="btnNewServer">New</button>
+            </div>
 
-      var messages = document.getElementById('messages');
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
+            <ul class="server-list">
+            </ul>
+        </div>
 
-      form.addEventListener('submit', (e) => {
-         e.preventDefault();
-         if (input.value) {
-            socket.emit('chat message', {type:1, msg:input.value});
-            input.value = '';
-         }
-      });
+        <!-- rooms -->
+        <div class="rooms">
+            <!-- new rooms -->
+            <div class="newChannel">
+                <input type="text" name="channelname" id="inputChannelName" placeholder="Create a new channel">
+                <button id="btnCreateChannel">Create</button>
+            </div>
 
-      socket.on('chat message', (msg) => {
-         let item = document.createElement('li');
-         item.textContent = msg.msg;
-         messages.appendChild(item);
-         window.scrollTo(0, document.body.scrollHeight);
-      });
-   </script>
+            <!-- room list -->
+            <ul class="room-list">
+
+            </ul>
+
+            <!-- user settings -->
+            <div class="user">
+                <button id="btnUser">Username</button>
+                <button id="btnLogout">Logout</button>
+            </div>
+        </div>
+
+        <!-- chats -->
+        <div class="chats">
+            <ul class="chat-list">
+            </ul>
+            <div class="text-field">
+                <div id="typing-indicator" class="displayNone"><span id="typing-name">Todd</span> is typing...</div>
+                <div role="textbox" id="textarea" data-text="Start Chat!"></div>
+            </div>
+        </div>
+
+        <!-- members -->
+        <div class="members">
+            <ul class="member-list">
+            </ul>
+        </div>
+    </div>
+
+    <div id="userMenuAdmin" class="userMenuAdmin displayNone">
+        <button id="pm">Message</button>
+        <button id="at">@</button>
+        <button id="kick">Kick</button>
+        <button id="ban">Ban</button>
+    </div>
+    <div id="userMenu" class="userMenu displayNone">
+        <button id="upm">Message</button>
+        <button id="uat">@</button>
+    </div>
+
+    <script src="./scripts/index.js"></script>
 </body>
 
 </html>
