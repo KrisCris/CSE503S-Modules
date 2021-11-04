@@ -13,7 +13,7 @@ REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-NAME-STUDENT-ID-AND-GITHUB-USERNAME
   - [x] The chat room displays all users currently in the room (5 points)
   - [x] A private room can be created that is password protected (5 points)
   - [x] Creators of chat rooms can temporarily kick others out of the room (3 points)
-  - [ ] Creators of chat rooms can permanently ban users from joining that particular room (2 points)
+  - [x] Creators of chat rooms can permanently ban users from joining that particular room (2 points)
 - **Messaging (5 Points):**
   - [x] A user's message shows their username and is sent to everyone in the room (1 point)
   - [ ] Users can send private messages to another user in the same room (4 points)

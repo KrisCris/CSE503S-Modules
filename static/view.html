@@ -549,7 +549,7 @@
         ban.addEventListener('click', e => {
             let u = e.target.parentNode.getAttribute('username');
             let s = e.target.parentNode.getAttribute('server');
-            console.log('you ban ' + u + " from " + s);
+            servers[s].socket.emit('tryBan', {username: u});
         })
 
         function processChannelSelection(key, li) {
