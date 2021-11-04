@@ -28,7 +28,10 @@ REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-NAME-STUDENT-ID-AND-GITHUB-USERNAME
   - [x] User can join multiple chat servers
   - [x] Server owner can create multiple channels in their server (like discord)
   - [x] You don't lose chatroom histories after logout.
-  - [x] Users' online status can be viewed (Because you don't lose chatroom histories)
+  - [x] Users' online status (Because you don't lose chatroom histories)
     - left side of username, gray is offline, green is online
-  - [ ] ...
+  - [x] User typing indicator
+  - [x] Messages with time
+  - [x] Differ server messages from users'
+  - [ ] @ someone
 

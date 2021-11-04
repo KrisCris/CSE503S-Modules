@@ -222,6 +222,11 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 		}
 	})
 
+	socket.on('tryPM', data => {
+		initPM(data.from, data.to);
+		// TODO 
+	})
+
 	socket.on('tryBan', data => {
 		if (DM.authServerUser(socket.nsp.name, socket.data.username, socket.data.token)) {
 			if (DM.isServerOwner(socket)) {
@@ -239,6 +244,10 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 		}
 	})
 
+	socket.on('typing', data => {
+		socket.broadcast.emit('typing', toJson(1, { username: socket.data.username }));
+	})
+
 	socket.on("disconnect", () => {
 		if (socket.data.username !== undefined) {
 			// set offline status
@@ -253,7 +262,6 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 		} else {
 			console.log(socket.id + " disconnected from " + socket.nsp.name);
 		}
-
 	})
 })
 

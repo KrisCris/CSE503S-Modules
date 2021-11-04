@@ -60,9 +60,8 @@
             <ul class="chat-list">
             </ul>
             <div class="text-field">
-                <div role="textbox" id="textarea">
-
-                </div>
+                <div id="typing-indicator" class="displayNone"><span id="typing-name">Todd</span> is typing...</div>
+                <div role="textbox" id="textarea" data-text="Start Chat!"></div>
             </div>
         </div>
 
@@ -88,23 +87,18 @@
         // defalut namespace
         const dftSocket = io();
         const servers = {};
+        const PM = {};
 
         dftSocket.on("connect", () => {
             document.getElementById("connStatus").setAttribute("src", "./res/online.png");
             if (localStorage.token !== undefined) {
-                dftSocket.emit("tryRetriveStatus", {token: localStorage.token});
+                dftSocket.emit("tryRetriveStatus", { token: localStorage.token });
             }
         })
 
         dftSocket.on("disconnect", () => {
             document.getElementById("connStatus").setAttribute("src", "data:image/png;base64,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")
         })
-
-        // document.addEventListener("DOMContentLoaded", ()=>{
-        //     if(localStorage.token !== undefined){
-        //         dftSocket.emit("tryRetriveStatus", {token:localStorage.token});
-        //     }
-        // })
 
         // login
         const username = document.getElementById("username");
@@ -133,7 +127,7 @@
             if (!regex.test(uname) || upw == '') {
                 alert("Invalid Input");
             } else {
-                dftSocket.emit("tryLogin", {username: uname, password: upw});
+                dftSocket.emit("tryLogin", { username: uname, password: upw });
             }
         });
 
@@ -144,7 +138,7 @@
             if (!regex.test(uname) || upw == '') {
                 alert("Invalid Input");
             } else {
-                dftSocket.emit("tryReg", {username: uname, password: upw});
+                dftSocket.emit("tryReg", { username: uname, password: upw });
             }
         })
 
@@ -160,11 +154,14 @@
         const chatPage = document.getElementsByClassName("chatroom")[0];
         const btnUser = document.getElementById("btnUser");
 
+        const typing_name = document.getElementById('typing-name');
+        const typing_indicator = document.getElementById('typing-indicator');
+
         function handleServers(server_name) {
             let server = io(server_name);
 
             server.on("authUser", () => {
-                server.emit("tryAuth", {username: localStorage.username, token: localStorage.token})
+                server.emit("tryAuth", { username: localStorage.username, token: localStorage.token })
             });
 
             server.on("syncServer", data => {
@@ -182,7 +179,7 @@
                 } else {
                     alert(data['msg']);
                 }
-            })
+            });
 
             server.on('announceStatus', data => {
                 data = data['data'];
@@ -193,18 +190,18 @@
                     if (owner[data.username]) {
                         owner[data.username]['status'] = data['status'];
                     } else {
-                        owner[data.username] = {username: data.username, status: data.status};
+                        owner[data.username] = { username: data.username, status: data.status };
                     }
                 } else {
                     if (members[data.username]) {
                         members[data.username]['status'] = data['status'];
                     } else {
-                        members[data.username] = {username: data.username, status: data.status};
+                        members[data.username] = { username: data.username, status: data.status };
                     }
                 }
                 // need to implement partial update;
                 updateChats();
-            })
+            });
 
             server.on('chatResp', data => {
                 if (data['code'] == 1) {
@@ -256,7 +253,20 @@
                 } else {
                     alert(data['msg']);
                 }
-            })
+            });
+
+            server.on('typing', data => {
+                if (!typing_indicator.classList.contains('displayNone')) {
+                    let interval = 2000;
+                    removeAllChildNodes(typing_name);
+                    typing_name.append(data['data'].username);
+                    typing_indicator.classList.remove('displayNone');
+                    setTimeout(() => {
+                        typing_indicator.classList.add('displayNone');
+                        removeAllChildNodes(typing_name);
+                    }, interval);
+                }
+            });
 
             server.on("disconnect", () => {
                 delete servers[server_name];
@@ -265,7 +275,7 @@
                 removeAllChildNodes(member_list);
                 removeAllChildNodes(chat_list);
                 updateChats();
-            })
+            });
         }
 
         function initUserFunc(data) {
@@ -330,7 +340,24 @@
                 selectedServer[0] = null;
                 selectedServer[1] = null;
             }
+            // private message btn
+            let li = document.createElement('li');
+            let a = document.createElement('a');
+            a.setAttribute("href", "#");
+            a.append("Private Messages");
+            li.append(a);
+            a.addEventListener('click', (e) => {
+                processServerSelection(key, li, true);
+            })
+            li.addEventListener('click', (e) => {
+                processServerSelection(key, li, true);
+            })
+            li.classList.add('PM');
+            server_list.append(li);
 
+
+
+            // draw all servers joined so far
             for (let key in servers) {
                 let li = document.createElement('li');
                 let a = document.createElement('a');
@@ -338,11 +365,11 @@
                 a.append(servers[key].data.name);
                 li.append(a);
                 a.addEventListener('click', (e) => {
-                    processServerSelection(key, e.target.parentElement);
+                    processServerSelection(key, li);
                 })
                 li.addEventListener('click', (e) => {
-                    processServerSelection(key, e.target);
-                }, true)
+                    processServerSelection(key, li);
+                })
                 if (selectedServer[0] === null) {
                     processServerSelection(key, li);
                 } else {
@@ -360,7 +387,40 @@
             0: 'offline'
         };
 
-        function processServerSelection(key, li) {
+        const newChannDiv = document.getElementsByClassName('newChannel')[0];
+        const roomsDiv = document.getElementsByClassName('room-list')[0];
+        const chatsDiv = document.getElementsByClassName('chats')[0];
+        const usersDiv = document.getElementsByClassName('members')[0];
+
+        function serverStyle() {
+            // show
+            newChannDiv.style.height = 6.2 + 'rem';
+            newChannDiv.classList.remove('displayNone');
+            usersDiv.style.width = 15 + '%';
+            usersDiv.classList.remove('displayNone');
+
+            roomsDiv.style.top = 6.2 + 'rem';
+            chatsDiv.style.right = 15 + '%';
+        }
+
+        function pmStyle() {
+            // hide
+            newChannDiv.style.height = 0 + 'rem';
+            newChannDiv.classList.add('displayNone');
+            usersDiv.style.width = 0 + 'rem';
+            usersDiv.classList.add('displayNone');
+
+            // extand
+            roomsDiv.style.top = 0 + 'rem';
+            chatsDiv.style.right = 0 + 'rem';
+        }
+
+        function processServerSelection(key, li, isPM = false) {
+            if (isPM) {
+                pmStyle();
+            } else {
+                serverStyle();
+            }
             // select
             selectedServer[0] = key;
             if (selectedServer[1] != null) {
@@ -430,7 +490,7 @@
                     li.addEventListener("contextmenu", e => {
                         e.preventDefault();
                         hideMenu();
-                        if (user.username != localStorage.username) {
+                        if (user.username != localStorage.username && status == 1) {
                             // you can't kick server owner
                             userMenu.setAttribute('username', user.username);
                             userMenu.setAttribute('server', selectedServer[0]);
@@ -470,7 +530,7 @@
                     li.addEventListener("contextmenu", e => {
                         e.preventDefault();
                         hideMenu();
-                        if (user.username != localStorage.username) {
+                        if (user.username != localStorage.username && status == 1) {
                             if (owner[localStorage.username]) {
                                 userMenuAdmin.setAttribute('username', user.username);
                                 userMenuAdmin.setAttribute('server', selectedServer[0]);
@@ -543,13 +603,13 @@
         kick.addEventListener('click', e => {
             let u = e.target.parentNode.getAttribute('username');
             let s = e.target.parentNode.getAttribute('server');
-            servers[s].socket.emit('tryKick', {username: u});
+            servers[s].socket.emit('tryKick', { username: u });
         })
 
         ban.addEventListener('click', e => {
             let u = e.target.parentNode.getAttribute('username');
             let s = e.target.parentNode.getAttribute('server');
-            servers[s].socket.emit('tryBan', {username: u});
+            servers[s].socket.emit('tryBan', { username: u });
         })
 
         function processChannelSelection(key, li) {
@@ -563,6 +623,7 @@
             li.classList.add("selected")
 
             // display chats
+            // structure:
             // chat[id=0] = {
             //     id: 0,
             //     username: 'SERVER',
@@ -624,7 +685,7 @@
             if (!regex.test(sname)) {
                 alert("No space or special characters");
             } else {
-                dftSocket.emit("tryJoinServer", {name: '/' + sname, password: spw});
+                dftSocket.emit("tryJoinServer", { name: '/' + sname, password: spw });
             }
         });
 
@@ -635,7 +696,7 @@
             if (!regex.test(sname)) {
                 alert("No space or special characters");
             } else {
-                dftSocket.emit("tryCreateServer", {name: '/' + sname, password: spw});
+                dftSocket.emit("tryCreateServer", { name: '/' + sname, password: spw });
             }
         })
 
@@ -661,7 +722,7 @@
                 if (selectedServer[0] && servers[selectedServer[0]]) {
                     // user is owner
                     if (servers[selectedServer[0]].data['owner'][localStorage.username]) {
-                        servers[selectedServer[0]].socket.emit('tryCreateRoom', {name: cname});
+                        servers[selectedServer[0]].socket.emit('tryCreateRoom', { name: cname });
                     } else {
                         alert('your have no permission to do that, contact server owner')
                     }
@@ -691,7 +752,11 @@
                 chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
             }
         }
-        textarea.addEventListener("input", fixHeight)
+        textarea.addEventListener("input", () => {
+            fixHeight();
+            servers[selectedServer[0]].socket.emit('typing', { channel: selectedChannel[0] });
+        });
+
         textarea.addEventListener('paste', function (e) {
             e.preventDefault()
             let text = e.clipboardData.getData('text/plain')
@@ -701,8 +766,9 @@
             }
             e.target.removeChild(e.target.lastChild);
             e.target.append(text);
-            fixHeight();
-        })
+        });
+
+        // submit msg or break line using enter key
         textarea.addEventListener('keydown', function (e) {
             function _clear() {
                 removeAllChildNodes(textarea);

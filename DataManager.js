@@ -45,7 +45,8 @@ class DataManager {
                 online: true,
                 status: 1,
                 ownedServers: [],
-                joinedServers: []
+                joinedServers: [],
+                PM: {}
             };
             this.users[username] = user;
             socket.data.username = username;
@@ -207,7 +208,8 @@ class DataManager {
             username: socket.data.username,
             token: socket.data.token,
             ownedServers: this.users[username].ownedServers,
-            joinedServers: this.users[username].joinedServers
+            joinedServers: this.users[username].joinedServers,
+            PM: this.users[username].PM
         }
 
         return data
@@ -343,6 +345,40 @@ class DataManager {
             this.users[username].joinedServers.pop(idx);
         }
         this.servers[serverName].banned.push(username);
+        return true;
+    }
+
+    initPM(from, to) {
+        if (this.hasUser(from) && this.hasServer(to)) {
+            if (!this.users[from]['PM'][to]) {
+                this.users[from]['PM'][to] = {
+                    chats: {
+                        0: {
+                            id: 0,
+                            username: 'SERVER',
+                            type: 0,
+                            msg: ['Welcome, You can start chat!'],
+                            attachment: null,
+                            time: Date.now()
+                        }
+                    }
+                };
+            }
+            if (!this.users[to]['PM'][from]) {
+                this.users[to]['PM'][from] = {
+                    chats: {
+                        0: {
+                            id: 0,
+                            username: 'SERVER',
+                            type: 0,
+                            msg: ['Welcome, You can start chat!'],
+                            attachment: null,
+                            time: Date.now()
+                        }
+                    }
+                }
+            }
+        }
         return true;
     }
 
