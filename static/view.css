@@ -556,5 +556,102 @@ a{
     color:
 } */
 
+.userMenuAdmin{
+    position:absolute;
+    width: 6rem;
+    height:10.5rem;
+    background-color: #23272A;
+    border-radius: 1rem;
+}
+.userMenuAdmin button{
+    position: absolute;
+    left: 0.5rem;
+    width: 5rem;
+    height: 2rem;
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+.userMenuAdmin #pm{
+    top:0.5rem;
+    background-color: #33a868; 
+}
+
+.userMenuAdmin #at{
+    top:3rem;
+    background-color: #3365da;
+}
+
+.userMenuAdmin #kick{
+    top:5.5rem;
+    background-color: #ebcb3d;
+}
+
+.userMenuAdmin #ban{
+    top:8rem;
+    background-color: #db3131;
+}
+
+.userMenuAdmin #pm:hover{
+    top:0.5rem;
+    background-color: #288653; 
+}
+
+.userMenuAdmin #at:hover{
+    top:3rem;
+    background-color: #1b49b4;
+}
+
+.userMenuAdmin #kick:hover{
+    top:5.5rem;
+    background-color: #ceb029;
+}
+
+.userMenuAdmin #ban:hover{
+    top:8rem;
+    background-color: #af2727;
+}
+
+.userMenu{
+    position:absolute;
+    width: 6rem;
+    height:5.5rem;
+    left: 20rem;
+    background-color: #23272A;
+    border-radius: 1rem;
+}
+.userMenu button{
+    position: absolute;
+    left: 0.5rem;
+    width: 5rem;
+    height: 2rem;
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+.userMenu #upm{
+    top:0.5rem;
+    background-color: #33a868; 
+}
+
+.userMenu #uat{
+    top:3rem;
+    background-color: #3365da;
+}
+
+
+.userMenu #upm:hover{
+    top:0.5rem;
+    background-color: #288653; 
+}
+
+.userMenu #uat:hover{
+    top:3rem;
+    background-color: #1b49b4;
+}
 
 

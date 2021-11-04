@@ -73,6 +73,17 @@
         </div>
     </div>
 
+    <div id="userMenuAdmin" class="userMenuAdmin displayNone">
+        <button id="pm">Message</button>
+        <button id="at">@</button>
+        <button id="kick">Kick</button>
+        <button id="ban">Ban</button>
+    </div>
+    <div id="userMenu" class="userMenu displayNone">
+        <button id="upm">Message</button>
+        <button id="uat">@</button>
+    </div>
+
     <script>
         // defalut namespace
         const dftSocket = io();
@@ -173,23 +184,23 @@
                 }
             })
 
-            server.on('announceStatus', data=>{
+            server.on('announceStatus', data => {
                 data = data['data'];
                 console.log(data);
                 let owner = servers[server_name]['data']['owner'];
                 let members = servers[server_name]['data']['members'];
 
-                if(data.isOwner){
-                    if(owner[data.username]){
+                if (data.isOwner) {
+                    if (owner[data.username]) {
                         owner[data.username]['status'] = data['status'];
                     } else {
-                        owner[data.username] = {username:data.username, status:data.status};
+                        owner[data.username] = {username: data.username, status: data.status};
                     }
                 } else {
-                    if(members[data.username]){
+                    if (members[data.username]) {
                         members[data.username]['status'] = data['status'];
                     } else {
-                        members[data.username] = {username:data.username, status:data.status};
+                        members[data.username] = {username: data.username, status: data.status};
                     }
                 }
                 // need to implement partial update;
@@ -214,7 +225,7 @@
                             let tsp = chat["time"];
                             let dateArr = new Date(tsp).toString().split(" ");
                             let time = " " + dateArr[0] + " " + dateArr[1] + " " + dateArr[2] + " " + dateArr[3] + " " + dateArr[4] + " :";
-                            
+
                             let li = document.createElement('li');
                             let p = document.createElement('p');
                             let sp1 = document.createElement("span");
@@ -344,8 +355,8 @@
         }
 
         const status_list = {
-            1:'online',
-            0:'offline'
+            1: 'online',
+            0: 'offline'
         };
 
         function processServerSelection(key, li) {
@@ -399,15 +410,15 @@
             let owner = servers[key]["data"]["owner"];
             let orderedOwner = {};
             for (let username in owner) {
-                if(orderedOwner[owner[username].status]){
+                if (orderedOwner[owner[username].status]) {
                     orderedOwner[owner[username].status].push(owner[username]);
                 } else {
                     orderedOwner[owner[username].status] = [];
                     orderedOwner[owner[username].status].push(owner[username]);
                 }
             }
-            for (let status of Object.keys(orderedOwner).reverse()){
-                for(let user of orderedOwner[status]){
+            for (let status of Object.keys(orderedOwner).reverse()) {
+                for (let user of orderedOwner[status]) {
                     let li = document.createElement('li')
                     let a = document.createElement('a')
                     a.setAttribute("href", "#");
@@ -415,6 +426,21 @@
                     li.append(a);
                     li.classList.add('owner');
                     li.classList.add(status_list[status])
+                    li.addEventListener("contextmenu", e => {
+                        e.preventDefault();
+                        hideMenu();
+                        if (user.username != localStorage.username) {
+                            // you can't kick server owner
+                            userMenu.setAttribute('username', user.username);
+                            userMenu.setAttribute('server', selectedServer[0]);
+                            document.getElementById("userMenu").style.top = e.pageY + 'px';
+                            document.getElementById("userMenu").style.left = (e.pageX - 6 * parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px';
+                            document.getElementById("userMenu").classList.remove("displayNone");
+                        }
+
+
+                    })
+
                     member_list.append(li);
                 }
             }
@@ -422,15 +448,15 @@
             let members = servers[key]["data"]["members"];
             let orderedUser = {};
             for (let username in members) {
-                if(orderedUser[members[username].status]){
+                if (orderedUser[members[username].status]) {
                     orderedUser[members[username].status].push(members[username]);
                 } else {
                     orderedUser[members[username].status] = [];
                     orderedUser[members[username].status].push(members[username]);
                 }
             }
-            for (let status of Object.keys(orderedUser).reverse()){
-                for(let user of orderedUser[status]){
+            for (let status of Object.keys(orderedUser).reverse()) {
+                for (let user of orderedUser[status]) {
                     let li = document.createElement('li')
                     let a = document.createElement('a')
                     a.setAttribute("href", "#");
@@ -438,12 +464,92 @@
                     li.append(a);
                     li.classList.add('user');
                     li.classList.add(status_list[status])
+
+                    // right click menu
+                    li.addEventListener("contextmenu", e => {
+                        e.preventDefault();
+                        hideMenu();
+                        if (user.username != localStorage.username) {
+                            if (owner[localStorage.username]) {
+                                userMenuAdmin.setAttribute('username', user.username);
+                                userMenuAdmin.setAttribute('server', selectedServer[0]);
+                                userMenuAdmin.style.top = e.pageY + 'px';
+                                userMenuAdmin.style.left = (e.pageX - 6 * parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px';
+                                userMenuAdmin.classList.remove("displayNone");
+                            } else {
+                                userMenu.setAttribute('username', user.username);
+                                userMenu.setAttribute('server', selectedServer[0]);
+                                userMenu.style.top = e.pageY + 'px';
+                                userMenu.style.left = (e.pageX - 6 * parseFloat(getComputedStyle(document.documentElement).fontSize)) + 'px';
+                                userMenu.classList.remove("displayNone");
+                            }
+                        }
+                    })
                     member_list.append(li);
                 }
             }
-
-
         }
+
+        // hide right click menu
+        document.addEventListener('click', hideMenu);
+        document.addEventListener('contextmenu', e => {
+            // e.preventDefault();
+            hideMenu();
+        }, true);
+
+        const userMenuAdmin = document.getElementById("userMenuAdmin");
+        const userMenu = document.getElementById("userMenu");
+        function hideMenu() {
+            userMenuAdmin.classList.add("displayNone");
+            userMenu.classList.add("displayNone");
+            userMenu.removeAttribute('server');
+            userMenuAdmin.removeAttribute('server');
+            userMenu.removeAttribute('username');
+            userMenuAdmin.removeAttribute('username');
+        }
+
+        const pm = document.getElementById('pm');
+        const at = document.getElementById('at');
+        const kick = document.getElementById('kick');
+        const ban = document.getElementById('ban');
+        const upm = document.getElementById('upm');
+        const uat = document.getElementById('uat');
+
+        pm.addEventListener('click', e => {
+            let u = e.target.parentNode.getAttribute('username');
+            let s = e.target.parentNode.getAttribute('server');
+            console.log('you pm ' + u + " from " + s);
+        })
+
+        at.addEventListener('click', e => {
+            let u = e.target.parentNode.getAttribute('username');
+            let s = e.target.parentNode.getAttribute('server');
+            console.log('you at ' + u + " from " + s);
+        })
+
+        upm.addEventListener('click', e => {
+            let u = e.target.parentNode.getAttribute('username');
+            let s = e.target.parentNode.getAttribute('server');
+            console.log('you pm ' + u + " from " + s);
+        })
+
+        uat.addEventListener('click', e => {
+            let u = e.target.parentNode.getAttribute('username');
+            let s = e.target.parentNode.getAttribute('server');
+            console.log('you at ' + u + " from " + s);
+        })
+
+        kick.addEventListener('click', e => {
+            let u = e.target.parentNode.getAttribute('username');
+            let s = e.target.parentNode.getAttribute('server');
+            console.log('you kick ' + u + " from " + s);
+        })
+
+        ban.addEventListener('click', e => {
+            let u = e.target.parentNode.getAttribute('username');
+            let s = e.target.parentNode.getAttribute('server');
+            console.log('you ban ' + u + " from " + s);
+        })
 
         function processChannelSelection(key, li) {
             // select
