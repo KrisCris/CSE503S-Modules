@@ -246,6 +246,17 @@ a{
     overflow-y: auto;
 }
 
+.namespaces .server-list li.PM{
+    border-radius: 0.5rem;
+    padding: 1rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    /* padding: 8px; */
+    font-size: 1rem;
+    font-style: italic;
+    transition: all 0.3s ease-in-out;
+}
+
 .namespaces .server-list li{
     border-radius: 0.5rem;
     padding: 1rem;
@@ -268,6 +279,14 @@ a{
     background-color: #ffffff10;
     /* color: #aaaaaa; */
     transition: all 0.3s ease-in-out;
+}
+
+.namespaces .server-list li.PM.selected{
+    border:#10358b;
+    border-width: 0.2rem;
+    border-style: solid;
+    color:whitesmoke;
+    font-weight: normal;
 }
 
 .namespaces .server-list li.selected{
@@ -455,6 +474,16 @@ a{
     transition: all 0.3s ease-in-out;
 }
 
+.chats .chat-list li[type='0']{
+    border-radius: 0.5rem;
+    padding: 0.7rem;
+    /* padding: 8px; */
+    font-size: 1.1rem;
+    transition: all 0.3s ease-in-out;
+    border-top: #ceb029;
+    border-top-style: solid;
+}
+
 .chats .chat-list li:hover{
     background-color: #ffffff10;
     /* color: #aaaaaa; */
@@ -512,6 +541,21 @@ a{
     overflow-y: hidden;
 }
 
+[contentEditable=true]:empty:not(:focus):before{
+    content:attr(data-text)
+}
+
+#typing-indicator{
+    position:absolute;
+    top:-2.38rem;
+    left:0rem;
+    background-color: #23272ada;
+    color:#b7c7d1;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-top-right-radius: 0.7rem;
+}
 
 .members{
     position: absolute;
@@ -531,6 +575,16 @@ a{
     transition: all 0.3s ease-in-out;
 }
 
+.members .member-list li.online{
+    border-left: #33a868;
+    border-left-style: solid;
+}
+
+.members .member-list li.offline{
+    border-left: #494949;
+    border-left-style: solid;
+}
+
 .members .member-list li:hover{
     background-color: #ffffff10;
     /* color: #aaaaaa; */
@@ -546,5 +600,102 @@ a{
     color:
 } */
 
+.userMenuAdmin{
+    position:absolute;
+    width: 6rem;
+    height:10.5rem;
+    background-color: #23272A;
+    border-radius: 1rem;
+}
+.userMenuAdmin button{
+    position: absolute;
+    left: 0.5rem;
+    width: 5rem;
+    height: 2rem;
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+.userMenuAdmin #pm{
+    top:0.5rem;
+    background-color: #33a868; 
+}
+
+.userMenuAdmin #at{
+    top:3rem;
+    background-color: #3365da;
+}
+
+.userMenuAdmin #kick{
+    top:5.5rem;
+    background-color: #ebcb3d;
+}
+
+.userMenuAdmin #ban{
+    top:8rem;
+    background-color: #db3131;
+}
+
+.userMenuAdmin #pm:hover{
+    top:0.5rem;
+    background-color: #288653; 
+}
+
+.userMenuAdmin #at:hover{
+    top:3rem;
+    background-color: #1b49b4;
+}
+
+.userMenuAdmin #kick:hover{
+    top:5.5rem;
+    background-color: #ceb029;
+}
+
+.userMenuAdmin #ban:hover{
+    top:8rem;
+    background-color: #af2727;
+}
+
+.userMenu{
+    position:absolute;
+    width: 6rem;
+    height:5.5rem;
+    left: 20rem;
+    background-color: #23272A;
+    border-radius: 1rem;
+}
+.userMenu button{
+    position: absolute;
+    left: 0.5rem;
+    width: 5rem;
+    height: 2rem;
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+.userMenu #upm{
+    top:0.5rem;
+    background-color: #33a868; 
+}
+
+.userMenu #uat{
+    top:3rem;
+    background-color: #3365da;
+}
+
+
+.userMenu #upm:hover{
+    top:0.5rem;
+    background-color: #288653; 
+}
+
+.userMenu #uat:hover{
+    top:3rem;
+    background-color: #1b49b4;
+}
 
 
