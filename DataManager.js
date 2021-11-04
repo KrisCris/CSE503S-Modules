@@ -139,9 +139,9 @@ class DataManager{
                 let server = {
                     name: name,
                     password: password,
-                    owner:[username],
+                    owner:{},
                     channels:{},
-                    members:[],
+                    members:{},
                     banned:[]
                 };
                 server.channels[defChannName] = {
@@ -156,6 +156,10 @@ class DataManager{
                         }
                     }
                 };
+                server.owner[username]={
+                    username:username,
+                    status:1
+                }
                 this.servers[name] = server
                 return server;
             } else {
@@ -178,7 +182,10 @@ class DataManager{
                 }
                 this.users[username].joinedServers.push(name)
                 // add user to the server's member list
-                this.servers[name].members.push(username)
+                this.servers[name].members[username]= {
+                    username:username,
+                    status:1
+                }
                 return this.servers[name];
             }
         }
@@ -218,7 +225,10 @@ class DataManager{
         if(this.hasServer(serverName) && this.hasUser(username)){
             if(this.tokens[token] !== undefined && this.tokens[token]["username"]==username){
                 if(this.users[username]['ownedServers'].includes(serverName) || this.users[username]['joinedServers'].includes(serverName)){
-                    if(!this.servers[serverName]["banned"].includes(username) && (this.servers[serverName]['members'].includes(username) || this.servers[serverName]['owner'].includes(username))){
+                    let banned = this.servers[serverName]["banned"];
+                    let members = Object.keys(this.servers[serverName]['members']);
+                    let owners = Object.keys(this.servers[serverName]['owner']);
+                    if(!banned.includes(username) && (members.includes(username) || owners.includes(username))){
                         return true;
                     }
                 }
@@ -229,7 +239,7 @@ class DataManager{
 
     isServerOwner(socket){
         if(this.authServerUser(socket.nsp.name, socket.data.username, socket.data.token)){
-            if(this.servers[socket.nsp.name].owner.includes(socket.data.username)){
+            if(this.servers[socket.nsp.name].owner[socket.data.username]){
                 return true;
             }
         }
@@ -281,6 +291,22 @@ class DataManager{
             return c;
         }
         return false;
+    }
+
+    isOwner(serverName, username){
+        if(this.servers[serverName].owner[username]){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    setStatus(serverName, username, status){
+        if(this.isOwner(serverName, username)){
+            this.servers[serverName].owner[username].status = status;
+        } else {
+            this.servers[serverName].members[username].status = status;
+        }
     }
     
 }

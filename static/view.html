@@ -173,6 +173,31 @@
                 }
             })
 
+            server.on('announceStatus', data=>{
+                data = data['data'];
+                console.log(data);
+                let owner = servers[server_name]['data']['owner'];
+                let members = servers[server_name]['data']['members'];
+
+                if(data.isOwner){
+                    if(owner[data.username]){
+                        owner[data.username]['status'] = data['status'];
+                    } else {
+                        owner[data.username] = {username:data.username, status:data.status};
+                    }
+                } else {
+                    if(members[data.username]){
+                        members[data.username]['status'] = data['status'];
+                    } else {
+                        members[data.username] = {username:data.username, status:data.status};
+                    }
+                }
+                // need to implement partial update;
+                updateChats();
+            })
+
+
+
             server.on('chatResp', data => {
                 if (data['code'] == 1) {
                     let chat = data['data']['chat'];
@@ -318,6 +343,11 @@
             }
         }
 
+        const status_list = {
+            1:'online',
+            0:'offline'
+        };
+
         function processServerSelection(key, li) {
             // select
             selectedServer[0] = key;
@@ -366,24 +396,50 @@
 
             // 3. show users
             removeAllChildNodes(member_list);
-            for (let username of servers[key]["data"]["owner"]) {
-                let li = document.createElement('li')
-                let a = document.createElement('a')
-                a.setAttribute("href", "#");
-                a.append(username);
-                li.append(a);
-                li.classList.add('owner');
-                member_list.append(li);
+            let owner = servers[key]["data"]["owner"];
+            let orderedOwner = {};
+            for (let username in owner) {
+                if(orderedOwner[owner[username].status]){
+                    orderedOwner[owner[username].status].push(owner[username]);
+                } else {
+                    orderedOwner[owner[username].status] = [];
+                    orderedOwner[owner[username].status].push(owner[username]);
+                }
+            }
+            for (let status of Object.keys(orderedOwner).reverse()){
+                for(let user of orderedOwner[status]){
+                    let li = document.createElement('li')
+                    let a = document.createElement('a')
+                    a.setAttribute("href", "#");
+                    a.append(user.username);
+                    li.append(a);
+                    li.classList.add('owner');
+                    li.classList.add(status_list[status])
+                    member_list.append(li);
+                }
             }
 
-            for (let username of servers[key]["data"]["members"]) {
-                let li = document.createElement('li')
-                let a = document.createElement('a')
-                a.setAttribute("href", "#");
-                a.append(username);
-                li.append(a);
-                li.classList.add('user');
-                member_list.append(li);
+            let members = servers[key]["data"]["members"];
+            let orderedUser = {};
+            for (let username in members) {
+                if(orderedUser[members[username].status]){
+                    orderedUser[members[username].status].push(members[username]);
+                } else {
+                    orderedUser[members[username].status] = [];
+                    orderedUser[members[username].status].push(members[username]);
+                }
+            }
+            for (let status of Object.keys(orderedUser).reverse()){
+                for(let user of orderedUser[status]){
+                    let li = document.createElement('li')
+                    let a = document.createElement('a')
+                    a.setAttribute("href", "#");
+                    a.append(user.username);
+                    li.append(a);
+                    li.classList.add('user');
+                    li.classList.add(status_list[status])
+                    member_list.append(li);
+                }
             }
 
 
@@ -497,7 +553,7 @@
                 // exists on client side
                 if (selectedServer[0] && servers[selectedServer[0]]) {
                     // user is owner
-                    if (servers[selectedServer[0]].data['owner'].includes(localStorage.username)) {
+                    if (servers[selectedServer[0]].data['owner'][localStorage.username]) {
                         servers[selectedServer[0]].socket.emit('tryCreateRoom', {name: cname});
                     } else {
                         alert('your have no permission to do that, contact server owner')

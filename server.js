@@ -73,6 +73,7 @@ const DM = DataManager.getInstance();
 
 io.on('connection', (socket) => {
 	console.log(socket.id + " connected to /");
+
 	socket.on('disconnect', () => {
         console.log('one disconnected');
     });
@@ -80,6 +81,7 @@ io.on('connection', (socket) => {
 	socket.on("tryLogin", (data) => {
 		let ret = DM.loginUser(data["username"], data["password"], socket);
 		if(ret){
+			console.log(socket.data.username + " login in w/ id: " +socket.id);
 			socket.emit("loginResp", toJson(1, DM.retriveStatus(socket)));
 		} else {
 			socket.emit("loginResp", toJson(-1, {}, "wrong username or password"));
@@ -89,6 +91,7 @@ io.on('connection', (socket) => {
 	socket.on("tryReg", (data)=>{
 		let ret = DM.newUser(data["username"], data["password"], socket);
 		if(ret){
+			console.log(socket.data.username + " registered & login w/ id: " +socket.id);
 			socket.emit("loginResp", toJson(1, DM.retriveStatus(socket)));
 		} else {
 			socket.emit("loginResp", toJson(-1, {}, "invalid name, choose another one!"));
@@ -104,6 +107,7 @@ io.on('connection', (socket) => {
 	})
 
 	socket.on("logout", ()=>{
+		console.log(socket.data.username + " logout in w/ id: " +socket.id);
 		DM.logoutUser(socket);
 		socket.emit("loginResp", toJson(0));
 	})
@@ -139,32 +143,10 @@ io.on('connection', (socket) => {
 			socket.emit("joinServerResp", toJson(-1, {}, "server already exists"))
 		}
 	})
-	// const count = io.engine.clientsCount;
-
-    // // to everyone except this socket
-    // socket.broadcast.emit('chat message', new Message(1, "New Member: " + socket.id));
-    // // to this socket
-    // socket.emit('chat message', new Message(1, 'Welcome to the server!'));
-
-    // console.log('new connection from '+socket);
-
-    // socket.on('disconnect', () => {
-    //     console.log('disconnected');
-    // });
-
-
-
-    // socket.on('chat message', (msg) => {
-    //     msg = Message.build(msg);
-    //     console.log('message: ' + msg.getMsg());
-    //     // to everyone
-    //     io.emit('chat message', msg);
-    // });
 });
 
 io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
-	console.log(socket.data.username+" w/ id "+socket.id + " joined "+socket.nsp.name);
-
+	console.log("id "+socket.id + " attempt to connect to "+socket.nsp.name);
 	socket.emit("authUser");
 
 	socket.on("tryAuth", data=>{
@@ -175,11 +157,21 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 				socket.data.token = data.token;
 				socket.emit("syncServer", toJson(1, ret));
 				console.log(socket.data.username+" w/ id "+socket.id + " joined "+socket.nsp.name);
+				
+				// add online socket to server list?
+				// no just set status is ok...
+				DM.setStatus(socket.nsp.name, socket.data.username, 1);
+				// announce online status
+				io.of(socket.nsp.name).emit('announceStatus', toJson(1, {
+						username: socket.data.username, 
+						status: 1,
+						isOwner: DM.isOwner(socket.nsp.name, socket.data.username)
+					})
+				);
 			}
 		} else {
 			socket.disconnect();
 		}
-		// else do some other things
 	})
 
 	socket.on("tryCreateRoom", data=>{
@@ -187,7 +179,7 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 		if(DM.isServerOwner(socket)){
 			let ret = DM.createChannel(name, socket)
 			if(ret){
-				socket.emit("createChannelResp", toJson(1, ret))
+				io.of(socket.nsp.name).emit("createChannelResp", toJson(1, ret))
 			} else {
 				socket.emit("createChannelResp", toJson(-2))
 			}
@@ -197,13 +189,6 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 	})
 
 	socket.on("chat", data=>{
-		// {
-		// 	channel: selectedChannel[0],
-		// 	msg: strArr,
-		// 	attachment: null,
-		// 	token: localStorage.token,
-		// 	username: localStorage.username
-        // }
 		if(DM.authServerUser(socket.nsp.name, data.username, data.token)){
 			let ret = DM.chat(socket, data);
 			if(ret){
@@ -217,7 +202,20 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket)=>{
 	})
 
 	socket.on("disconnect", ()=>{
-		console.log(socket.data.username + " disconnected from "+socket.nsp.name);
+		if(socket.data.username !== undefined){
+			// set offline status
+			DM.setStatus(socket.nsp.name, socket.data.username, 0);
+			// announce offline status
+			io.of(socket.nsp.name).emit('announceStatus', toJson(1, {
+					username: socket.data.username, 
+					status: 0,
+					isOwner: DM.isOwner(socket.nsp.name, socket.data.username)
+				})
+			);
+		} else {
+			console.log(socket.id + " disconnected from "+socket.nsp.name);
+		}
+		
 	})
 })
 

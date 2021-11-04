@@ -531,6 +531,16 @@ a{
     transition: all 0.3s ease-in-out;
 }
 
+.members .member-list li.online{
+    border-left: #33a868;
+    border-left-style: solid;
+}
+
+.members .member-list li.offline{
+    border-left: #494949;
+    border-left-style: solid;
+}
+
 .members .member-list li:hover{
     background-color: #ffffff10;
     /* color: #aaaaaa; */

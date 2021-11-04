@@ -10,7 +10,7 @@ REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-NAME-STUDENT-ID-AND-GITHUB-USERNAME
 - **Administration of user created chat rooms (25 Points):**
   - [x] Users can create chat rooms with an arbitrary room name(5 points)
   - [x] Users can join an arbitrary chat room (5 points)
-  - [ ] The chat room displays all users currently in the room (5 points)
+  - [x] The chat room displays all users currently in the room (5 points)
   - [x] A private room can be created that is password protected (5 points)
   - [ ] Creators of chat rooms can temporarily kick others out of the room (3 points)
   - [ ] Creators of chat rooms can permanently ban users from joining that particular room (2 points)
