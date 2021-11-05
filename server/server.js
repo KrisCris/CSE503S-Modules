@@ -1,6 +1,5 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const { Message } = require('./message');
 const { DataManager } = require('./DataManager')
 const path = require('path');
 const url = require('url');
@@ -32,7 +31,7 @@ const httpServer = createServer((req, res) => {
 		pathname = url.parse(req.url).pathname;
 	}
 
-	var filename = path.join(__dirname, "static", pathname);
+	var filename = path.join(__dirname, "../static", pathname);
 	(fs.exists || path.exists)(filename, function (exists) {
 		if (exists) {
 			fs.readFile(filename, function (err, data) {
@@ -71,7 +70,7 @@ const httpServer = createServer((req, res) => {
 const io = new Server(httpServer);
 const DM = DataManager.getInstance();
 
-// connection to lobby
+// connection to lobby / PM
 io.on('connection', (socket) => {
 	console.log(socket.id + " connected to /");
 
@@ -113,8 +112,12 @@ io.on('connection', (socket) => {
 		socket.emit("loginResp", toJson(0));
 	})
 
-	socket.on("disconnect", (res) => {
-		DM.disconnUser(socket, false);
+	socket.on('typing', data => {
+		if (socket.data.username && DM.users[data.target]) {
+			for (let s of DM.users[data.target].sockets) {
+				s.emit('typing', toJson(1, { target: socket.data.username }));
+			}
+		}
 	})
 
 	socket.on("tryJoinServer", (data) => {
@@ -143,6 +146,22 @@ io.on('connection', (socket) => {
 		} else {
 			socket.emit("joinServerResp", toJson(-1, {}, "server already exists"))
 		}
+	})
+
+	socket.on("PM", (data) => {
+		let ret = DM.PM(socket, data);
+		if (ret) {
+			for (let s of DM.users[socket.data.username].sockets) {
+				s.emit('incomePM', toJson(1, { target: data.target, chat: ret }));
+			}
+			for (let s of DM.users[data.target].sockets) {
+				s.emit('incomePM', toJson(1, { target: socket.data.username, chat: ret }));
+			}
+		}
+	})
+
+	socket.on("disconnect", (res) => {
+		DM.disconnUser(socket, false);
 	})
 });
 
@@ -210,12 +229,13 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 			if (DM.isServerOwner(socket)) {
 				DM.kick(data.username, socket.nsp.name);
 				io.of(socket.nsp.name).emit("authUser");
+				let ret = DM.globalNoti(socket.nsp.name, data.username + " is kicked from this server!")
 				for (let chann of Object.keys(DM.servers[socket.nsp.name].channels)) {
 					io.of(socket.nsp.name).emit(
 						"chatResp",
 						toJson(1, {
 							channel: chann,
-							chat: DM.globalNoti(socket.nsp.name, data.username + " is kicked from this server!")
+							chat: ret
 						}));
 				}
 			}
@@ -223,8 +243,17 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 	})
 
 	socket.on('tryPM', data => {
-		initPM(data.from, data.to);
-		// TODO 
+		let ret = DM.initPM(socket.data.username, data.target, socket);
+		if (ret) {
+			for (let s of DM.users[socket.data.username].sockets) {
+				s.emit('initPMResp', toJson(1, { target: data.target, chat: ret }));
+			}
+			for (let s of DM.users[data.target].sockets) {
+				s.emit('incomePM', toJson(1, { target: socket.data.username, chat: ret }));
+			}
+		} else {
+			socket.emit('initPMResp', toJson(-3, {}, "invalid request!"));
+		}
 	})
 
 	socket.on('tryBan', data => {
@@ -232,12 +261,13 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 			if (DM.isServerOwner(socket)) {
 				DM.ban(data.username, socket.nsp.name);
 				io.of(socket.nsp.name).emit("authUser");
+				let ret = DM.globalNoti(socket.nsp.name, data.username + " is banned from this server!")
 				for (let chann of Object.keys(DM.servers[socket.nsp.name].channels)) {
 					io.of(socket.nsp.name).emit(
 						"chatResp",
 						toJson(1, {
 							channel: chann,
-							chat: DM.globalNoti(socket.nsp.name, data.username + " is banned from this server!")
+							chat: ret
 						}));
 				}
 			}
@@ -245,7 +275,7 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 	})
 
 	socket.on('typing', data => {
-		socket.broadcast.emit('typing', toJson(1, { username: socket.data.username }));
+		socket.broadcast.emit('typing', toJson(1, { username: socket.data.username, channel: data.channel }));
 	})
 
 	socket.on("disconnect", () => {
