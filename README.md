@@ -2,7 +2,21 @@
 
 Pingchuan Huang-503954-KrisCris
 
-REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-NAME-STUDENT-ID-AND-GITHUB-USERNAME
+# Screenshots
+
+- Login
+
+<img src="res/Login.png" alt="Login" style="zoom:50%;" />
+
+- Group Chats
+
+<img src="res/ServerTest.png" alt="ServerTest" style="zoom:50%;" />
+
+- Private Messages
+
+<img src="res/PM.png" alt="PM" style="zoom:50%;" />
+
+
 
 
 ## Grading
@@ -28,6 +42,7 @@ REPLACE-THIS-TEXT-WITH-YOUR-PARTNERS-NAME-STUDENT-ID-AND-GITHUB-USERNAME
   - [x] User can join multiple chat servers
   - [x] Server owner can create multiple channels under their servers (like discord)
   - [x] You don't lose chatroom histories after logout.
+    - Note: Data is stored in memory at the moment, if server crashed, data will lose.
   - [x] Chatrooms can show Users' online status (Because you don't lose chatroom histories)
     - left side of username, gray is offline, green is online
   - [x] User typing indicator

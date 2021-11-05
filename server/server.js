@@ -1,6 +1,5 @@
 const { createServer } = require('http');
 const { Server } = require('socket.io');
-const { Message } = require('./message');
 const { DataManager } = require('./DataManager')
 const path = require('path');
 const url = require('url');
@@ -32,7 +31,7 @@ const httpServer = createServer((req, res) => {
 		pathname = url.parse(req.url).pathname;
 	}
 
-	var filename = path.join(__dirname, "static", pathname);
+	var filename = path.join(__dirname, "../static", pathname);
 	(fs.exists || path.exists)(filename, function (exists) {
 		if (exists) {
 			fs.readFile(filename, function (err, data) {

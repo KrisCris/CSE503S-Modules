@@ -2,9 +2,9 @@
   "name": "module6-chatroom",
   "version": "1.0.0",
   "description": "WUSTL-CSE503S-Module6-Chatroom",
-  "main": "server.js",
+  "main": "server/server.js",
   "scripts": {
-    "serve": "nodemon server.js"
+    "serve": "nodemon server/server.js"
   },
   "author": "connlost",
   "license": "ISC",
