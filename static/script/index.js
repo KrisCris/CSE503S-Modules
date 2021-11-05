@@ -78,6 +78,8 @@ dftSocket.on("loginResp", (res) => {
         }
         initGuestFunc();
     }
+    username.value = "";
+    password.value = "";
 })
 
 dftSocket.on('typing', data => {
@@ -346,12 +348,12 @@ function initGuestFunc() {
     removeAllChildNodes(room_list)
     removeAllChildNodes(member_list)
     removeAllChildNodes(chat_list)
-    removeAllChildNodes(username)
-    removeAllChildNodes(password)
-    removeAllChildNodes(inputServerName)
-    removeAllChildNodes(inputServerPW)
     removeAllChildNodes(textarea)
-    removeAllChildNodes(inputChannelName)
+    inputChannelName.value = "";
+    username.value = "";
+    password.value = "";
+    inputServerName.value = "";
+    inputServerPW.value = "";
 
     textarea.setAttribute("contenteditable", false);
 }
@@ -805,6 +807,8 @@ btnJoinServer.addEventListener('click', e => {
     } else {
         dftSocket.emit("tryJoinServer", { name: '/' + sname, password: spw });
     }
+    inputServerName.value = "";
+    inputServerPW.value = "";
 });
 
 btnNewServer.addEventListener('click', e => {
@@ -816,6 +820,8 @@ btnNewServer.addEventListener('click', e => {
     } else {
         dftSocket.emit("tryCreateServer", { name: '/' + sname, password: spw });
     }
+    inputServerName.value = "";
+    inputServerPW.value = "";
 })
 
 btnCreateChannel.addEventListener('click', e => {
@@ -838,6 +844,7 @@ btnCreateChannel.addEventListener('click', e => {
             alert("server not exist");
         }
     }
+    inputChannelName.value = "";
 })
 
 textarea.addEventListener("input", () => {
@@ -876,15 +883,6 @@ textarea.addEventListener('keydown', function (e) {
             return;
         }
 
-        // let li = document.createElement("li");
-
-        // let p = document.createElement('p');
-        // p.append("KrisCris 10/12/2021 14:23 :");
-        // li.append(p)
-
-        // tool a
-        // let a = document.createElement("a");
-        // a.setAttribute("href", "#");
         let strArr = [];
         let textArr = textarea.innerHTML.split("<br>");
         for (let idx = 0; idx < textArr.length; idx++) {
@@ -902,7 +900,6 @@ textarea.addEventListener('keydown', function (e) {
             );
         }
 
-        // a.removeChild(a.lastChild);
         // server chat
         if (inPM) {
             dftSocket.emit("PM", {
@@ -922,11 +919,7 @@ textarea.addEventListener('keydown', function (e) {
             });
         }
 
-
         //pm
-
-        // li.append(a);
-        // chat_list.append(li);
         chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
         e.target.textContent = "";
         _clear();
