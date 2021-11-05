@@ -63,5 +63,6 @@ Pingchuan Huang-503954-KrisCris
   - [x] Differ server messages (has a gold top border) from users'
   - [x] Support login from multiple devices
     - You can test it using different browsers.
+  - [x] You can even send message to someone is offline, they will be able to receive that after login.
   - [ ] @ someone
 

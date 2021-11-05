@@ -544,7 +544,7 @@ function processServerSelection(key, li, isPM = false) {
                 li.addEventListener("contextmenu", e => {
                     e.preventDefault();
                     hideMenu();
-                    if (user.username != localStorage.username && status == 1) {
+                    if (user.username != localStorage.username) {
                         // you can't kick server owner
                         userMenu.setAttribute('username', user.username);
                         userMenu.setAttribute('server', selectedServer[0]);
