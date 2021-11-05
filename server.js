@@ -114,7 +114,7 @@ io.on('connection', (socket) => {
 	})
 
 	socket.on('typing', data => {
-		if (socket.data.username) {
+		if (socket.data.username && DM.users[data.target]) {
 			for (let s of DM.users[data.target].sockets) {
 				s.emit('typing', toJson(1, { target: socket.data.username }));
 			}
@@ -230,12 +230,13 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 			if (DM.isServerOwner(socket)) {
 				DM.kick(data.username, socket.nsp.name);
 				io.of(socket.nsp.name).emit("authUser");
+				let ret = DM.globalNoti(socket.nsp.name, data.username + " is kicked from this server!")
 				for (let chann of Object.keys(DM.servers[socket.nsp.name].channels)) {
 					io.of(socket.nsp.name).emit(
 						"chatResp",
 						toJson(1, {
 							channel: chann,
-							chat: DM.globalNoti(socket.nsp.name, data.username + " is kicked from this server!")
+							chat: ret
 						}));
 				}
 			}
@@ -261,12 +262,13 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 			if (DM.isServerOwner(socket)) {
 				DM.ban(data.username, socket.nsp.name);
 				io.of(socket.nsp.name).emit("authUser");
+				let ret = DM.globalNoti(socket.nsp.name, data.username + " is banned from this server!")
 				for (let chann of Object.keys(DM.servers[socket.nsp.name].channels)) {
 					io.of(socket.nsp.name).emit(
 						"chatResp",
 						toJson(1, {
 							channel: chann,
-							chat: DM.globalNoti(socket.nsp.name, data.username + " is banned from this server!")
+							chat: ret
 						}));
 				}
 			}

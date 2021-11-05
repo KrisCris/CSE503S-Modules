@@ -326,11 +326,12 @@ class DataManager {
     }
 
     globalNoti(serverName, msg) {
+        let c = null
         for (let key of Object.keys(this.servers[serverName].channels)) {
             let chats = this.servers[serverName].channels[key].chats;
             let keys = Object.keys(chats);
             let newId = Number(keys[keys.length - 1]) + 1;
-            let c = {
+            c = {
                 id: newId,
                 username: 'SERVER',
                 type: 0,
@@ -339,8 +340,8 @@ class DataManager {
                 time: Date.now()
             };
             chats[newId] = c;
-            return c;
         }
+        return c;
     }
 
     isOwner(serverName, username) {

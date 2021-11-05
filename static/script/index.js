@@ -291,6 +291,10 @@ function handleServers(server_name) {
         removeAllChildNodes(room_list);
         removeAllChildNodes(member_list);
         removeAllChildNodes(chat_list);
+        if(selectedServer[0] == server_name){
+            selectedServer = [null, null];
+            selectedChannel = [null, null];
+        }
         updateChats();
     });
 }
@@ -384,7 +388,7 @@ function updateChats() {
         let li = document.createElement('li');
         let a = document.createElement('a');
         a.setAttribute("href", "#");
-        a.append(servers[key].data.name);
+        a.append(servers[key].data.name.split('/')[1]);
         li.append(a);
         a.addEventListener('click', (e) => {
             processServerSelection(key, li);
@@ -400,7 +404,6 @@ function updateChats() {
             }
         }
         server_list.append(li);
-
     }
 }
 
@@ -435,6 +438,7 @@ function initPM() {
 
 // when a server li is clicked
 function processServerSelection(key, li, isPM = false) {
+    removeAllChildNodes(chat_list);
     // select
     selectedServer[0] = key;
     if (selectedServer[1] != null) {
@@ -449,6 +453,9 @@ function processServerSelection(key, li, isPM = false) {
         initPM();
         removeAllChildNodes(room_list);
         let keys = Object.keys(PM);
+        if(!keys.length){
+            textarea.setAttribute("contenteditable", false);
+        }
         for (let uname of keys) {
             let li = document.createElement("li");
             let a = document.createElement('a');
@@ -492,7 +499,7 @@ function processServerSelection(key, li, isPM = false) {
             let li = document.createElement("li");
             let a = document.createElement('a');
             a.setAttribute("href", "#");
-            a.append(channelKey);
+            a.append(channelKey.split('::')[1]);
             li.append(a);
             room_list.append(li);
 
@@ -835,12 +842,13 @@ btnCreateChannel.addEventListener('click', e => {
 
 textarea.addEventListener("input", () => {
     fixHeight();
-    if (inPM) {
-        dftSocket.emit('typing', { target: selectedChannel[0] });
-    } else {
-        servers[selectedServer[0]].socket.emit('typing', { channel: selectedChannel[0] });
+    if (selectedServer[0] && selectedChannel[0]) {
+        if (inPM) {
+            dftSocket.emit('typing', { target: selectedChannel[0] });
+        } else {
+            servers[selectedServer[0]].socket.emit('typing', { channel: selectedChannel[0] });
+        }
     }
-
 });
 
 textarea.addEventListener('paste', function (e) {
