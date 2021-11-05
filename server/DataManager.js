@@ -111,7 +111,6 @@ class DataManager {
     logoutUser(socket) {
         if (socket.data.token && this.tokens[socket.data.token]) {
             delete this.tokens[socket.data.token];
-            socket.data.username = undefined;
         }
         this.disconnUser(socket);
     }
@@ -125,6 +124,8 @@ class DataManager {
             if (idx !== -1) {
                 this.users[socket.data.username].sockets.splice(idx, 1);
             }
+            socket.data.username = undefined;
+            socket.data.token = undefined;
         }
     }
 

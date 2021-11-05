@@ -74,9 +74,10 @@ const DM = DataManager.getInstance();
 io.on('connection', (socket) => {
 	console.log(socket.id + " connected to /");
 
-	socket.on('disconnect', () => {
-		console.log('one disconnected');
-	});
+	socket.on("disconnect", (res) => {
+		console.log(socket.data.username+' disconnected');
+		DM.disconnUser(socket, false);
+	})
 
 	socket.on("tryLogin", (data) => {
 		let ret = DM.loginUser(data["username"], data["password"], socket);
@@ -100,6 +101,7 @@ io.on('connection', (socket) => {
 
 	socket.on("tryRetriveStatus", (data) => {
 		if (DM.loginUserByToken(data["token"], socket)) {
+			console.log(socket.data.username + " logout in w/ id: " + socket.id);
 			socket.emit("loginResp", toJson(1, DM.retriveStatus(socket)));
 		} else {
 			socket.emit("loginResp", toJson(0));
@@ -158,10 +160,6 @@ io.on('connection', (socket) => {
 				s.emit('incomePM', toJson(1, { target: socket.data.username, chat: ret }));
 			}
 		}
-	})
-
-	socket.on("disconnect", (res) => {
-		DM.disconnUser(socket, false);
 	})
 });
 

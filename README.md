@@ -16,7 +16,9 @@ Pingchuan Huang-503954-KrisCris
 
 <img src="res/PM.png" alt="PM" style="zoom:50%;" />
 
+- Multi-Devices Login
 
+<img src="res/MultiDeviceLogin.png" alt="MultiDeviceLogin" style="zoom:50%;" />
 
 
 ## Grading
@@ -46,7 +48,9 @@ Pingchuan Huang-503954-KrisCris
   - [x] Chatrooms can show Users' online status (Because you don't lose chatroom histories)
     - left side of username, gray is offline, green is online
   - [x] User typing indicator
-  - [x] Messages with time
+  - [x] Messages show sent time
   - [x] Differ server messages (has a gold top border) from users'
+  - [x] Support login from multiple devices
+    - You can test it using different browsers.
   - [ ] @ someone
 
