@@ -71,7 +71,7 @@ const httpServer = createServer((req, res) => {
 const io = new Server(httpServer);
 const DM = DataManager.getInstance();
 
-// connection to lobby
+// connection to lobby / PM
 io.on('connection', (socket) => {
 	console.log(socket.id + " connected to /");
 
@@ -113,8 +113,12 @@ io.on('connection', (socket) => {
 		socket.emit("loginResp", toJson(0));
 	})
 
-	socket.on("disconnect", (res) => {
-		DM.disconnUser(socket, false);
+	socket.on('typing', data => {
+		if (socket.data.username) {
+			for (let s of DM.users[data.target].sockets) {
+				s.emit('typing', toJson(1, { target: socket.data.username }));
+			}
+		}
 	})
 
 	socket.on("tryJoinServer", (data) => {
@@ -143,6 +147,22 @@ io.on('connection', (socket) => {
 		} else {
 			socket.emit("joinServerResp", toJson(-1, {}, "server already exists"))
 		}
+	})
+
+	socket.on("PM", (data) => {
+		let ret = DM.PM(socket, data);
+		if (ret) {
+			for (let s of DM.users[socket.data.username].sockets) {
+				s.emit('incomePM', toJson(1, { target: data.target, chat: ret }));
+			}
+			for (let s of DM.users[data.target].sockets) {
+				s.emit('incomePM', toJson(1, { target: socket.data.username, chat: ret }));
+			}
+		}
+	})
+
+	socket.on("disconnect", (res) => {
+		DM.disconnUser(socket, false);
 	})
 });
 
@@ -223,8 +243,17 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 	})
 
 	socket.on('tryPM', data => {
-		initPM(data.from, data.to);
-		// TODO 
+		let ret = DM.initPM(socket.data.username, data.target, socket);
+		if (ret) {
+			for (let s of DM.users[socket.data.username].sockets) {
+				s.emit('initPMResp', toJson(1, { target: data.target, chat: ret }));
+			}
+			for (let s of DM.users[data.target].sockets) {
+				s.emit('incomePM', toJson(1, { target: socket.data.username, chat: ret }));
+			}
+		} else {
+			socket.emit('initPMResp', toJson(-3, {}, "invalid request!"));
+		}
 	})
 
 	socket.on('tryBan', data => {
@@ -245,7 +274,7 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 	})
 
 	socket.on('typing', data => {
-		socket.broadcast.emit('typing', toJson(1, { username: socket.data.username }));
+		socket.broadcast.emit('typing', toJson(1, { username: socket.data.username, channel: data.channel }));
 	})
 
 	socket.on("disconnect", () => {

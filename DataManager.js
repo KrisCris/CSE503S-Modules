@@ -239,6 +239,15 @@ class DataManager {
         return false
     }
 
+    inServer(serverName, username) {
+        let members = Object.keys(this.servers[serverName]['members']);
+        let owners = Object.keys(this.servers[serverName]['owner']);
+        if (members.includes(username) || owners.includes(username)) {
+            return true;
+        }
+        return false;
+    }
+
     isServerOwner(socket) {
         if (this.authServerUser(socket.nsp.name, socket.data.username, socket.data.token)) {
             if (this.servers[socket.nsp.name].owner[socket.data.username]) {
@@ -291,6 +300,27 @@ class DataManager {
             };
             chats[newId] = c;
             return c;
+        }
+        return false;
+    }
+
+    PM(socket, data) {
+        if (this.hasUser(socket.data.username) && this.hasUser(data.target)) {
+            if (this.users[socket.data.username].PM[data.target] && this.users[data.target].PM[socket.data.username]) {
+                let keys = Object.keys(this.users[socket.data.username].PM[data.target].chats);
+                let newId = Number(keys[keys.length - 1]) + 1;
+                let c = {
+                    id: newId,
+                    username: data.username,
+                    type: 1,
+                    msg: data.msg,
+                    attachment: data.attachment,
+                    time: Date.now()
+                };
+                this.users[socket.data.username].PM[data.target].chats[newId] = c;
+                this.users[data.target].PM[socket.data.username].chats[newId] = c;
+                return c;
+            }
         }
         return false;
     }
@@ -348,38 +378,41 @@ class DataManager {
         return true;
     }
 
-    initPM(from, to) {
-        if (this.hasUser(from) && this.hasServer(to)) {
-            if (!this.users[from]['PM'][to]) {
-                this.users[from]['PM'][to] = {
-                    chats: {
-                        0: {
-                            id: 0,
-                            username: 'SERVER',
-                            type: 0,
-                            msg: ['Welcome, You can start chat!'],
-                            attachment: null,
-                            time: Date.now()
+    initPM(from, to, socket) {
+        if (this.inServer(socket.nsp.name, from) && this.inServer(socket.nsp.name, to)) {
+            if (this.hasUser(from) && this.hasUser(to)) {
+                if (!this.users[from]['PM'][to]) {
+                    this.users[from]['PM'][to] = {
+                        chats: {
+                            0: {
+                                id: 0,
+                                username: 'SERVER',
+                                type: 0,
+                                msg: ['Welcome, You can start chat!'],
+                                attachment: null,
+                                time: Date.now()
+                            }
                         }
-                    }
-                };
-            }
-            if (!this.users[to]['PM'][from]) {
-                this.users[to]['PM'][from] = {
-                    chats: {
-                        0: {
-                            id: 0,
-                            username: 'SERVER',
-                            type: 0,
-                            msg: ['Welcome, You can start chat!'],
-                            attachment: null,
-                            time: Date.now()
+                    };
+                }
+                if (!this.users[to]['PM'][from]) {
+                    this.users[to]['PM'][from] = {
+                        chats: {
+                            0: {
+                                id: 0,
+                                username: 'SERVER',
+                                type: 0,
+                                msg: ['Welcome, You can start chat!'],
+                                attachment: null,
+                                time: Date.now()
+                            }
                         }
                     }
                 }
+                return this.users[from]['PM'][to]['chats'][0];
             }
         }
-        return true;
+        return false;
     }
 
 }
