@@ -14,5 +14,20 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.14"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cse330-fall-2021/module6-group-503954.git"
+  },
+  "keywords": [
+    "chatroom",
+    "wustl",
+    "cse330",
+    "cse503",
+    "module6"
+  ],
+  "bugs": {
+    "url": "https://github.com/cse330-fall-2021/module6-group-503954/issues"
+  },
+  "homepage": "https://github.com/cse330-fall-2021/module6-group-503954#readme"
 }
