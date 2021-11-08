@@ -2,8 +2,6 @@
 
 Pingchuan Huang-503954-KrisCris
 
-
-
 # Links
 
 [Link using my own domain name](http://ec2.connlost.online:3456/)
@@ -17,15 +15,15 @@ Pingchuan Huang-503954-KrisCris
 
 - Login
 
-<img src="res/Login.png" alt="Login" style="zoom:50%;" />
+<img src="img/Login.png" alt="Login" style="zoom:50%;" />
 
 - Group Chats
 
-<img src="res/ServerTest.png" alt="ServerTest" style="zoom:50%;" />
+<img src="img/ServerTest.png" alt="ServerTest" style="zoom:50%;" />
 
 - Private Messages
 
-<img src="res/PM.png" alt="PM" style="zoom:50%;" />
+<img src="img/PM.png" alt="PM" style="zoom:50%;" />
 
 - Multi-Devices Login
 
