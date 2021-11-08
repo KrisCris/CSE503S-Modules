@@ -152,7 +152,9 @@ dftSocket.on('incomePM', data => {
             // attachment?
             li.append(p);
             li.append(a);
+            let scrollFlag = (chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight))
             chat_list.append(li);
+            tryScrollDown(scrollFlag);
         }
         // show a dots or something on the username
     }
@@ -255,7 +257,9 @@ function handleServers(server_name) {
                     // attachment?
                     li.append(p);
                     li.append(a);
+                    let scrollFlag = (chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight))
                     chat_list.append(li);
+                    tryScrollDown(scrollFlag);
                 } else {
                     // hightlight that channel
                 }
@@ -674,6 +678,7 @@ function processChannelSelection(key, li, isPM = false) {
         chat_list.append(li);
     }
     textarea.setAttribute("contenteditable", true);
+    tryScrollDown(true);
 }
 
 // hide right click menu ui
@@ -687,27 +692,29 @@ function hideMenu() {
 }
 
 // dynamically update chat bar height
-function fixHeight() {
-    let flag = false;
+function fixHeight(shouldScroll = false) {
     let parent = textarea.parentNode;
     let rem = 1.2;
     let base = rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-    if (chat_list.scrollHeight - chat_list.offsetHeight == chat_list.scrollTop) {
-        flag = true;
-    }
+
     parent.style.height = '5rem';
     parent.style.height = (textarea.scrollHeight + base) + "px";
+    document.getElementById("inputImage").style.top = (textarea.scrollHeight + base) / 2 - parseFloat(getComputedStyle(document.documentElement).fontSize);
     chat_list.style.bottom = (textarea.scrollHeight + base) + "px";
 
-    if (flag) {
-        chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
-    }
+    tryScrollDown(shouldScroll);
 }
 
 // util func that remove all children nodes from a element
 function removeAllChildNodes(parent) {
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
+    }
+}
+
+function tryScrollDown(force = false) {
+    if (chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight) || force) {
+        chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
     }
 }
 
@@ -848,7 +855,7 @@ btnCreateChannel.addEventListener('click', e => {
 })
 
 textarea.addEventListener("input", () => {
-    fixHeight();
+    fixHeight(chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight));
     if (selectedServer[0] && selectedChannel[0]) {
         if (inPM) {
             dftSocket.emit('typing', { target: selectedChannel[0] });
@@ -867,13 +874,14 @@ textarea.addEventListener('paste', function (e) {
     }
     e.target.removeChild(e.target.lastChild);
     e.target.append(text);
+    fixHeight(chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight));
 });
 
 // submit msg or break line using enter key
 textarea.addEventListener('keydown', function (e) {
     function _clear() {
         removeAllChildNodes(textarea);
-        fixHeight();
+        fixHeight(chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight));
     }
 
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -920,7 +928,6 @@ textarea.addEventListener('keydown', function (e) {
         }
 
         //pm
-        chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
         e.target.textContent = "";
         _clear();
     } else if (e.key === 'Enter' && e.shiftKey) {
