@@ -28,6 +28,8 @@ const ban = document.getElementById('ban');
 const upm = document.getElementById('upm');
 const uat = document.getElementById('uat');
 const btnCreateChannel = document.getElementById("btnCreateChannel");
+const inputImage = document.getElementById("inputImage");
+const realFileBtn = document.getElementById("realFileBtn");
 
 // modules
 const loginPage = document.getElementsByClassName("login")[0];
@@ -144,12 +146,21 @@ dftSocket.on('incomePM', data => {
             p.append(sp2);
             let a = document.createElement('a');
             a.setAttribute("href", "#");
-            for (let msg of msgArr) {
-                a.append(msg);
-                a.append(document.createElement("br"));
+            // img
+            if (msgArr === null) {
+                let img = document.createElement('img');
+                img.setAttribute("src", attachment);
+                img.setAttribute('alt', 'image');
+                a.append(img)
+            } else {
+                // txt
+                for (let msg of msgArr) {
+                    a.append(msg);
+                    a.append(document.createElement("br"));
+                }
+                a.removeChild(a.lastChild)
             }
-            a.removeChild(a.lastChild)
-            // attachment?
+
             li.append(p);
             li.append(a);
             let scrollFlag = (chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight))
@@ -249,12 +260,19 @@ function handleServers(server_name) {
                     p.append(sp2);
                     let a = document.createElement('a');
                     a.setAttribute("href", "#");
-                    for (let msg of msgArr) {
-                        a.append(msg);
-                        a.append(document.createElement("br"));
+                    // img
+                    if (msgArr === null) {
+                        let img = document.createElement('img');
+                        img.setAttribute("src", attachment);
+                        img.setAttribute('alt', 'image');
+                        a.append(img)
+                    } else {
+                        for (let msg of msgArr) {
+                            a.append(msg);
+                            a.append(document.createElement("br"));
+                        }
+                        a.removeChild(a.lastChild)
                     }
-                    a.removeChild(a.lastChild)
-                    // attachment?
                     li.append(p);
                     li.append(a);
                     let scrollFlag = (chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight))
@@ -297,7 +315,7 @@ function handleServers(server_name) {
         removeAllChildNodes(room_list);
         removeAllChildNodes(member_list);
         removeAllChildNodes(chat_list);
-        if(selectedServer[0] == server_name){
+        if (selectedServer[0] == server_name) {
             selectedServer = [null, null];
             selectedChannel = [null, null];
         }
@@ -360,6 +378,8 @@ function initGuestFunc() {
     inputServerPW.value = "";
 
     textarea.setAttribute("contenteditable", false);
+    inputImage.disabled = true;
+    realFileBtn.disabled = true;
 }
 
 // render the whole page
@@ -459,8 +479,10 @@ function processServerSelection(key, li, isPM = false) {
         initPM();
         removeAllChildNodes(room_list);
         let keys = Object.keys(PM);
-        if(!keys.length){
+        if (!keys.length) {
             textarea.setAttribute("contenteditable", false);
+            inputImage.disabled = true;
+            realFileBtn.disabled = true;
         }
         for (let uname of keys) {
             let li = document.createElement("li");
@@ -666,18 +688,28 @@ function processChannelSelection(key, li, isPM = false) {
         p.append(sp2);
         let a = document.createElement('a');
         a.setAttribute("href", "#");
-        for (let msg of msgArr) {
-            a.append(msg);
-            a.append(document.createElement("br"));
+        // img
+        if (msgArr === null) {
+            let img = document.createElement('img');
+            img.setAttribute("src", attachment);
+            img.setAttribute('alt', 'image');
+            a.append(img)
+        } else {
+            // txt
+            for (let msg of msgArr) {
+                a.append(msg);
+                a.append(document.createElement("br"));
+            }
+            a.removeChild(a.lastChild)
         }
-        a.removeChild(a.lastChild)
         // attachment?
-
         li.append(p);
         li.append(a);
         chat_list.append(li);
     }
     textarea.setAttribute("contenteditable", true);
+    inputImage.disabled = false;
+    realFileBtn.disabled = false;
     tryScrollDown(true);
 }
 
@@ -716,6 +748,15 @@ function tryScrollDown(force = false) {
     if (chat_list.scrollTop == (chat_list.scrollHeight - chat_list.offsetHeight) || force) {
         chat_list.scroll(chat_list.scrollWidth, chat_list.scrollHeight);
     }
+}
+
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
 }
 
 btnLogin.addEventListener('click', e => {
@@ -852,6 +893,34 @@ btnCreateChannel.addEventListener('click', e => {
         }
     }
     inputChannelName.value = "";
+});
+
+inputImage.addEventListener("click", () => {
+    realFileBtn.click();
+})
+
+realFileBtn.addEventListener("change", () => {
+    toBase64(realFileBtn.files[0]).then((data) => {
+        // server chat
+        if (inPM) {
+            dftSocket.emit("PM", {
+                target: selectedChannel[0],
+                msg: null,
+                attachment: data,
+                token: localStorage.token,
+                username: localStorage.username
+            })
+        } else {
+            servers[selectedServer[0]].socket.emit("chat", {
+                channel: selectedChannel[0],
+                msg: null,
+                attachment: data,
+                token: localStorage.token,
+                username: localStorage.username
+            });
+        }
+        realFileBtn.value = '';
+    })
 })
 
 textarea.addEventListener("input", () => {

@@ -27,7 +27,11 @@ Pingchuan Huang-503954-KrisCris
 
 - Multi-Devices Login
 
-<img src="res/MultiDeviceLogin.png" alt="MultiDeviceLogin" style="zoom:50%;" />
+<img src="img/MultiDeviceLogin.png" alt="MultiDeviceLogin" style="zoom:50%;" />
+
+- Send Image
+
+<img src="img/img.png" alt="img" style="zoom:50%;" />
 
 
 ## Grading
@@ -62,5 +66,6 @@ Pingchuan Huang-503954-KrisCris
   - [x] Support login from multiple devices
     - You can test it using different browsers.
   - [x] You can even send message to someone is offline, they will be able to receive that after login.
+  - [x] Send image - click the img icon right next to the textarea.
   - [ ] @ someone
 

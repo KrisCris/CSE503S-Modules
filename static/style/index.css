@@ -464,6 +464,7 @@ a{
     left:0rem;
     width: 100%;
     overflow: auto;
+    padding-bottom: 2rem;
 }
 
 .chats .chat-list li{
@@ -494,6 +495,11 @@ a{
     word-wrap: break-word;      /* IE 5.5-7 */
     white-space: -moz-pre-wrap; /* Firefox 1.0-2.0 */
     white-space: pre-wrap;      /* current browsers */
+}
+
+.chats .chat-list li a img{
+    max-width: 50%;
+    margin-top: 1rem;
 }
 
 .chats .chat-list li p .name{
@@ -539,6 +545,16 @@ a{
     font-family: Helvetica, Arial, sans-serif;
     color: #b7c7d1;
     overflow-y: hidden;
+    padding-right: 4.5rem;
+}
+
+.text-field #inputImage{
+    position: absolute;
+    right:1.5rem;
+    top:1.5rem;
+    width: 2rem;
+    height: 2rem;
+    z-index: 1;
 }
 
 [contentEditable=true]:empty:not(:focus):before{

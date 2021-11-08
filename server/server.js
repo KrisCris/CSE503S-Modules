@@ -24,14 +24,17 @@ function toJson(code, data = {}, msg = null) {
 
 // host http server
 const httpServer = createServer((req, res) => {
-	// default entry
-	let pathname = '/index.html'
-	// else
-	if (url.parse(req.url).pathname != '/') {
-		pathname = url.parse(req.url).pathname;
+
+	let filename = "";
+	if (url.parse(req.url).pathname == '/') {
+		filename = path.join(__dirname, "../static", '/index.html');
+	} else if(url.parse(req.url).pathname.startsWith('/import')){
+		filename = path.join(__dirname, "../node_modules", url.parse(req.url).pathname);
+	} else {
+		filename = path.join(__dirname, "../static", url.parse(req.url).pathname);
 	}
 
-	var filename = path.join(__dirname, "../static", pathname);
+	
 	(fs.exists || path.exists)(filename, function (exists) {
 		if (exists) {
 			fs.readFile(filename, function (err, data) {
@@ -67,7 +70,9 @@ const httpServer = createServer((req, res) => {
 });
 
 // attach socket.io on http server
-const io = new Server(httpServer);
+const io = new Server(httpServer,{
+	maxHttpBufferSize: 1e8
+});
 const DM = DataManager.getInstance();
 
 // connection to lobby / PM
