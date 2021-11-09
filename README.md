@@ -1,4 +1,4 @@
-# CSE330
+# CSE503S-Module5-Calender
 
 Pingchuan Huang-503954-KrisCris
 
