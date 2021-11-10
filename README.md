@@ -7,7 +7,7 @@ Pingchuan Huang-503954-KrisCris
 ## Rubric
 
 - **Rubric turned in on time (5 points)**
-  - Remember to get it checked out by a TA!
+  - Todd approved it!
 
 
 - **Languages/Frameworks (30 points)**
