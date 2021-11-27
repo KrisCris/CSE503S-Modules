@@ -107,13 +107,24 @@ def delete_link(lid):
 def refresh_link(lid):
     try:
         from app import db
-        t = get_future_time(7)
-        dbResp = db.links.update_one(
-            {'_id': ObjectId(lid)},
-            {'$set': {'expiry': t}}
-        )
-        if dbResp.modified_count:
-            return reply(1, data={'newExpiry': t}), 200
+        new_link = request.form.get('newLink')
+        if new_link:
+            dbResp = db.links.update_one(
+                {'_id': ObjectId(lid)},
+                {'$set': {'original': new_link}}
+            )
+            if dbResp.modified_count:
+                return reply(1, data={'newLink': new_link}), 200
+        else:
+            t = get_future_time(7)
+            dbResp = db.links.update_one(
+                {'_id': ObjectId(lid)},
+                {'$set': {'expiry': t}}
+            )
+            if dbResp.modified_count:
+                return reply(1, data={'newExpiry': t}), 200
+
+
         if dbResp.matched_count:
             return reply(1), 202
         return reply(-1), 404

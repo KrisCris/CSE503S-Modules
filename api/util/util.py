@@ -44,4 +44,4 @@ def get_time_gap(old):
 
 
 def get_future_time(days, now=None):
-    return int(time.time() if now is None else now + 3600 * 24 * days)
+    return int((time.time() if now is None else now) + 3600 * 24 * days)
