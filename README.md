@@ -7,14 +7,12 @@ Pingchuan Huang-503954-KrisCris
 ## Rubric
 
 - **Rubric turned in on time (5 points)**
-  - Remember to get it checked out by a TA!
-
+  - Todd approved it!
 
 - **Languages/Frameworks (30 points)**
   - Vue.js Frontend (10 points)
   - Flask Backend (10 points)
   - MongoDB Database (10 points)
-
 
 - **Functionality (55 points)**
   - Users can register, login, and logout. (10 points)
@@ -23,8 +21,10 @@ Pingchuan Huang-503954-KrisCris
   - Logged in users can edit/delete their shortened URLs. (10 points)
   - Each user has limited number of shortened URLs working at the same time, but the number can grow by inviting new users. (5 points)
   - Database is properly defined to maintain the above functionality (10 points)
+ 
 - **Best Practices (10 points)**
   - Code is readable and well formatted (3 points)
   - Users are authenticated using JSON Web Token (JWT) (5 points)
   - All pages pass the W3C HTML validators (2 points)
-- **Creative Portion (10 points, in case if I lose points else where)**
+ 
+- **Creative Portion**
