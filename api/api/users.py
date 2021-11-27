@@ -11,8 +11,9 @@ users = Blueprint(name="users", import_name=__name__, url_prefix='/users')
 CORS(users)
 
 
-@users.route('/register', methods=['POST'])
-def register():
+@users.route('/register', defaults={'invitation': None}, methods=['POST'])
+@users.route('/register/<invitation>', methods=['POST'])
+def register(invitation):
     try:
         username = request.form["username"]
         password = request.form["password"]
@@ -37,6 +38,14 @@ def register():
             refresh_token = create_refresh_token(identity=uid)
             set_access_cookies(response, access_token)
             set_refresh_cookies(response, refresh_token)
+
+            # process invitation
+            if invitation is not None:
+                # that user receive 5 more urls
+                db.users.update_one(
+                    {"inviteCode": invitation},
+                    {"$inc": {"linksNum": 5}}
+                )
 
             return response, 201
         else:
