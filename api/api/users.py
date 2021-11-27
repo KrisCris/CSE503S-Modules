@@ -52,6 +52,8 @@ def register(invitation):
             return reply(-2), 202
 
     except Exception as ex:
+        if hasattr(ex, 'code'):
+            return reply(ex.code, msg=str(ex)), ex.code
         return reply(500, data={"err": str(ex)}), 500
 
 
@@ -84,6 +86,8 @@ def login():
         return reply(code=0, msg="Wrong username or password!"), 401
 
     except Exception as ex:
+        if hasattr(ex, 'code'):
+            return reply(ex.code, msg=str(ex)), ex.code
         return reply(500, data={"err": str(ex)}), 500
 
 
@@ -122,4 +126,6 @@ def getInfo():
         return reply(code=-1), 404
 
     except Exception as ex:
+        if hasattr(ex, 'code'):
+            return reply(ex.code, msg=str(ex)), ex.code
         return reply(500, data={"err": str(ex)}), 500

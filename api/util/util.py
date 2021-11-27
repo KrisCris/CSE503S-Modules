@@ -1,5 +1,7 @@
-from flask import jsonify
+import time
 import uuid
+
+from flask import jsonify
 
 REPLY_CODES = {
     500: 'Error',
@@ -21,8 +23,8 @@ def reply(code, msg=None, data=None):
         })
 
     return jsonify({
-        'code': 500,
-        'msg': 'Unknown Error',
+        'code': code,
+        'msg': msg,
         'data': data
     })
 
@@ -30,3 +32,15 @@ def reply(code, msg=None, data=None):
 def gen_token(key):
     time_uuid = uuid.uuid1()
     return str(uuid.uuid5(time_uuid, key))
+
+
+def get_current_time():
+    return int(time.time())
+
+
+def get_time_gap(old):
+    return int(time.time()) - old
+
+
+def get_future_time(days, now=get_current_time()):
+    return int((time.time() if now is None else now) + 3600 * 24 * days)
