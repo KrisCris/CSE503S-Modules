@@ -5,6 +5,7 @@ from flask import jsonify
 
 REPLY_CODES = {
     500: 'Error',
+    -3: 'Expired',
     -2: 'Already Exist',
     -1: 'Not Exist',
     0: 'Login Required',
@@ -42,5 +43,5 @@ def get_time_gap(old):
     return int(time.time()) - old
 
 
-def get_future_time(days, now=get_current_time()):
-    return int((time.time() if now is None else now) + 3600 * 24 * days)
+def get_future_time(days, now=None):
+    return int(time.time() if now is None else now + 3600 * 24 * days)
