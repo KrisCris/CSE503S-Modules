@@ -6,6 +6,7 @@ import pymongo
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, get_jwt_identity, create_access_token, get_jwt, set_access_cookies
+from hashids import Hashids
 
 from api.links import links
 from api.users import users
@@ -18,6 +19,15 @@ try:
     )
     db = mongo.shortUrl
     mongo.server_info()
+
+    # init
+    if 'counters' not in db.list_collection_names():
+        seq = {
+            '_id': 'urlId',
+            'seq': 0
+        }
+        db.counters.insert(seq)
+
 except Exception as ex:
     print(f"Error connecting to DB: {ex}")
 
@@ -34,6 +44,8 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
 CORS(app)
 jwt = JWTManager(app)
+
+hashids = Hashids(min_length=4, salt=app.config['JWT_SECRET_KEY'])
 
 
 @app.after_request
