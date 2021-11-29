@@ -47,7 +47,7 @@ export default {
         handleSubmit() {
             let url = this.originalURL.toLowerCase();
             if (!url.startsWith("https://") && !url.startsWith("http://")) {
-                this.originalURL = "https://" + this.originalURL;
+                this.originalURL = "http://" + this.originalURL;
             }
             PUT("/links/", {
                 link: this.originalURL,
