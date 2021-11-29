@@ -1,7 +1,7 @@
 import configparser
 import os
 from datetime import timedelta, datetime, timezone
-
+from util.util import reply
 import pymongo
 from flask import Flask
 from flask_cors import CORS
@@ -61,6 +61,36 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original respone
         return response
+
+
+@jwt.invalid_token_loader
+def invalid_token_resp(header, payload):
+    return reply(-1, 'invalid token')
+
+
+@jwt.expired_token_loader
+def expired_token_reps(header, payload):
+    return reply(-3, 'expired token')
+
+
+@jwt.needs_fresh_token_loader
+def expired_token_reps(header, payload):
+    return reply(-3, 'expired token')
+
+
+@jwt.revoked_token_loader
+def revoked_token_loader(header, payload):
+    return reply(-1, 'token revoked')
+
+
+@jwt.unauthorized_loader
+def unauthorized_loader(reason):
+    return reply(-1, reason)
+
+
+@jwt.token_verification_failed_loader
+def token_verification_failed_loader(header, payload):
+    return reply(-1, 'token verification failed')
 
 
 if __name__ == '__main__':

@@ -4,7 +4,7 @@ import uuid
 from flask import jsonify
 
 REPLY_CODES = {
-    500: 'Error',
+    500: 'Unknown Error',
     -3: 'Expired',
     -2: 'Already Exist',
     -1: 'Not Exist',

@@ -24,25 +24,30 @@ def add_link():
 
     try:
         objId = ObjectId(get_jwt_identity())
-
         result = list(db.users.find({'_id': objId}))
         if len(result):
-            idx = _getNextSEQ()
-            shortened = hashids.encode(idx)
-            link = {
-                'uid': f'{objId}',
-                'idx': idx,
-                'original': request.form['link'],
-                'shortened': shortened,
-                'expiry': get_future_time(7)
-            }
-            lid = str(db.links.insert_one(link).inserted_id)
-            del link['uid']
-            del link['_id']
-            link['id'] = lid
-            return reply(code=1, data=link), 200
+            maxLinks = result[0]['linksNum']
+            # get current number of created links
+            result = list(db.links.find({'uid': get_jwt_identity()}))
+            if maxLinks - len(result) > 0:
+                idx = _getNextSEQ()
+                shortened = hashids.encode(idx)
+                link = {
+                    'uid': f'{objId}',
+                    'idx': idx,
+                    'original': request.form['link'],
+                    'shortened': shortened,
+                    'expiry': get_future_time(7)
+                }
+                lid = str(db.links.insert_one(link).inserted_id)
+                del link['uid']
+                del link['_id']
+                link['id'] = lid
+                return reply(code=1, data=link), 200
+            else:
+                return reply(code=-2, msg="Reached Maximum Limit!"), 202
 
-        return reply(code=-1), 404
+        return reply(code=-1, msg="User Not Exist, Please Try Again"), 404
 
     except Exception as ex:
         if hasattr(ex, 'code'):
@@ -93,7 +98,7 @@ def parse_link(shortened):
 def delete_link(lid):
     try:
         from app import db
-        dbResp = db.links.delete_one({'_id': ObjectId(lid)})
+        dbResp = db.links.delete_one({'_id': ObjectId(lid), 'uid': get_jwt_identity()})
         if dbResp.deleted_count == 1:
             return reply(1), 200
 
@@ -112,7 +117,7 @@ def refresh_link(lid):
         new_link = request.form.get('newLink')
         if new_link:
             dbResp = db.links.update_one(
-                {'_id': ObjectId(lid)},
+                {'_id': ObjectId(lid), 'uid': get_jwt_identity()},
                 {'$set': {'original': new_link}}
             )
             if dbResp.modified_count:
@@ -120,7 +125,7 @@ def refresh_link(lid):
         else:
             t = get_future_time(7)
             dbResp = db.links.update_one(
-                {'_id': ObjectId(lid)},
+                {'_id': ObjectId(lid), 'uid': get_jwt_identity()},
                 {'$set': {'expiry': t}}
             )
             if dbResp.modified_count:
