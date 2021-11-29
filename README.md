@@ -10,7 +10,7 @@ Pingchuan Huang-503954-KrisCris
   - [x] Todd approved it!
 
 - **Languages/Frameworks (30 points)**
-  - [ ] Vue.js Frontend (10 points)
+  - [x] Vue.js Frontend (10 points)
   - [x] Flask Backend (10 points)
   - [x] MongoDB Database (10 points)
 
@@ -23,9 +23,9 @@ Pingchuan Huang-503954-KrisCris
   - [x] Database is properly defined to maintain the above functionality (10 points)
 
 - **Best Practices (10 points)**
-  - [ ] Code is readable and well formatted (3 points)
+  - [x] Code is readable and well formatted (3 points)
   - [x] Users are authenticated using JSON Web Token (JWT) (5 points)
-  - [ ] All pages pass the W3C HTML validators (2 points)
+  - [x] All pages pass the W3C HTML validators (2 points)
 
 - **Creative Portion**
 
