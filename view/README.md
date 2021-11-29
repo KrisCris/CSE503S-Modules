@@ -5,7 +5,7 @@
 npm install
 ```
 
-### Replace `SAMPLE_ENV` with `.env`
+**NOTE: Replace `sample_env` with `.env`**
 
 
 ### Compiles and hot-reloads for development
