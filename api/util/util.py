@@ -13,21 +13,20 @@ REPLY_CODES = {
 }
 
 
-def reply(code, msg=None, data=None):
-    if data is None:
-        data = []
-    if code in REPLY_CODES:
-        return jsonify({
-            'code': code,
-            'msg': REPLY_CODES[code] if msg is None else msg,
-            'data': data
-        })
-
-    return jsonify({
+def reply(code, msg='', data=[]):
+    resp = jsonify({
         'code': code,
         'msg': msg,
         'data': data
     })
+    if code in REPLY_CODES:
+        resp = jsonify({
+            'code': code,
+            'msg': REPLY_CODES[code] if msg == '' else msg,
+            'data': data
+        })
+
+    return resp
 
 
 def gen_token(key):

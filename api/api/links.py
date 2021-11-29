@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from util.util import reply, get_future_time, get_current_time
 
 links = Blueprint(name='links', import_name=__name__, url_prefix='/links')
-CORS(links)
+CORS(links, supports_credentials=True)
 
 
 @links.route('/', methods=['PUT'])
@@ -57,6 +57,8 @@ def getAllLinks():
         from app import db
         result = list(db.links.find({'uid': get_jwt_identity()}))
         for link in result:
+            del link['uid']
+            del link['idx']
             link['_id'] = str(link['_id'])
             link['expired'] = True if get_current_time() > link['expiry'] else False
         return reply(1, data=result)
@@ -123,7 +125,6 @@ def refresh_link(lid):
             )
             if dbResp.modified_count:
                 return reply(1, data={'newExpiry': t}), 200
-
 
         if dbResp.matched_count:
             return reply(1), 202

@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from util.util import reply, gen_token
 
 users = Blueprint(name="users", import_name=__name__, url_prefix='/users')
-CORS(users)
+CORS(users, supports_credentials=True)
 
 
 @users.route('/register', defaults={'invitation': None}, methods=['POST'])

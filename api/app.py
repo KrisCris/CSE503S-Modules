@@ -42,7 +42,7 @@ app.config['JWT_SECRET_KEY'] = config['DEV']['JWT_SECRET']
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 
 hashids = Hashids(min_length=4, salt=app.config['JWT_SECRET_KEY'])
