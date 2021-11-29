@@ -5,6 +5,9 @@
 npm install
 ```
 
+### Replace `SAMPLE_ENV` with `.env`
+
+
 ### Compiles and hot-reloads for development
 ```
 npm run serve
