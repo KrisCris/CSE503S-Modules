@@ -1,12 +1,10 @@
 from bson.objectid import ObjectId
 from flask import Blueprint, request
-from flask_cors import CORS
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from util.util import reply, get_future_time, get_current_time
 
 links = Blueprint(name='links', import_name=__name__, url_prefix='/links')
-CORS(links, supports_credentials=True)
 
 
 @links.route('/', methods=['PUT'])

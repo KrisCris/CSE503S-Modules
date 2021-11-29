@@ -12,7 +12,7 @@ export const GET = async (api) => {
         headers: {
             'X-CSRF-TOKEN': getCookie('csrf_access_token'),
         },
-        credentials: 'include'
+        // credentials: 'include'
     }).then(response => response.json())
         .catch(error => console.error('Error:', error));
 }
@@ -29,7 +29,7 @@ export const POST = async (api, data) => {
         headers: {
             'X-CSRF-TOKEN': getCookie('csrf_access_token'),
         },
-        credentials: 'include'
+        // credentials: 'include'
     }).then(response => response.json())
         .catch(error => console.error('Error:', error));
 }
@@ -46,7 +46,7 @@ export const PUT = async (api, data) => {
         headers: {
             'X-CSRF-TOKEN': getCookie('csrf_access_token'),
         },
-        credentials: 'include'
+        // credentials: 'include'
     }).then(response => response.json())
         .catch(error => console.error('Error:', error));
 }
@@ -63,7 +63,7 @@ export const PATCH = async (api, data) => {
         headers: {
             'X-CSRF-TOKEN': getCookie('csrf_access_token'),
         },
-        credentials: 'include'
+        // credentials: 'include'
     }).then(response => response.json())
         .catch(error => console.error('Error:', error));
 }
@@ -80,7 +80,7 @@ export const DELETE = async (api, data) => {
         headers: {
             'X-CSRF-TOKEN': getCookie('csrf_access_token'),
         },
-        credentials: 'include'
+        // credentials: 'include'
     }).then(response => response.json())
         .catch(error => console.error('Error:', error));
 }

@@ -4,7 +4,6 @@ from datetime import timedelta, datetime, timezone
 from util.util import reply
 import pymongo
 from flask import Flask
-from flask_cors import CORS
 from flask_jwt_extended import JWTManager, get_jwt_identity, create_access_token, get_jwt, set_access_cookies
 from hashids import Hashids
 
@@ -42,7 +41,6 @@ app.config['JWT_SECRET_KEY'] = config['DEV']['JWT_SECRET']
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=24)
 
-CORS(app, supports_credentials=True)
 jwt = JWTManager(app)
 
 hashids = Hashids(min_length=4, salt=app.config['JWT_SECRET_KEY'])

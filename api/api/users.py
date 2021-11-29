@@ -1,6 +1,5 @@
 from bson.objectid import ObjectId
 from flask import Blueprint, request
-from flask_cors import CORS
 from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
     jwt_required, get_jwt_identity, unset_jwt_cookies
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,7 +7,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from util.util import reply, gen_token
 
 users = Blueprint(name="users", import_name=__name__, url_prefix='/users')
-CORS(users, supports_credentials=True)
 
 
 @users.route('/register', defaults={'invitation': None}, methods=['POST'])
