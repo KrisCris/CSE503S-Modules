@@ -1,7 +1,7 @@
 <template>
     <Nav />
     <div id="table">
-        <LinksTable :username="username" :maxLinks="maxLinks" />
+        <LinksTable :username="username" :maxLinks="maxLinks" :inviteCode="inviteCode" />
     </div>
 </template>
 
@@ -16,7 +16,8 @@ export default {
     data() {
         return {
             username:'',
-            maxLinks: 0
+            maxLinks: 0,
+            inviteCode:''
         };
     },
     mounted() {
@@ -24,6 +25,7 @@ export default {
             if (res.code == 1) {
                 this.username = res.data.username
                 this.maxLinks = res.data.linksNum
+                this.inviteCode = res.data.inviteCode
             } else {
                 if (res.code == -1) {
                     this.$router.push({ name: "Auth" });

@@ -4,6 +4,9 @@
             <el-alert :title="title" :type="canCreate" center show-icon :closable="false"> </el-alert>
         </div>
         <div class="noti">
+            <el-alert :title="inviteCode" type="warning" center :closable="false" @click="copy(inviteCode)"> </el-alert>
+        </div>
+        <div class="noti">
             <el-alert v-show="errorMsg" :title="errorMsg" type="error" effect="dark" :closable="false" @click="errorMsg=''"> </el-alert>
             <el-alert v-show="successMsg" :title="successMsg" type="success" show-icon :closable="false" @click="successMsg=''"> </el-alert>
         </div>
@@ -39,7 +42,7 @@ import { GET, POST, PUT, PATCH, DELETE } from "../requests.js";
 
 export default {
     name: "LinksTable",
-    props: ['username', 'maxLinks'],
+    props: ['username', 'maxLinks', 'inviteCode'],
     data() {
         return {
             baseUrl: "",
@@ -56,7 +59,7 @@ export default {
             return this.availability > 0 ? 'success' : 'warning'
         },
         title(){
-            return this.username + ', you can create ' + this.availability + '/' + this.maxLinks + ' link(s)'
+            return this.username + ', you can create ' + this.availability + '/' + this.maxLinks + ' link(s). Earn URLs by inviting people using the following code:'
         }
     },
     methods:{
