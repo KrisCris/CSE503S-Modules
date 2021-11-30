@@ -30,6 +30,7 @@
                 <td>
                     <el-button type="primary" @click="copy(link.shortened)" round>Copy</el-button>
                     <el-button type="success" @click="renew(link._id)" round>Renew</el-button>
+                    <el-button type="warning" @click="showEditor(link._id, link.original)" round>Edit</el-button>
                     <el-button type="danger" @click="del(link._id)" round>Delete</el-button>
                 </td>
             </tr>
@@ -80,10 +81,32 @@ export default {
                 }
             })
         },
+        showEditor(id, link){
+            this.$emit("showEditor", {
+                id:id,
+                link:link
+            })
+        },
         del(id){
             DELETE("/links/"+id).then((res)=>{
                 if(res.code==1){
                     this.successMsg="Deleted!"
+                    this.fetchLinks()
+                } else {
+                    if (res.code == 0) {
+                        this.$router.push({ name: "Auth" });
+                    } else {
+                        this.errorMsg = res.msg;
+                    }
+                }
+            })
+        },
+        updateModify(data){
+            PATCH("/links/"+data.id, {
+                newLink:data.newUrl
+            }).then((res)=>{
+                if(res.code==1){
+                    this.successMsg=data.msg
                     this.fetchLinks()
                 } else {
                     if (res.code == 0) {

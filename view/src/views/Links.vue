@@ -1,23 +1,26 @@
 <template>
     <Nav />
     <div id="table">
-        <LinksTable :username="username" :maxLinks="maxLinks" :inviteCode="inviteCode" />
+        <LinksTable ref="linksTb" :username="username" :maxLinks="maxLinks" :inviteCode="inviteCode" @showEditor="initEditor"/>
     </div>
+    <LinkEditor v-show="showEditor" @closeModal="showEditor=false" @updateURL="updatedUrl" ref="linkEd"/>
 </template>
 
 <script>
 import { GET, POST, PUT, PATCH, DELETE } from "../requests.js";
 import Nav from "../components/Nav.vue";
 import LinksTable from "../components/LinksTable.vue";
+import LinkEditor from "../components/LinkEditor.vue"
 
 export default {
     name: "Links",
-    components: { LinksTable, Nav },
+    components: { LinksTable, Nav, LinkEditor },
     data() {
         return {
             username:'',
             maxLinks: 0,
-            inviteCode:''
+            inviteCode:'',
+            showEditor: false,
         };
     },
     mounted() {
@@ -37,7 +40,16 @@ export default {
             }
         });
     },
-    methods: {},
+    methods: {
+        updatedUrl(data){
+            this.$refs.linksTb.updateModify(data)
+            this.showEditor = false
+        },
+        initEditor(data){
+            this.$refs.linkEd.setup(data)
+            this.showEditor = true
+        }
+    },
 };
 </script>
 

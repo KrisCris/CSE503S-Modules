@@ -109,7 +109,7 @@ def delete_link(lid):
 
 @links.route('/<lid>', methods=['PATCH'])
 @jwt_required()
-def refresh_link(lid):
+def update_link(lid):
     try:
         from app import db
         new_link = request.form.get('newLink')
