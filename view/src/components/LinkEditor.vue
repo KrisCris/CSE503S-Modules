@@ -48,6 +48,7 @@ export default {
 </script>
 
 <style>
+/* Credit https://github.com/iamshaunjp/Vue-3-Firebase/blob/lesson-26/modal-project/src/components/Modal.vue */
 #warp {
     top: 0;
     position: fixed;

@@ -101,6 +101,7 @@ export default {
 </script>
 
 <style>
+/* Credit https://github.com/iamshaunjp/Vue-3-Firebase/blob/lesson-44/web-forms/src/components/SignupForm.vue */
 .sign {
     max-width: 420px;
     margin: 5rem auto;
