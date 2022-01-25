@@ -10,22 +10,7 @@ Xingchen Yang-501890-xingcheny
 
   ![Database UML](DB.png)
 
-2. Link to webpage
-
-    - [Link using my domain name](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
-
-    - [Link using domain name provided by AWS](http://ec2.connlost.online/~connlost/module5-group-503954/view/cal.html)
-
-3. Created Accounts
-
-    - user1
-    - user2
-    - groupuser1
-    - groupuser2 
-  
-    **Note:** password is the same as username
-
-4. Screenshots
+2. Screenshots
 
   ![1](img1.png)
   ![2](img2.png)
