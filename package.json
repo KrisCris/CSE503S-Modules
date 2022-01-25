@@ -1,0 +1,33 @@
+{
+  "name": "module6-chatroom",
+  "version": "1.0.0",
+  "description": "WUSTL-CSE503S-Module6-Chatroom",
+  "main": "server/server.js",
+  "scripts": {
+    "serve": "nodemon server/server.js"
+  },
+  "author": "connlost",
+  "license": "ISC",
+  "dependencies": {
+    "mime": "^2.5.2",
+    "socket.io": "^4.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.14"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cse330-fall-2021/module6-group-503954.git"
+  },
+  "keywords": [
+    "chatroom",
+    "wustl",
+    "cse330",
+    "cse503",
+    "module6"
+  ],
+  "bugs": {
+    "url": "https://github.com/cse330-fall-2021/module6-group-503954/issues"
+  },
+  "homepage": "https://github.com/cse330-fall-2021/module6-group-503954#readme"
+}

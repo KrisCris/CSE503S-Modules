@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatRoom</title>
+    <link rel="stylesheet" href="./style/index.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <!-- login -->
+    <div class="login">
+        <img id="connStatus" src="./res/offline.png" alt="connStatus"><br>
+        <input id="username" type="text" placeholder="Nickname"><br>
+        <input id="password" type="password" placeholder="Password"><br>
+        <button id="btnLogin">Login</button><br>
+        <button id="btnReg">Register</button><br>
+    </div>
+
+
+    <div class="chatroom displayNone">
+        <!-- namespaces -->
+        <div class="namespaces">
+            <div class="add">
+                <input type="text" name="servername" id="inputServerName" placeholder="Server Name">
+                <input type="password" name="serverpw" id="inputServerPW" placeholder="Password">
+                <button id="btnJoinServer">Join</button>
+                <button id="btnNewServer">New</button>
+            </div>
+
+            <ul class="server-list">
+            </ul>
+        </div>
+
+        <!-- rooms -->
+        <div class="rooms">
+            <!-- new rooms -->
+            <div class="newChannel">
+                <input type="text" name="channelname" id="inputChannelName" placeholder="New Channel">
+                <button id="btnCreateChannel">Create</button>
+            </div>
+
+            <!-- room list -->
+            <ul class="room-list">
+
+            </ul>
+
+            <!-- user settings -->
+            <div class="user">
+                <button id="btnUser">Username</button>
+                <button id="btnLogout">Logout</button>
+            </div>
+        </div>
+
+        <!-- chats -->
+        <div class="chats">
+            <ul class="chat-list">
+            </ul>
+            <div class="text-field">
+                <div id="typing-indicator" class="displayNone"><span id="typing-name">Todd</span> is typing...</div>
+                <input type="file" name="realFileBtn" id="realFileBtn" accept="image/*" class="displayNone" disabled>
+                <input type="image" src="./res/image.png" alt="Image" id="inputImage" disabled>
+                <div role="textbox" id="textarea" data-text="Start Chat!"></div>
+            </div>
+        </div>
+
+        <!-- members -->
+        <div class="members">
+            <ul class="member-list">
+            </ul>
+        </div>
+    </div>
+
+    <div id="userMenuAdmin" class="userMenuAdmin displayNone">
+        <button id="pm">Message</button>
+        <button id="at">@</button>
+        <button id="kick">Kick</button>
+        <button id="ban">Ban</button>
+    </div>
+    <div id="userMenu" class="userMenu displayNone">
+        <button id="upm">Message</button>
+        <button id="uat">@</button>
+    </div>
+
+    <!-- page logics -->
+    <script src="./script/index.js"></script>
+</body>
+
+</html>
