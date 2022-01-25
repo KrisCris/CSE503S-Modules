@@ -4,8 +4,6 @@
 
 #### Pingchuan Huang-503954-KrisCris
 
-#### [Link to the page](http://ec2-18-117-87-53.us-east-2.compute.amazonaws.com/~connlost/module3-group-503954/view/)
-
 
 #### Path:
 
@@ -81,6 +79,6 @@
 - [ ] Admin account features.
 - [ ] User account settings.
 - [ ] Order stories based on number of likes / views.
- 
- 
+
+
  Grade: 60/60. 

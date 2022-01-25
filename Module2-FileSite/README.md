@@ -4,10 +4,6 @@ Pingchuan Huang-503954-KrisCris
 
 Xingchen Yang-501890-xingcheny
 
-# link to the site
-
-[Link](http://ec2-18-117-87-53.us-east-2.compute.amazonaws.com/~connlost/module2-group-503954/)
-
 
 # Note before testing on it
 1. we created 2 account, `testuser` and `connlost`, feel free to use them.
