@@ -298,6 +298,6 @@ io.of(/^\/[\w_\.\-]+$/).on("connection", (socket) => {
 	})
 })
 
-httpServer.listen(3456, () => {
-	console.log('Server running on http://0.0.0.0:3456/');
+httpServer.listen(2333, () => {
+	console.log('Server running on http://127.0.0.1:2333/');
 });
