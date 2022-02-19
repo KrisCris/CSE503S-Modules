@@ -2,8 +2,6 @@
 
 ## News Site (60 Points):
 
-#### Pingchuan Huang-503954-KrisCris
-
 
 #### Path:
 
@@ -13,14 +11,6 @@
 - **view/index.php**: main page.
 - **view/style**: some css files
 - **view/moeule**: components used in index.php, as well as a seperate php file for handling post requests.
-
-
-#### Some already created account:
-- username: root 
-- password: root
-
-- username: pingchuan
-- password: pingchuan
 
 #### Database
 ![DB](db.png)

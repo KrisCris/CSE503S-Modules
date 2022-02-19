@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="style/calender.css">
+    <script src="script/calender.js"></script>
+    <script src="script/query.js"></script>
+    <script src="script/main.js"></script>
+</head>
+
+<body>
+    <!-- login/logout -->
+    <div id=login class="displayNone">
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="password" name="password" id="password" placeholder="password">
+        <button id="loginBtn">LOGIN</button>
+        <button id="regBtn">REGISTER</button>
+    </div>
+
+    <div id="logout" class="displayNone">
+        <div>
+            <h1 id="hi">hi</h1>
+            <button id="logoutBtn">LOGOUT</button>
+        </div>
+        <!-- some user functions that require login -->
+        <br><br>
+        <div>
+            <input type="text" name="joinGroup" id="joinGroup" placeholder="code for join group!"><br>
+            <button onclick="joinGroup()">Join Group!</button>
+        </div>
+        <br><br>
+        <div>
+            <input type="text" name="createGroup" id="createGroup" placeholder="create group!"><br>
+            <button onclick="createGroup()">Create Group!</button>
+            <p>Group Code: <br><span id="groupCode"></span></p>
+        </div>
+        <br><br>
+        <div>
+            <input type="text" name="sharedEvent" id="sharedEvent" placeholder="code for shared event!"><br>
+            <button onclick="addSharedEvent()">Add Event!</button>
+        </div>
+        <br><br>
+    </div>
+
+    <!-- calender -->
+    <div class="calendar">
+        <div id="tags" class="row top">
+            <!-- tags -->
+        </div>
+        <div class="row bottom">
+            <div class="col left">
+                <div class="content">
+                    <h1 id="year">
+                        YEAR
+                    </h1>
+                    <h2 class="month">
+                        <a class="prev" href="#">←</a>
+                        <span id="month">
+                            MONTH
+                        </span>
+                        <a class="next" href="#">→</a>
+                    </h2>
+                    <div class="spacer10"></div>
+                    <ul class="weekdays">
+                        <li><a href="#">SUN</a></li>
+                        <li><a href="#">MON</a></li>
+                        <li><a href="#">TUE</a></li>
+                        <li><a href="#">WED</a></li>
+                        <li><a href="#">THU</a></li>
+                        <li><a href="#">FRI</a></li>
+                        <li><a href="#">SAT</a></li>
+                    </ul>
+                    <ul id="days" class="days">
+                        <!-- DATES -->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col middle">
+                <div class="content">
+                    <h2><span id="weekday">
+                            WEEKDAY
+                        </span><a id="addEvent" href="#">+</a></h2>
+                    <div class="events">
+                        <ul class="eventList">
+                            <!-- EVENT -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col right">
+                <div class="content">
+                    <div id="editor">
+                        <p>Start Date</p><input type="datetime-local" name="begin" id="date-begin">
+                        <p>End Date</p><input type="datetime-local" name="end" id="date-end">
+                        <p>Category (Tag)</p>
+                        <select name="categories" id="categories">
+                            <!-- categories -->
+                        </select>
+                        <p>New tags?</p>
+                        <textarea name="newTag" id="newTag" cols="30" rows="2"
+                            placeholder="Input tag name to create a new one"></textarea>
+                        <p>Group</p>
+                        <select name="group" id="groups">
+                            <!-- groups -->
+                        </select>
+                        <textarea name="title" id="title" cols="30" rows="2" placeholder="Title"></textarea>
+                        <textarea name="Detail" id="detail" cols="30" rows="2" placeholder="Detail"></textarea>
+                        <!-- btn for add event -->
+                        <div id="new">
+                            <button id="submit">Submit</button>
+                        </div>
+                        <!-- btns for existing event -->
+                        <div id="exist">
+                            <button id="edit">Edit</button>
+                            <button id="del">Delete</button>
+                            <button id="share">Share</button>
+                            <p id="shareToken"></p>
+                        </div>
+                        <button onclick="narrow()">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

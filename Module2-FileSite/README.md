@@ -1,17 +1,6 @@
 # CSE330
 
-Pingchuan Huang-503954-KrisCris
-
-Xingchen Yang-501890-xingcheny
-
-
-# Note before testing on it
-1. we created 2 account, `testuser` and `connlost`, feel free to use them.
-2. don't input characters other than number and letters as username, or new folder name.
-
-
-
-# Usage
+## Usage
 
 1. login an account
 2. click `choose file` to select a file for upload, then click `upload`. The file should show up in your online folder.
@@ -26,7 +15,7 @@ Xingchen Yang-501890-xingcheny
 ![note](note.png)
 
 
-# Requirements
+## Requirements
 
 1. File Sharing Site (40 Points):
 

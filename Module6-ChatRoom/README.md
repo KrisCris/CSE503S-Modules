@@ -1,7 +1,5 @@
 # CSE503S-Module6-Chatroom
 
-Pingchuan Huang-503954-KrisCris
-
 
 # Screenshots
 
